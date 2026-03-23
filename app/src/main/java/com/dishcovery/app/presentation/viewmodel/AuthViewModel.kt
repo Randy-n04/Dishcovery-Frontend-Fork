@@ -38,4 +38,9 @@ class AuthViewModel(
             }
         }
     }
+    fun logout() {
+        _user.value = null
+        _error.value = null
+    }
+
 }
