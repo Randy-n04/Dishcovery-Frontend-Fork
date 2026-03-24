@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.dishcovery.app.data.datasource.AuthDataSourceImpl
 import com.dishcovery.app.data.mapper.UserMapper
 import com.dishcovery.app.data.repository.AuthRepositoryImpl
+import com.dishcovery.app.domain.model.UserRole
 import com.dishcovery.app.presentation.factory.AuthViewModelFactory
 import com.dishcovery.app.presentation.navigation.NavGraph
 import com.dishcovery.app.presentation.ui.components.BottomNavigationBar
@@ -36,11 +37,11 @@ class MainActivity : ComponentActivity() {
 
                 val navController = rememberNavController()
                 val user by authViewModel.user.collectAsState()
-                val isAuthenticated = user != null
+                val showBottomBar = user?.role is UserRole.User
 
                 Scaffold(
                     bottomBar = {
-                        if (isAuthenticated) {
+                        if (showBottomBar) {
                             BottomNavigationBar(navController = navController)
                         }
                     }

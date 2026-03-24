@@ -6,5 +6,6 @@ package com.dishcovery.app.data.datasource.model
 data class UserDto(
     val id: Long,
     val username: String,
-    val password: String
+    val password: String,
+    val role: String
 )

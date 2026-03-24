@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.dishcovery.app.domain.model.UserRole
 import com.dishcovery.app.presentation.ui.screens.AdminDashboardScreen
 import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
@@ -23,36 +24,36 @@ fun NavGraph(
     paddingValues: PaddingValues
 ) {
     val user by authViewModel.user.collectAsState()
-    val isAuthenticated = user != null
-    val isAdmin = user?.username == "admin"
+
+    val startDestination = when {
+        user == null                 -> NavRoutes.Auth.ROUTE
+        user?.role is UserRole.Admin -> NavRoutes.AdminDashboard.ROUTE
+        else                         -> NavRoutes.UserDashboard.ROUTE
+    }
 
     NavHost(
         navController = navController,
-        startDestination = if (isAuthenticated) {
-            if (isAdmin) NavRoutes.AdminDashboard.ROUTE else NavRoutes.UserDashboard.ROUTE
-        } else {
-            NavRoutes.Auth.ROUTE
-        }
+        startDestination = startDestination
     ) {
-        // Auth screen
+
+        // ── Auth ────────────────────────────────────────────────────────────
         composable(NavRoutes.Auth.ROUTE) {
             LoginScreen(
                 viewModel = authViewModel,
                 onLoginSuccess = {
-                    navController.navigate(
-                        if (user?.username == "admin") {
-                            NavRoutes.AdminDashboard.ROUTE
-                        } else {
-                            NavRoutes.UserDashboard.ROUTE
-                        }
-                    ) {
+                    val destination = if (user?.role is UserRole.Admin) {
+                        NavRoutes.AdminDashboard.ROUTE
+                    } else {
+                        NavRoutes.UserDashboard.ROUTE
+                    }
+                    navController.navigate(destination) {
                         popUpTo(NavRoutes.Auth.ROUTE) { inclusive = true }
                     }
                 }
             )
         }
 
-        // User Dashboard screen
+        // ── User ────────────────────────────────────────────────────────────
         composable(NavRoutes.UserDashboard.ROUTE) {
             UserDashboardScreen(
                 navController = navController,
@@ -65,8 +66,7 @@ fun NavGraph(
                 }
             )
         }
-
-        // Admin Dashboard screen
+        // ── Admin ───────────────────────────────────────────────────────────
         composable(NavRoutes.AdminDashboard.ROUTE) {
             AdminDashboardScreen(
                 navController = navController,
@@ -97,5 +97,7 @@ fun NavGraph(
                 paddingValues = paddingValues
             )
         }
+
+
     }
 }

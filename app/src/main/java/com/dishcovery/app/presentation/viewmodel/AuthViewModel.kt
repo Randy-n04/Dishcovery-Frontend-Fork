@@ -15,32 +15,32 @@ class AuthViewModel(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    // Estado del usuario logueado
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
 
-    // Estado de error
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
     /**
-     * Login function
+     * Attempts to log in with the given credentials.
+     * Updates [user] on success or [error] on failure.
      */
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            val result = repository.login(username, password)
-
-            result.onSuccess { user ->
-                _user.value = user
-                _error.value = null
-            }.onFailure {
-                _error.value = it.message
-            }
+            repository.login(username, password)
+                .onSuccess { user ->
+                    _user.value = user
+                    _error.value = null
+                }
+                .onFailure { throwable ->
+                    _error.value = throwable.message
+                }
         }
     }
+
+    /** Clears the current user session. */
     fun logout() {
         _user.value = null
         _error.value = null
     }
-
 }
