@@ -30,7 +30,7 @@ fun PopularRecipesList(modifier: Modifier = Modifier) {
                     .size(width = 240.dp, height = 100.dp)
             ) {
                 Text(
-                    text = "Cajita #$index",
+                    text = "Receta popular #$index",
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxSize(),

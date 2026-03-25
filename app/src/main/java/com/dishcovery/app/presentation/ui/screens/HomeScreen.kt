@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.dishcovery.app.presentation.ui.components.HomeHeader
 import com.dishcovery.app.presentation.ui.components.AITipBanner
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
+import com.dishcovery.app.presentation.ui.components.SavedRecipesList
 
 @Composable
 fun HomeScreen(paddingValues: PaddingValues) {
@@ -33,9 +34,13 @@ fun HomeScreen(paddingValues: PaddingValues) {
             modifier = Modifier.fillMaxWidth()
         )
         Text(
-            text = "Recetas Favoritas",
+            text = "Recetas Guardadas",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        SavedRecipesList(
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
