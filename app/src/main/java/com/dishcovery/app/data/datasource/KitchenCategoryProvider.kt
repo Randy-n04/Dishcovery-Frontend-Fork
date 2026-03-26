@@ -13,7 +13,9 @@ class KitchenCategoryProvider {
             KitchenCategoryDto(id = 2, name = "Mexicana"),
             KitchenCategoryDto(id = 3, name = "Asiática"),
             KitchenCategoryDto(id = 4, name = "Postres"),
-            KitchenCategoryDto(id = 5, name = "Saludable")
+            KitchenCategoryDto(id = 5, name = "Saludable"),
+            KitchenCategoryDto(id = 5, name = "Tipica")
+
         )
 
         fun getAll(): List<KitchenCategoryDto> = categories

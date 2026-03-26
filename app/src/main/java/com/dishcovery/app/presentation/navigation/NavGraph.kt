@@ -15,11 +15,13 @@ import com.dishcovery.app.presentation.ui.screens.LoginScreen
 import com.dishcovery.app.presentation.ui.screens.ProfileScreen
 import com.dishcovery.app.presentation.ui.screens.RecipesScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
+import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    recipeViewModel: RecipeViewModel,
     paddingValues: PaddingValues
 ) {
     val user by authViewModel.user.collectAsState()
@@ -54,7 +56,7 @@ fun NavGraph(
 
         // ── User / Home ────────────────────────────────────────────────────
         composable(NavRoutes.Home.ROUTE) {
-            HomeScreen(paddingValues)
+            HomeScreen(paddingValues, recipeViewModel)
         }
 
         // ── Admin ───────────────────────────────────────────────────────────

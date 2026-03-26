@@ -3,20 +3,26 @@ package com.dishcovery.app.presentation.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dishcovery.app.domain.model.Recipe
 
 @Composable
-fun SavedRecipesList(modifier: Modifier = Modifier) {
+fun SavedRecipesList(
+    recipes: List<Recipe>,
+    modifier: Modifier = Modifier
+) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(5) { index ->
+        items(recipes) { recipe ->
             SavedRecipeCard(
-                title = if (index == 0) "Paella" else "Favorito $index"
+                title = recipe.name,
+                imageUrl = recipe.iconUrl
             )
         }
     }
