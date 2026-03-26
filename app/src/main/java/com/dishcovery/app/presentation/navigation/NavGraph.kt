@@ -14,7 +14,6 @@ import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
 import com.dishcovery.app.presentation.ui.screens.ProfileScreen
 import com.dishcovery.app.presentation.ui.screens.RecipesScreen
-import com.dishcovery.app.presentation.ui.screens.UserDashboardScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -28,7 +27,7 @@ fun NavGraph(
     val startDestination = when {
         user == null                 -> NavRoutes.Auth.ROUTE
         user?.role is UserRole.Admin -> NavRoutes.AdminDashboard.ROUTE
-        else                         -> NavRoutes.UserDashboard.ROUTE
+        else                         -> NavRoutes.Home.ROUTE
     }
 
     NavHost(
@@ -44,7 +43,7 @@ fun NavGraph(
                     val destination = if (user?.role is UserRole.Admin) {
                         NavRoutes.AdminDashboard.ROUTE
                     } else {
-                        NavRoutes.UserDashboard.ROUTE
+                        NavRoutes.Home.ROUTE
                     }
                     navController.navigate(destination) {
                         popUpTo(NavRoutes.Auth.ROUTE) { inclusive = true }
@@ -53,19 +52,11 @@ fun NavGraph(
             )
         }
 
-        // ── User ────────────────────────────────────────────────────────────
-        composable(NavRoutes.UserDashboard.ROUTE) {
-            UserDashboardScreen(
-                navController = navController,
-                paddingValues = paddingValues,
-                onLogout = {
-                    authViewModel.logout()
-                    navController.navigate(NavRoutes.Auth.ROUTE) {
-                        popUpTo(NavRoutes.UserDashboard.ROUTE) { inclusive = true }
-                    }
-                }
-            )
+        // ── User / Home ────────────────────────────────────────────────────
+        composable(NavRoutes.Home.ROUTE) {
+            HomeScreen(paddingValues)
         }
+
         // ── Admin ───────────────────────────────────────────────────────────
         composable(NavRoutes.AdminDashboard.ROUTE) {
             AdminDashboardScreen(
@@ -80,11 +71,6 @@ fun NavGraph(
             )
         }
 
-        // Home screen (bottom navigation destination)
-        composable(NavRoutes.Home.ROUTE) {
-            HomeScreen(paddingValues)
-        }
-
         // Recipes screen (bottom navigation destination)
         composable(NavRoutes.Recipes.ROUTE) {
             RecipesScreen(paddingValues)
@@ -97,7 +83,5 @@ fun NavGraph(
                 paddingValues = paddingValues
             )
         }
-
-
     }
 }

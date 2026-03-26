@@ -20,11 +20,11 @@ fun AITipBanner(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .background(Color(0xFFF1F4E6)) // Light background for the banner section
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Row(
@@ -37,27 +37,27 @@ fun AITipBanner(modifier: Modifier = Modifier) {
                             )
                         )
                     )
-                    .padding(20.dp),
+                    .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "AI Tip",
                     tint = Color.White,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
                         text = "AI Tip: ¡Intenta comida Mexicana esta semana!",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        fontSize = 13.sp
                     )
                     Text(
                         text = "Ya has perfeccionado lo básico de la comida italiana",
                         color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 12.sp
+                        fontSize = 11.sp
                     )
                 }
             }
