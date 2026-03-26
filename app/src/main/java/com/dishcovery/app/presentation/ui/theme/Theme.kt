@@ -30,7 +30,8 @@ private val LightColorScheme = lightColorScheme(
 fun FrontendDishcoveryTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
+    // This parameter needs to be false, if true, it will use the wallpapers colors
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
