@@ -19,13 +19,5 @@ class UserMapper {
         }
     )
 
-    fun mapToDto(domain: User): UserDto = UserDto(
-        id       = domain.id,
-        username = domain.username,
-        password = domain.password,
-        role     = when (domain.role) {
-            is UserRole.Admin -> "admin"
-            is UserRole.User  -> "user"
-        }
-    )
+
 }
