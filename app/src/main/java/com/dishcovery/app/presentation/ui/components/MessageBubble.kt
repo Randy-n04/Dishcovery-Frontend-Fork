@@ -1,6 +1,7 @@
 package com.dishcovery.app.presentation.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -31,13 +32,18 @@ fun MessageBubble(
             modifier = Modifier
                 .padding(8.dp)
                 .widthIn(max = 290.dp)
+                .border(
+                    width = 1.dp,
+                    color = if (!isMe) Color(0xFFCCCCCC) else Color.Transparent,
+                    shape = bubbleShape
+                )
                 .background(
                     brush = when {
                         isMe -> Brush.horizontalGradient(listOf(Primary, Primary))
                         isFirstChatHighlight -> Brush.linearGradient(
                             colors = listOf(Color(0xFFF3F3F5), Color(0xFFE0E1E6))
                         )
-                        else -> Brush.horizontalGradient(listOf(BackgroundLight, BackgroundLight))
+                        else -> Brush.horizontalGradient(listOf(Gris, Gris))
                     },
                     shape = bubbleShape
                 )

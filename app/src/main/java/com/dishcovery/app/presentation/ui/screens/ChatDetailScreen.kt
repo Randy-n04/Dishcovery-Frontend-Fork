@@ -45,14 +45,14 @@ fun ChatDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE9E9F0))
+            .background(Beige)
     ) {
 
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(BackgroundLight)
+                .background(Color(0xFFF0ECD5))
         ) {
             Row(
                 modifier = Modifier

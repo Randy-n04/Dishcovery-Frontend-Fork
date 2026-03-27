@@ -75,18 +75,17 @@ fun ProfileScreen(
                         location      = profile!!.location
                     )
                     ProfileMenuSection(
-                        title = "Cuenta",
+                        title = "Configuraciones",
                         items = listOf(
-                            "Datos Personales" to { },
-                            "Ajustes de Cuenta" to { }
+                            Triple("Datos Personales", { }, TextPrimary),
+                            Triple("Ajustes de Cuenta", { }, TextPrimary)
                         )
                     )
                     ProfileMenuSection(
-                        title = "Configuraciones",
+                        title = "Otro",
                         items = listOf(
-                            "Cambiar Contraseña"   to { },
-                            "Preguntas Frecuentes" to { },
-                            "Salir de la Cuenta"   to onLogout
+                            Triple("Preguntas Frecuentes", { }, TextPrimary),
+                            Triple("Salir de la Cuenta",   onLogout, Rojo)
                         )
                     )
                     Spacer(Modifier.height(16.dp))

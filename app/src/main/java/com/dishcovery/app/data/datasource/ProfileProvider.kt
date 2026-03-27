@@ -47,7 +47,7 @@ class ProfileProvider {
                         bio           = "Apasionado/a de la cocina",
                         photoUrl      = avatars[index % avatars.size],
                         offeredSkills = skills[index % skills.size],
-                        language      = "Es",
+                        language      = "Español",
                         location      = "San José, Costa Rica"
                     )
                 }

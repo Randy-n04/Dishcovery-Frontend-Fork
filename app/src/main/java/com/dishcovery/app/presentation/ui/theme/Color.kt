@@ -16,6 +16,7 @@ val BottomNavIndicator = Color(0xFFF7F0CF)
 
 // Extras UI
 val BackgroundLight = Beige
+val Gris = Color(0xFFEEEEEE)
 val Primary = Rojo
 val Secondary = Naranja
 val TextPrimary = Color(0xFF2C2C2C)

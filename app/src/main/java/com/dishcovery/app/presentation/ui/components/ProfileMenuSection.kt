@@ -27,7 +27,7 @@ import com.dishcovery.app.presentation.ui.theme.TextPrimary
  * A labeled group of tappable menu rows.
  */
 @Composable
-fun ProfileMenuSection(title: String, items: List<Pair<String, () -> Unit>>) {
+fun ProfileMenuSection(title: String, items: List<Triple<String, () -> Unit, Color>>) {
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -35,9 +35,9 @@ fun ProfileMenuSection(title: String, items: List<Pair<String, () -> Unit>>) {
         Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextPrimary)
         Surface(Modifier.fillMaxWidth(), RoundedCornerShape(10.dp), color = TextPrimary.copy(.06f)) {
             Column {
-                items.forEachIndexed { i, (label, onClick) ->
+                items.forEachIndexed { i, (label, onClick, color) ->
                     if (i > 0) HorizontalDivider(color = TextPrimary.copy(.08f))
-                    ProfileMenuItem(label = label, onClick = onClick)
+                    ProfileMenuItem(label = label, onClick = onClick, color = color)
                 }
             }
         }
