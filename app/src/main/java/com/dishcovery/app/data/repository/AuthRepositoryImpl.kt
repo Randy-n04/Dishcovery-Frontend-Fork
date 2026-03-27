@@ -22,7 +22,7 @@ class AuthRepositoryImpl(
                 val user = mapper.mapToDomain(userDto)
                 Result.success(user)
             } else {
-                Result.failure(Exception("Invalid credentials"))
+                Result.failure(Exception("invalid_credentials_error"))
             }
 
         } catch (e: Exception) {

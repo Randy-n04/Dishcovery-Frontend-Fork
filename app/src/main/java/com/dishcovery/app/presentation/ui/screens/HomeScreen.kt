@@ -6,7 +6,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.ui.components.AITipBanner
 import com.dishcovery.app.presentation.ui.components.BackPressToExit
@@ -47,7 +49,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Recetas Populares",
+                    text = stringResource(R.string.popular_recipes_title),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -62,7 +64,7 @@ fun HomeScreen(
 
                 if (savedRecipes.isNotEmpty()) {
                     Text(
-                        text = "Recetas Guardadas",
+                        text = stringResource(R.string.saved_recipes_title),
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )

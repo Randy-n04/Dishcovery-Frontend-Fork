@@ -1,6 +1,5 @@
 package com.dishcovery.app.presentation.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,8 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dishcovery.app.R
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.theme.Rojo
 import com.dishcovery.app.presentation.ui.theme.TextPrimary
@@ -54,7 +55,7 @@ fun ChatScreen(
     ) {
 
         Text(
-            text = "Chats",
+            text = stringResource(R.string.chats_title),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
         )
@@ -81,7 +82,7 @@ fun ChatScreen(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.back_button_desc),
                         tint = Rojo
                     )
                 }
@@ -92,11 +93,11 @@ fun ChatScreen(
             TextField(
                 value = search,
                 onValueChange = { search = it },
-                placeholder = { Text("Buscar") },
+                placeholder = { Text(stringResource(R.string.search_placeholder)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Buscar",
+                        contentDescription = stringResource(R.string.search_placeholder),
                         tint = Rojo
                     )
                 },

@@ -20,8 +20,8 @@
     <string name="no_data_available">Sin datos disponibles</string>
     <string name="user_management_title">Gestión de Usuarios</string>
     <string name="no_users_to_show">Sin usuarios por mostrar</string>
-    <string name="remove_from_saved_desc">Remove from saved</string>
-    <string name="save_recipe_desc">Save recipe</string>
+    <string name="remove_from_saved_desc">Eliminar de Recetas Guardadas</string>
+    <string name="save_recipe_desc">Guardar Receta</string>
     <string name="close_desc">Close</string>
     <string name="search_match_button">Buscar Match</string>
     <string name="nav_profile">Perfil</string>
@@ -44,4 +44,20 @@
     <string name="account_settings_item">Ajustes de Cuenta</string>
     <string name="faq_item">Preguntas Frecuentes</string>
     <string name="logout_item">Salir de la Cuenta</string>
+    <string name="chats_title">Chats</string>
+    <string name="search_placeholder">Buscar</string>
+    <string name="ai_suggestion_prefix">Sugerencia de IA: </string>
+    <string name="ai_suggestion_chat_detail">Ambos tienen disponibilidad este fin de semana. Recomiendo empezar con una receta sencilla para generar confianza.</string>
+    <string name="translate_chip">Traducir</string>
+    <string name="recipe_tips_chip">Tips recetas</string>
+    <string name="plan_schedules_chip">Planear horarios</string>
+    <string name="message_placeholder">Mensaje</string>
+    <string name="popular_recipes_title">Recetas Populares</string>
+    <string name="saved_recipes_title">Recetas Guardadas</string>
+    <string name="recipes_screen_title">Pantalla de Recetas</string>
+    <string name="no_profile_found">No se encontró el perfil.</string>
+    <string name="hello_user_prefix">Hola Usuario 👨‍🍳</string>
+    <string name="logout_label">Cerrar Sesión</string>
+    <string name="system_label">Sistema</string>
+    <string name="invalid_credentials_error">Credenciales invalidas</string>
 </resources>

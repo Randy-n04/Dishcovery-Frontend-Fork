@@ -22,8 +22,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dishcovery.app.R
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
@@ -62,7 +64,7 @@ fun ChatDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_desc))
                 }
 
                 Text(
@@ -72,7 +74,7 @@ fun ChatDetailScreen(
                         .padding(horizontal = 8.dp, vertical = 10.dp)
                 )
 
-                Icon(Icons.Default.Search, contentDescription = null, tint = Primary)
+                Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search_placeholder), tint = Primary)
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(Icons.Default.Call, contentDescription = null, tint = Primary)
                 Spacer(modifier = Modifier.width(10.dp))
@@ -132,7 +134,7 @@ fun ChatDetailScreen(
                                     .padding(horizontal = 16.dp, vertical = 14.dp)
                             ) {
                                 Text(
-                                    text = "Sugerencia de IA: Ambos tienen disponibilidad este fin de semana. Recomiendo empezar con una receta sencilla para generar confianza.",
+                                    text = stringResource(R.string.ai_suggestion_prefix) + stringResource(R.string.ai_suggestion_chat_detail),
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
@@ -154,9 +156,9 @@ fun ChatDetailScreen(
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SuggestionChip(text = "Traducir", selected = false, modifier = Modifier.weight(1f))
-                SuggestionChip(text = "Tips recetas", selected = false, modifier = Modifier.weight(1f))
-                SuggestionChip(text = "Planear horarios", selected = true, modifier = Modifier.weight(1.2f))
+                SuggestionChip(text = stringResource(R.string.translate_chip), selected = false, modifier = Modifier.weight(1f))
+                SuggestionChip(text = stringResource(R.string.recipe_tips_chip), selected = false, modifier = Modifier.weight(1f))
+                SuggestionChip(text = stringResource(R.string.plan_schedules_chip), selected = true, modifier = Modifier.weight(1.2f))
             }
 
             Row(
@@ -194,7 +196,7 @@ fun ChatDetailScreen(
                 TextField(
                     value = draft,
                     onValueChange = { draft = it },
-                    placeholder = { Text("Mensaje", color = Color(0xFF7E7E7E)) },
+                    placeholder = { Text(stringResource(R.string.message_placeholder), color = Color(0xFF7E7E7E)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     colors = TextFieldDefaults.colors(

@@ -5,6 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.dishcovery.app.R
 
 @Composable
 fun RecipesScreen(paddingValues: PaddingValues) {
@@ -14,6 +16,6 @@ fun RecipesScreen(paddingValues: PaddingValues) {
             .padding(paddingValues),
         contentAlignment = Alignment.Center
     ) {
-        Text("Pantalla de Recetas")
+        Text(stringResource(R.string.recipes_screen_title))
     }
 }
