@@ -84,8 +84,15 @@ fun ChatScreen(
 
 
         LazyColumn {
-            items(filteredChats) {
-                ChatItem(it)
+            items(filteredChats) { chat ->
+                ChatItem(
+                    chat = chat,
+                    onClick = {
+                        navController.navigate(
+                            NavRoutes.ChatDetail.createRoute(chat.id, chat.name)
+                        )
+                    }
+                )
             }
         }
     }

@@ -25,6 +25,7 @@ import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
+import com.dishcovery.app.presentation.ui.screens.ChatDetailScreen
 
 @Composable
 fun NavGraph(
@@ -114,5 +115,19 @@ fun NavGraph(
                 viewModel = profileViewModel
             )
         }
+
+
+        composable(NavRoutes.ChatDetail.ROUTE) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId")?.toLong() ?: 0
+            val chatName = backStackEntry.arguments?.getString("chatName") ?: ""
+
+            ChatDetailScreen(
+                chatId = chatId,
+                chatName = chatName,
+                chatViewModel = chatViewModel,
+                navController = navController
+            )
+        }
     }
+
 }

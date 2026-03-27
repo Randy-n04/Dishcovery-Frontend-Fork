@@ -13,6 +13,7 @@ import com.dishcovery.app.data.datasource.ChatDataSourceImpl
 import com.dishcovery.app.data.datasource.ProfileDataSourceImpl
 import com.dishcovery.app.data.mapper.ChatMapper
 import com.dishcovery.app.data.mapper.KitchenCategoryMapper
+import com.dishcovery.app.data.mapper.MessageMapper 
 import com.dishcovery.app.data.mapper.ProfileMapper
 import com.dishcovery.app.data.mapper.RecipeMapper
 import com.dishcovery.app.data.mapper.UserMapper
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FrontendDishcoveryTheme {
-                // Auth Dependencies
+
                 val authRepository = AuthRepositoryImpl(
                     AuthDataSourceImpl(),
                     UserMapper()
@@ -48,23 +49,24 @@ class MainActivity : ComponentActivity() {
                     factory = AuthViewModelFactory(authRepository)
                 )
 
-                // Recipe Dependencies
                 val recipeRepository = RecipeRepositoryImpl(RecipeMapper())
                 val recipeViewModel: RecipeViewModel = viewModel(
                     factory = RecipeViewModelFactory(recipeRepository)
                 )
 
-                // Chat Dependencies
                 val chatMapper = ChatMapper()
+                val messageMapper = MessageMapper()
+
                 val chatRepository = ChatRepositoryImpl(
                     ChatDataSourceImpl(chatMapper),
-                    chatMapper
+                    chatMapper,
+                    messageMapper
                 )
+
                 val chatViewModel: ChatViewModel = viewModel(
                     factory = ChatViewModelFactory(chatRepository)
                 )
 
-                //Profile Dependencies
                 val profileRepository = ProfileRepositoryImpl(
                     dataSource = ProfileDataSourceImpl(),
                     mapper = ProfileMapper(UserMapper(), KitchenCategoryMapper())

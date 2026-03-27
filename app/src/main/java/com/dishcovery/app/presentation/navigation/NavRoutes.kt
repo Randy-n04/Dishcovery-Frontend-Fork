@@ -54,4 +54,11 @@ sealed class NavRoutes {
     data object Profile : NavRoutes() {
         const val ROUTE = "profile"
     }
+
+    data object ChatDetail : NavRoutes() {
+        const val ROUTE = "chat_detail/{chatId}/{chatName}"
+
+        fun createRoute(id: Long, name: String) =
+            "chat_detail/$id/$name"
+    }
 }
