@@ -4,10 +4,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.dishcovery.app.data.datasource.ProfileDataSourceImpl
+import com.dishcovery.app.data.mapper.KitchenCategoryMapper
+import com.dishcovery.app.data.mapper.ProfileMapper
+import com.dishcovery.app.data.mapper.UserMapper
+import com.dishcovery.app.data.repository.ProfileRepositoryImpl
 import com.dishcovery.app.domain.model.UserRole
+import com.dishcovery.app.presentation.factory.ProfileViewModelFactory
 import com.dishcovery.app.presentation.ui.screens.AdminDashboardScreen
 import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
@@ -17,6 +24,7 @@ import com.dishcovery.app.presentation.ui.screens.ChatScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
+import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
 
 @Composable
 fun NavGraph(
@@ -24,6 +32,7 @@ fun NavGraph(
     authViewModel: AuthViewModel,
     recipeViewModel: RecipeViewModel,
     chatViewModel: ChatViewModel,
+    profileViewModel: ProfileViewModel,
     paddingValues: PaddingValues
 ) {
     val user by authViewModel.user.collectAsState()
@@ -93,8 +102,16 @@ fun NavGraph(
         // ── Profile ──────────────────────────────────────────
         composable(NavRoutes.Profile.ROUTE) {
             ProfileScreen(
-                user = user,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                user          = user,
+                onBack        = { navController.popBackStack() },
+                onLogout      = {
+                    authViewModel.logout()
+                    navController.navigate(NavRoutes.Auth.ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                viewModel = profileViewModel
             )
         }
     }

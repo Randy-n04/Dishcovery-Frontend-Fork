@@ -16,4 +16,8 @@ sealed class DomainError(
         message: String = "Unknown error occurred",
         cause: Throwable? = null
     ) : DomainError(message, cause)
+
+    class ProfileNotFound(
+        message: String = "Profile not found"
+    ) : DomainError(message)
 }

@@ -28,5 +28,8 @@ class AuthProvider {
         fun login(username: String, password: String): UserDto? {
             return users.find { it.username == username && it.password == password }
         }
+
+        /** Exposes the full user list for other providers. */
+        fun getUsers(): List<UserDto> = users
     }
 }
