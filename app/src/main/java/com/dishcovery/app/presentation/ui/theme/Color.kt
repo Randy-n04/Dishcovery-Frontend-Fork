@@ -9,6 +9,11 @@ val Naranja = Color(0xFFF4A460)
 
 val SuccessGreen = Color(0xFF2E7D32)
 
+// Chat search + bottom navigation palette
+val SearchFieldBackground = Color(0xFFF0F0F0)
+val BottomNavBackground = Color(0xFFE6654A)
+val BottomNavIndicator = Color(0xFFF7F0CF)
+
 // Extras UI
 val BackgroundLight = Beige
 val Primary = Rojo

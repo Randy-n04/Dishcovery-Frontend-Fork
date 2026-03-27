@@ -8,10 +8,10 @@ object ChatProvider {
     // 🔹 LISTA DE CHATS (lo que ya tienes)
     private val chats = listOf(
 
-        Chat(1, 2, "Javier Rodriguez", "¿Cuándo te gustaría empezar...?", "4:30 PM", 2,
+        Chat(1, 2, "Javier Rodriguez", "¿Cuándo te gustaría empezar...?", "4:30 PM", 0,
             "https://randomuser.me/api/portraits/men/11.jpg"),
 
-        Chat(2, 2, "Kari", "Looks great!", "4:23 PM", 1,
+        Chat(2, 2, "Kari", "Looks great!", "4:23 PM", 0,
             "https://randomuser.me/api/portraits/women/12.jpg"),
 
         Chat(3, 2, "Diana", "Lunch on Monday?", "4:12 PM", 0,

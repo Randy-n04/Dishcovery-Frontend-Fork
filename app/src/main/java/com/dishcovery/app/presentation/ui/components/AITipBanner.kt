@@ -29,6 +29,7 @@ fun AITipBanner(modifier: Modifier = Modifier) {
         ) {
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(

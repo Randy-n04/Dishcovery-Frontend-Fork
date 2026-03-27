@@ -1,17 +1,24 @@
 package com.dishcovery.app.presentation.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dishcovery.app.presentation.navigation.NavRoutes
+import com.dishcovery.app.presentation.ui.theme.Rojo
+import com.dishcovery.app.presentation.ui.theme.TextPrimary
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.ui.components.ChatItem
@@ -48,35 +55,68 @@ fun ChatScreen(
 
         Text(
             text = "Chats",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
         )
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            IconButton(
-                onClick = {
-                    navController.navigate(NavRoutes.Home.ROUTE) {
-                        popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
-                    }
-                }
+            Surface(
+                shape = CircleShape,
+                color = Color.White,
+                shadowElevation = 2.dp,
+                modifier = Modifier.size(36.dp)
             ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                IconButton(
+                    onClick = {
+                        navController.navigate(NavRoutes.Home.ROUTE) {
+                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Rojo
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = search,
                 onValueChange = { search = it },
                 placeholder = { Text("Buscar") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Buscar",
+                        tint = Rojo
+                    )
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp),
+                shape = RoundedCornerShape(26.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    focusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f),
+                    unfocusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f)
+                )
             )
         }
 

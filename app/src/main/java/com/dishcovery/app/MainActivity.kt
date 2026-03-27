@@ -7,13 +7,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dishcovery.app.data.datasource.AuthDataSourceImpl
 import com.dishcovery.app.data.datasource.ChatDataSourceImpl
 import com.dishcovery.app.data.datasource.ProfileDataSourceImpl
 import com.dishcovery.app.data.mapper.ChatMapper
 import com.dishcovery.app.data.mapper.KitchenCategoryMapper
-import com.dishcovery.app.data.mapper.MessageMapper 
+import com.dishcovery.app.data.mapper.MessageMapper
 import com.dishcovery.app.data.mapper.ProfileMapper
 import com.dishcovery.app.data.mapper.RecipeMapper
 import com.dishcovery.app.data.mapper.UserMapper
@@ -27,6 +28,7 @@ import com.dishcovery.app.presentation.factory.ChatViewModelFactory
 import com.dishcovery.app.presentation.factory.ProfileViewModelFactory
 import com.dishcovery.app.presentation.factory.RecipeViewModelFactory
 import com.dishcovery.app.presentation.navigation.NavGraph
+import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.BottomNavigationBar
 import com.dishcovery.app.presentation.ui.theme.FrontendDishcoveryTheme
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
@@ -76,8 +78,12 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
                 val user by authViewModel.user.collectAsState()
-                val showBottomBar = user?.role is UserRole.User
+                val isChatDetailRoute = currentRoute == NavRoutes.ChatDetail.ROUTE ||
+                    currentRoute?.startsWith("chat_detail/") == true
+                val showBottomBar = user?.role is UserRole.User && !isChatDetailRoute
 
                 Scaffold(
                     bottomBar = {
