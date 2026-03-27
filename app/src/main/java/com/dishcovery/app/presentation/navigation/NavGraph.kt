@@ -85,7 +85,8 @@ fun NavGraph(
             ChatScreen(
                 paddingValues = paddingValues,
                 chatViewModel = chatViewModel,
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                navController = navController
             )
         }
 

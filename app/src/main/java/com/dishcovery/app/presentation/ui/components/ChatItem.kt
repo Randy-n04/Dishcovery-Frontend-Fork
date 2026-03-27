@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.dishcovery.app.domain.model.Chat
+import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 
 @Composable
 fun ChatItem(
@@ -27,46 +29,33 @@ fun ChatItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // Avatar
-        Box(
+
+        AsyncImage(
+            model = chat.avatarUrl,
+            contentDescription = "Avatar",
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = chat.name.first().toString(),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Name + Message
         Column(modifier = Modifier.weight(1f)) {
+            Text(chat.name, style = MaterialTheme.typography.titleMedium)
             Text(
-                text = chat.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = chat.lastMessage,
+                chat.lastMessage,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        // Time + unread
         Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = chat.time,
-                style = MaterialTheme.typography.labelSmall
-            )
+            Text(chat.time, style = MaterialTheme.typography.labelSmall)
 
             if (chat.unreadCount > 0) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Badge {
-                    Text(text = chat.unreadCount.toString())
+                    Text(chat.unreadCount.toString())
                 }
             }
         }

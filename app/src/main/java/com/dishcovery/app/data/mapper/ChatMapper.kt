@@ -12,7 +12,8 @@ class ChatMapper {
             name = chat.name,
             lastMessage = chat.lastMessage,
             time = chat.time,
-            unreadCount = chat.unreadCount
+            unreadCount = chat.unreadCount,
+            avatarUrl = chat.avatarUrl
         )
     }
 
@@ -23,7 +24,8 @@ class ChatMapper {
             name = dto.name,
             lastMessage = dto.lastMessage,
             time = dto.time,
-            unreadCount = dto.unreadCount
+            unreadCount = dto.unreadCount,
+            avatarUrl = dto.avatarUrl
         )
     }
 }
