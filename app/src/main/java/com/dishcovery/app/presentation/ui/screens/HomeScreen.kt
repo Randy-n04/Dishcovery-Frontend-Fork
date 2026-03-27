@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.ui.components.AITipBanner
+import com.dishcovery.app.presentation.ui.components.BackPressToExit
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
 import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
@@ -20,6 +21,8 @@ fun HomeScreen(
     paddingValues: PaddingValues,
     recipeViewModel: RecipeViewModel
 ) {
+
+    BackPressToExit()
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
     val isLoading by recipeViewModel.isLoading.collectAsState()
