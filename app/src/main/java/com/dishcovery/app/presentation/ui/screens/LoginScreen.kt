@@ -5,6 +5,9 @@ import androidx.compose.runtime.collectAsState
 import com.dishcovery.app.presentation.ui.components.LoginContent
 import com.dishcovery.app.presentation.ui.layout.MainLayout
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.dishcovery.app.R
 
 @Composable
 fun LoginScreen(
