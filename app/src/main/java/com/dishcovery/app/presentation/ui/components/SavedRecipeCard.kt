@@ -22,9 +22,11 @@ import com.dishcovery.app.presentation.ui.theme.Cafe
 fun SavedRecipeCard(
     title: String,
     imageUrl: String,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier
             .width(120.dp)
             .height(180.dp),

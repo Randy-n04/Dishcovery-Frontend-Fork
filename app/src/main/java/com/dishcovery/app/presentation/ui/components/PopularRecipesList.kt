@@ -12,6 +12,7 @@ import com.dishcovery.app.domain.model.Recipe
 @Composable
 fun PopularRecipesList(
     recipes: List<Recipe>,
+    onRecipeClick: (Recipe) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -23,8 +24,9 @@ fun PopularRecipesList(
             PopularRecipeCard(
                 title = recipe.name,
                 description = recipe.description,
-                likes = recipe.weight, // Using weight as a proxy for likes for now
-                imageUrl = recipe.iconUrl
+                likes = recipe.weight,
+                imageUrl = recipe.iconUrl,
+                onClick = { onRecipeClick(recipe) }
             )
         }
     }

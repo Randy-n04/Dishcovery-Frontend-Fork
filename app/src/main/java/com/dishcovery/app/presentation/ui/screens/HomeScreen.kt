@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.ui.components.AITipBanner
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
+import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
 import com.dishcovery.app.presentation.ui.layout.HomeLayout
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
@@ -23,6 +23,8 @@ fun HomeScreen(
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
     val isLoading by recipeViewModel.isLoading.collectAsState()
+    
+    var selectedRecipe by remember { mutableStateOf<Recipe?>(null) }
 
     HomeLayout(
         modifier = Modifier.padding(paddingValues)
@@ -49,6 +51,7 @@ fun HomeScreen(
 
                 PopularRecipesList(
                     recipes = popularRecipes,
+                    onRecipeClick = { selectedRecipe = it },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -62,11 +65,19 @@ fun HomeScreen(
 
                 SavedRecipesList(
                     recipes = savedRecipes,
+                    onRecipeClick = { selectedRecipe = it },
                     modifier = Modifier.fillMaxWidth()
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+    }
+
+    selectedRecipe?.let { recipe ->
+        RecipeDetailDialog(
+            recipe = recipe,
+            onDismiss = { selectedRecipe = null }
+        )
     }
 }

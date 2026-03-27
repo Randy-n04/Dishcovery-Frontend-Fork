@@ -23,9 +23,11 @@ fun PopularRecipeCard(
     description: String,
     likes: Int,
     imageUrl: String,
+    onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier
             .width(280.dp)
             .height(320.dp),

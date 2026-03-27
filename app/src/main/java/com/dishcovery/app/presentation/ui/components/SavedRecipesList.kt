@@ -12,6 +12,7 @@ import com.dishcovery.app.domain.model.Recipe
 @Composable
 fun SavedRecipesList(
     recipes: List<Recipe>,
+    onRecipeClick: (Recipe) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -22,7 +23,8 @@ fun SavedRecipesList(
         items(recipes) { recipe ->
             SavedRecipeCard(
                 title = recipe.name,
-                imageUrl = recipe.iconUrl
+                imageUrl = recipe.iconUrl,
+                onClick = { onRecipeClick(recipe) }
             )
         }
     }
