@@ -13,18 +13,17 @@ class ProfileProvider {
 
         private val avatars = listOf(
             "https://m.media-amazon.com/images/M/MV5BMTk5OTM3MzM2NF5BMl5BanBnXkFtZTgwOTM2MTY2MDI@._V1_FMjpg_UX1000_.jpg", //Juan
-            "https://randomuser.me/api/portraits/women/1.jpg",
-            "https://randomuser.me/api/portraits/men/11.jpg",
-            "https://randomuser.me/api/portraits/women/12.jpg",
-            "https://randomuser.me/api/portraits/women/13.jpg",
-            "https://randomuser.me/api/portraits/men/14.jpg",
-            "https://randomuser.me/api/portraits/women/15.jpg",
-            "https://randomuser.me/api/portraits/men/2.jpg",
-            "https://randomuser.me/api/portraits/women/3.jpg",
-            "https://randomuser.me/api/portraits/men/3.jpg",
-            "https://randomuser.me/api/portraits/women/4.jpg",
-            "https://randomuser.me/api/portraits/men/4.jpg",
-            "https://randomuser.me/api/portraits/women/5.jpg"
+            "https://i.pravatar.cc/150?img=maria",
+            "https://i.pravatar.cc/150?img=carlos",
+            "https://i.pravatar.cc/150?img=andres",
+            "https://i.pravatar.cc/150?img=luis",
+            "https://i.pravatar.cc/150?img=sofia",
+            "https://i.pravatar.cc/150?img=3",
+            "https://i.pravatar.cc/150?img=valeria",
+            "https://i.pravatar.cc/150?img=david",
+            "https://i.pravatar.cc/150?img=laura",
+            "https://i.pravatar.cc/150?img=1",
+            "https://i.pravatar.cc/150?img=camila",
         )
 
         private val skills = listOf(

@@ -6,74 +6,89 @@ import com.dishcovery.app.domain.model.Message
 object ChatProvider {
 
 
+    private val avatars = listOf(
+        "https://i.pravatar.cc/150?img=4", // 0
+        "https://i.pravatar.cc/150?img=maria",   // 1
+        "https://i.pravatar.cc/150?img=5",  // 2
+        "https://i.pravatar.cc/150?img=andres",  // 3
+        "https://i.pravatar.cc/150?img=luis",    // 4
+        "https://i.pravatar.cc/150?img=sofia",   // 5
+        "https://i.pravatar.cc/150?img=3",       // 6
+        "https://i.pravatar.cc/150?img=valeria", // 7
+        "https://i.pravatar.cc/150?img=david",   // 8
+        "https://i.pravatar.cc/150?img=laura",   // 9
+        "https://i.pravatar.cc/150?img=1",       // 10
+        "https://i.pravatar.cc/150?img=camila",  // 11
+    )
+
     private val chats = listOf(
         Chat(1, 2, "Javier", "¿Cuándo te gustaría empezar...?", "4:30 PM", 0,
-            "https://randomuser.me/api/portraits/men/11.jpg"),
+            avatars[0]),
         Chat(2, 2, "Kari", "Looks great!", "4:23 PM", 0,
-            "https://randomuser.me/api/portraits/women/12.jpg"),
+            avatars[1]),
         Chat(3, 2, "Diana", "Lunch on Monday?", "4:12 PM", 0,
-            "https://randomuser.me/api/portraits/women/13.jpg"),
+            avatars[11]),
         Chat(4, 2, "Ben", "You sent a photo.", "3:58 PM", 0,
-            "https://randomuser.me/api/portraits/men/14.jpg"),
-        Chat(5, 2, "Chafcito - AI Assistant", "That’s an amazing pizza!", "3:31 PM", 0,
+            avatars[10]),
+        Chat(5, 2, "Chafcito - AI Assistant", "That's an amazing pizza!", "3:31 PM", 0,
             "https://cdn-icons-png.flaticon.com/512/4712/4712027.png"),
         Chat(6, 2, "Alicia", "See you at 8.", "3:30 PM", 0,
-            "https://randomuser.me/api/portraits/women/15.jpg"),
+            avatars[2]),
 
         Chat(7, 3, "Marco", "Perfecto, llevo los ingredientes.", "5:40 PM", 1,
-            "https://randomuser.me/api/portraits/men/21.jpg"),
+            avatars[5]),
         Chat(8, 3, "Luisa", "Nos vemos el domingo para cocinar.", "2:10 PM", 0,
-            "https://randomuser.me/api/portraits/women/22.jpg"),
+            avatars[6]),
 
         Chat(9, 4, "Mateo", "Te comparto la receta de ramen.", "6:05 PM", 2,
-            "https://randomuser.me/api/portraits/men/23.jpg"),
+            avatars[7]),
         Chat(10, 4, "Paola", "Gracias por el tip de salsas.", "1:35 PM", 0,
-            "https://randomuser.me/api/portraits/women/24.jpg"),
+            avatars[8]),
 
         Chat(11, 5, "Rosa", "Esa pasta te quedo genial.", "7:01 PM", 0,
-            "https://randomuser.me/api/portraits/women/25.jpg"),
+            avatars[9]),
         Chat(12, 5, "Daniel", "Mañana probamos tacos veganos.", "12:48 PM", 1,
-            "https://randomuser.me/api/portraits/men/26.jpg"),
+            avatars[10]),
 
         Chat(13, 6, "Emma", "Ya hice la lista del mercado.", "4:09 PM", 0,
-            "https://randomuser.me/api/portraits/women/27.jpg"),
+            avatars[11]),
         Chat(14, 6, "Nico", "Te mando foto del emplatado.", "10:20 AM", 0,
-            "https://randomuser.me/api/portraits/men/28.jpg"),
+            avatars[0]),  // reutiliza desde el inicio
 
         Chat(15, 7, "Andrea", "Listo, arranco con la masa.", "8:15 PM", 0,
-            "https://randomuser.me/api/portraits/women/29.jpg"),
+            avatars[1]),
         Chat(16, 7, "Leo", "Hoy hacemos postres rapidos.", "11:02 AM", 0,
-            "https://randomuser.me/api/portraits/men/30.jpg"),
+            avatars[2]),
 
         Chat(17, 8, "Santiago", "Te ayudo con el marinado.", "3:25 PM", 0,
-            "https://randomuser.me/api/portraits/men/31.jpg"),
+            avatars[3]),
         Chat(18, 8, "Ines", "Quedo muy bien el arroz.", "9:12 AM", 0,
-            "https://randomuser.me/api/portraits/women/32.jpg"),
+            avatars[4]),
 
         Chat(19, 9, "Marta", "Ajusta la sal y queda perfecto.", "5:55 PM", 0,
-            "https://randomuser.me/api/portraits/women/33.jpg"),
+            avatars[5]),
         Chat(20, 9, "Hugo", "Te veo en la clase online.", "2:44 PM", 0,
-            "https://randomuser.me/api/portraits/men/34.jpg"),
+            avatars[6]),
 
         Chat(21, 10, "Julia", "Prueba hornearlo 5 min mas.", "6:33 PM", 0,
-            "https://randomuser.me/api/portraits/women/35.jpg"),
+            avatars[7]),
         Chat(22, 10, "Tomas", "Me encanto esa combinacion.", "1:19 PM", 0,
-            "https://randomuser.me/api/portraits/men/36.jpg"),
+            avatars[8]),
 
         Chat(23, 11, "Sara", "Te paso mi receta de brownies.", "7:45 PM", 1,
-            "https://randomuser.me/api/portraits/women/37.jpg"),
+            avatars[9]),
         Chat(24, 11, "Bruno", "Despues hacemos la salsa picante.", "4:56 PM", 0,
-            "https://randomuser.me/api/portraits/men/38.jpg"),
+            avatars[10]),
 
         Chat(25, 12, "Elena", "Ya tengo todo para la sopa.", "8:02 PM", 0,
-            "https://randomuser.me/api/portraits/women/39.jpg"),
+            avatars[11]),
         Chat(26, 12, "Raul", "Hoy toca cocina asiatica.", "9:28 AM", 0,
-            "https://randomuser.me/api/portraits/men/40.jpg"),
+            avatars[0]),
 
         Chat(27, 13, "Noa", "Que buena pinta ese curry.", "5:17 PM", 0,
-            "https://randomuser.me/api/portraits/women/41.jpg"),
+            avatars[1]),
         Chat(28, 13, "Ivan", "Luego te envio otra idea.", "12:03 PM", 0,
-            "https://randomuser.me/api/portraits/men/42.jpg")
+            avatars[2])
     )
 
     fun getChats(userId: Long): List<Chat> {
