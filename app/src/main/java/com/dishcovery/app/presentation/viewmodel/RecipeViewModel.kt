@@ -43,4 +43,20 @@ class RecipeViewModel(
             _isLoading.value = false
         }
     }
+
+    fun toggleSaveRecipe(recipe: Recipe) {
+        viewModelScope.launch {
+            val isSaved = _savedRecipes.value.any { it.id == recipe.id }
+            if (isSaved) {
+                repository.removeSavedRecipe(recipe.id)
+            } else {
+                repository.saveRecipe(recipe)
+            }
+            // Refresh saved recipes
+            val savedResult = repository.getSavedRecipes()
+            if (savedResult.isSuccess) {
+                _savedRecipes.value = savedResult.getOrDefault(emptyList())
+            }
+        }
+    }
 }

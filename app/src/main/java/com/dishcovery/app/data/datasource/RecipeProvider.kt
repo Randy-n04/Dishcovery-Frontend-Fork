@@ -53,9 +53,9 @@ class RecipeProvider {
             ),
             RecipeDto(
                 id = 6,
-                name = "Mondongo",
-                description = "Mondongo.",
-                iconUrl = "https://preview.redd.it/el-mondongo-vs-skibidi-goku-v0-fszfr9it2ore1.jpg?width=736&format=pjpg&auto=webp&s=8257cad439d905d4e1cf6586164bc96c86810f37",
+                name = "Sopa de Mondongo",
+                description = "La sopa de mondongo es un plato tradicional de América Latina, conocido por su sabor intenso y su textura única. Su ingrediente principal es la panza o callo de res (el estómago), que se cocina lentamente junto con verduras y especias hasta lograr una consistencia sustanciosa..",
+                iconUrl = "https://www.tresjotas.com/wp-content/uploads/2025/03/Sopa-de-Mondongo-al-estilo-casero-con-Tres-Jotas-1.png",
                 weight = 200,
                 categories = listOf(catProvider.categories[5]) // Tipica
             )

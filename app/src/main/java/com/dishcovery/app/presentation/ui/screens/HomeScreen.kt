@@ -57,26 +57,31 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Recetas Guardadas",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                if (savedRecipes.isNotEmpty()) {
+                    Text(
+                        text = "Recetas Guardadas",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
 
-                SavedRecipesList(
-                    recipes = savedRecipes,
-                    onRecipeClick = { selectedRecipe = it },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
+                    SavedRecipesList(
+                        recipes = savedRecipes,
+                        onRecipeClick = { selectedRecipe = it },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
 
     selectedRecipe?.let { recipe ->
+        val isSaved = savedRecipes.any { it.id == recipe.id }
         RecipeDetailDialog(
             recipe = recipe,
+            isSaved = isSaved,
+            onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
             onDismiss = { selectedRecipe = null }
         )
     }

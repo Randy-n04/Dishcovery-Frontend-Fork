@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,8 @@ import com.dishcovery.app.presentation.ui.theme.Primary
 @Composable
 fun RecipeDetailDialog(
     recipe: Recipe,
+    isSaved: Boolean,
+    onSaveToggle: () -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(
@@ -57,6 +60,15 @@ fun RecipeDetailDialog(
                         color = Primary,
                         modifier = Modifier.weight(1f)
                     )
+                    
+                    IconButton(onClick = onSaveToggle) {
+                        Icon(
+                            imageVector = if (isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isSaved) "Remove from saved" else "Save recipe",
+                            tint = if (isSaved) Color.Red else Color.Gray
+                        )
+                    }
+
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,

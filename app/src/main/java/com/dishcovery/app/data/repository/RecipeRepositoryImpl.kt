@@ -11,6 +11,9 @@ class RecipeRepositoryImpl(
     private val mapper: RecipeMapper = RecipeMapper()
 ) : RecipeRepository {
 
+    // Simulated local storage for saved recipes
+    private val savedRecipeIds = mutableSetOf<Long>()
+
     override suspend fun getPopularRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
             val dtos = RecipeProvider.getAll()
@@ -23,11 +26,21 @@ class RecipeRepositoryImpl(
 
     override suspend fun getSavedRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
-            val dtos = RecipeProvider.getAll().take(3)
+            val dtos = RecipeProvider.getAll().filter { it.id in savedRecipeIds }
             val recipes = dtos.map { mapper.mapToDomain(it) }
             Result.success(recipes)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun saveRecipe(recipe: Recipe): Result<Unit> = withContext(Dispatchers.IO) {
+        savedRecipeIds.add(recipe.id)
+        Result.success(Unit)
+    }
+
+    override suspend fun removeSavedRecipe(recipeId: Long): Result<Unit> = withContext(Dispatchers.IO) {
+        savedRecipeIds.remove(recipeId)
+        Result.success(Unit)
     }
 }
