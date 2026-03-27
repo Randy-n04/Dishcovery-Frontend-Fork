@@ -35,7 +35,7 @@ class ProfileProvider {
             listOf(KitchenCategoryDto(5L, "Parrilla"))
         )
 
-        // Genera un perfil por cada usuario de AuthProvider automáticamente
+
         private val profiles: List<ProfileDto> by lazy {
             AuthProvider.getUsers()
                 .filter { it.role == "user" }

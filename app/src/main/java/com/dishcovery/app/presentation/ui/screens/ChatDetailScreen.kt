@@ -2,6 +2,7 @@ package com.dishcovery.app.presentation.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -52,7 +53,7 @@ fun ChatDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF0ECD5))
+                .background(Color.White)
         ) {
             Row(
                 modifier = Modifier
@@ -77,6 +78,8 @@ fun ChatDetailScreen(
                 Spacer(modifier = Modifier.width(10.dp))
             }
         }
+
+        HorizontalDivider(color = Color(0xFFE8E8E8), thickness = 1.dp)
 
 
         LazyColumn(
@@ -161,8 +164,13 @@ fun ChatDetailScreen(
                     .fillMaxWidth()
                     .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
                     .height(52.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFE4E4E4),
+                        shape = RoundedCornerShape(26.dp)
+                    )
                     .background(
-                        color = Color(0xFFF6F3D8),
+                        color = Color.White,
                         shape = RoundedCornerShape(26.dp)
                     )
                     .padding(horizontal = 10.dp),
@@ -186,7 +194,7 @@ fun ChatDetailScreen(
                 TextField(
                     value = draft,
                     onValueChange = { draft = it },
-                    placeholder = { Text("Mensaje") },
+                    placeholder = { Text("Mensaje", color = Color(0xFF7E7E7E)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -195,7 +203,9 @@ fun ChatDetailScreen(
                         disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary
                     )
                 )
             }
