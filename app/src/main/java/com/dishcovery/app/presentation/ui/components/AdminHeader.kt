@@ -13,10 +13,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.dishcovery.app.R
 import com.dishcovery.app.presentation.ui.theme.Rojo
 
 @Composable
@@ -31,11 +32,11 @@ fun AdminHeader(onLogout: () -> Unit) {
             }
             Column {
                 Text("James S.", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Panel Administrativo", color = Color.White.copy(.85f), fontSize = 12.sp)
+                Text(stringResource(R.string.admin_panel_title), color = Color.White.copy(.85f), fontSize = 12.sp)
             }
         }
         IconButton(onLogout, Modifier.size(40.dp).clip(CircleShape).background(Color.White.copy(.2f))) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Cerrar sesión", tint = Color.White)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.logout_button_desc), tint = Color.White)
         }
     }
 }

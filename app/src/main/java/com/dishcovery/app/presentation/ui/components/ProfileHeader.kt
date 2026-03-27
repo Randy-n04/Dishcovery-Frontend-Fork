@@ -12,10 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
+import com.dishcovery.app.R
 import com.dishcovery.app.presentation.ui.theme.Rojo
 
 /**
@@ -31,10 +33,14 @@ fun ProfileHeader(onBack: () -> Unit) {
             .padding(top = 14.dp, bottom = 0.dp)
     ) {
         IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back_button_desc),
+                tint = Color.White
+            )
         }
         Text(
-            text = "Mi Perfil",
+            text = stringResource(R.string.profile_title),
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,

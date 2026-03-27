@@ -10,6 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.dishcovery.app.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -21,13 +23,14 @@ fun BackPressToExit() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var backPressedOnce by remember { mutableStateOf(false) }
+    val exitMessage = stringResource(R.string.exit_press_again)
 
     BackHandler {
         if (backPressedOnce) {
             (context as? Activity)?.finish()
         } else {
             backPressedOnce = true
-            Toast.makeText(context, "Pulse de nuevo para salir", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, exitMessage, Toast.LENGTH_SHORT).show()
             coroutineScope.launch {
                 delay(2000)
                 backPressedOnce = false

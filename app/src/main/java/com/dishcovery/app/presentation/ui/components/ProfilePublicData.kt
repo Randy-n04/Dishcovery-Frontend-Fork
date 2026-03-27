@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -19,8 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,17 +34,18 @@ import com.dishcovery.app.R
  */
 @Composable
 fun ProfilePublicData(offeredSkills: List<KitchenCategory>, language: String, location: String) {
+    val noSkillsText = stringResource(R.string.no_skills_available)
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("Datos Públicos:", fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextPrimary)
+        Text(stringResource(R.string.public_data_title), fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextPrimary)
         Surface(Modifier.fillMaxWidth(), RoundedCornerShape(10.dp), color = TextPrimary.copy(.06f)) {
 
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 ProfileDataRow(
                     icon = Icons.Default.Star,
-                    text = offeredSkills.joinToString(", ") { it.name }.ifEmpty { "Sin habilidades" }
+                    text = offeredSkills.joinToString(", ") { it.name }.ifEmpty { noSkillsText }
                 )
                 ProfileDataRow(
                     iconRes = R.drawable.public_language,

@@ -1,6 +1,5 @@
 package com.dishcovery.app.presentation.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -11,9 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Chat
-import androidx.compose.foundation.Image
 import coil.compose.AsyncImage
 
 @Composable
@@ -32,7 +32,7 @@ fun ChatItem(
 
         AsyncImage(
             model = chat.avatarUrl,
-            contentDescription = "Avatar",
+            contentDescription = stringResource(R.string.avatar_desc),
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)

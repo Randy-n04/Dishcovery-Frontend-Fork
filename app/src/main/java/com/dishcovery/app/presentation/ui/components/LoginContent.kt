@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ fun LoginContent(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.chef_icon),
-                contentDescription = "Chef Icon",
+                contentDescription = stringResource(R.string.chef_icon_desc),
                 modifier = Modifier.size(60.dp)
             )
         }
@@ -57,13 +58,13 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Dishcovery",
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
 
         Text(
-            text = "Aprende y enseña cocina alrededor del mundo.",
+            text = stringResource(R.string.app_description),
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -72,7 +73,7 @@ fun LoginContent(
         OutlinedTextField(
             value = username,
             onValueChange = onUsernameChange,
-            label = { Text("Usuario") },
+            label = { Text(stringResource(R.string.username_label)) },
             leadingIcon = { Icon(Icons.Default.Email, null) },
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth()
@@ -83,7 +84,7 @@ fun LoginContent(
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
-            label = { Text("Contraseña") },
+            label = { Text(stringResource(R.string.password_label)) },
             leadingIcon = { Icon(Icons.Default.Lock, null) },
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(20.dp),
@@ -99,7 +100,7 @@ fun LoginContent(
                 .fillMaxWidth()
                 .height(55.dp)
         ) {
-            Text("Iniciar sesión")
+            Text(stringResource(R.string.login_button))
         }
 
         Spacer(modifier = Modifier.height(16.dp))

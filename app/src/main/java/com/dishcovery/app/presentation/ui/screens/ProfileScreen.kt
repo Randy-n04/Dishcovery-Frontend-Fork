@@ -11,8 +11,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.presentation.ui.components.ProfileAvatar
 import com.dishcovery.app.presentation.ui.components.ProfileHeader
@@ -75,17 +77,17 @@ fun ProfileScreen(
                         location      = profile!!.location
                     )
                     ProfileMenuSection(
-                        title = "Configuraciones",
+                        title = stringResource(R.string.settings_section_title),
                         items = listOf(
-                            Triple("Datos Personales", { }, TextPrimary),
-                            Triple("Ajustes de Cuenta", { }, TextPrimary)
+                            Triple(stringResource(R.string.personal_data_item), { }, TextPrimary),
+                            Triple(stringResource(R.string.account_settings_item), { }, TextPrimary)
                         )
                     )
                     ProfileMenuSection(
-                        title = "Otro",
+                        title = stringResource(R.string.other_section_title),
                         items = listOf(
-                            Triple("Preguntas Frecuentes", { }, TextPrimary),
-                            Triple("Salir de la Cuenta",   onLogout, Rojo)
+                            Triple(stringResource(R.string.faq_item), { }, TextPrimary),
+                            Triple(stringResource(R.string.logout_item),   onLogout, Rojo)
                         )
                     )
                     Spacer(Modifier.height(16.dp))

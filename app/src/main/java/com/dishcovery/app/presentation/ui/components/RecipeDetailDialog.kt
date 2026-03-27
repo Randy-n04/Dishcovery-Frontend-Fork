@@ -15,12 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.ui.theme.Cafe
 import com.dishcovery.app.presentation.ui.theme.Primary
@@ -64,7 +66,7 @@ fun RecipeDetailDialog(
                     IconButton(onClick = onSaveToggle) {
                         Icon(
                             imageVector = if (isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = if (isSaved) "Remove from saved" else "Save recipe",
+                            contentDescription = if (isSaved) stringResource(R.string.remove_from_saved_desc) else stringResource(R.string.save_recipe_desc),
                             tint = if (isSaved) Color.Red else Color.Gray
                         )
                     }
@@ -72,7 +74,7 @@ fun RecipeDetailDialog(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close",
+                            contentDescription = stringResource(R.string.close_desc),
                             tint = Color.Gray
                         )
                     }
@@ -165,7 +167,7 @@ fun RecipeDetailDialog(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Buscar Match",
+                        text = stringResource(R.string.search_match_button),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White

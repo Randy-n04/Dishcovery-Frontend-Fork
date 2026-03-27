@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dishcovery.app.R
 
 @Composable
 fun AITipBanner(modifier: Modifier = Modifier) {
@@ -43,20 +45,20 @@ fun AITipBanner(modifier: Modifier = Modifier) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Star,
-                    contentDescription = "AI Tip",
+                    contentDescription = stringResource(R.string.ai_tip_icon_desc),
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "AI Tip: ¡Intenta comida Mexicana esta semana!",
+                        text = stringResource(R.string.ai_tip_title),
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp
                     )
                     Text(
-                        text = "Ya has perfeccionado lo básico de la comida italiana",
+                        text = stringResource(R.string.ai_tip_subtitle),
                         color = Color.White.copy(alpha = 0.9f),
                         fontSize = 11.sp
                     )

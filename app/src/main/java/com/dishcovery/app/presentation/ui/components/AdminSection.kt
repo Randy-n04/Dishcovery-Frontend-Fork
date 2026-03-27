@@ -17,8 +17,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.dishcovery.app.R
 import com.dishcovery.app.presentation.ui.theme.Rojo
 
 
@@ -35,7 +37,7 @@ fun AdminSection(title: String, content: @Composable ColumnScope.() -> Unit) {
                     Text(title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Rojo)
                 }
                 Icon(if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    if (expanded) "Colapsar" else "Expandir", tint = Rojo)
+                    if (expanded) stringResource(R.string.collapse_desc) else stringResource(R.string.expand_desc), tint = Rojo)
             }
             AnimatedVisibility(expanded, enter = expandVertically(), exit = shrinkVertically()) {
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
