@@ -85,10 +85,6 @@ fun NavGraph(
             )
         }
 
-//        // ── Recipes ──────────────────────────────────────────
-//        composable(NavRoutes.Recipes.ROUTE) {
-//            RecipesScreen(paddingValues)
-//        }
 
 
         composable(NavRoutes.Chats.ROUTE) {

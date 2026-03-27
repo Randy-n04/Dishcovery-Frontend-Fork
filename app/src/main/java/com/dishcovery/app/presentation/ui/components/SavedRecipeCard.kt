@@ -3,6 +3,7 @@ package com.dishcovery.app.presentation.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -48,7 +49,7 @@ fun SavedRecipeCard(
                 )
                 
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = Icons.Default.Favorite,
                     contentDescription = null,
                     tint = Color(0xFFFFD700),
                     modifier = Modifier

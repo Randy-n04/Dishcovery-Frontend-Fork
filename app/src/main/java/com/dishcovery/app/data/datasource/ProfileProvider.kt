@@ -12,7 +12,7 @@ class ProfileProvider {
     companion object {
 
         private val avatars = listOf(
-            "https://randomuser.me/api/portraits/men/1.jpg",
+            "https://m.media-amazon.com/images/M/MV5BMTk5OTM3MzM2NF5BMl5BanBnXkFtZTgwOTM2MTY2MDI@._V1_FMjpg_UX1000_.jpg", //Juan
             "https://randomuser.me/api/portraits/women/1.jpg",
             "https://randomuser.me/api/portraits/men/11.jpg",
             "https://randomuser.me/api/portraits/women/12.jpg",
