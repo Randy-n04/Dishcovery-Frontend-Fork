@@ -1,4 +1,3 @@
-// presentation/navigation/NavGraph.kt
 package com.dishcovery.app.presentation.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,14 +13,17 @@ import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
 import com.dishcovery.app.presentation.ui.screens.ProfileScreen
 import com.dishcovery.app.presentation.ui.screens.RecipesScreen
+import com.dishcovery.app.presentation.ui.screens.ChatScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
+import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     recipeViewModel: RecipeViewModel,
+    chatViewModel: ChatViewModel,
     paddingValues: PaddingValues
 ) {
     val user by authViewModel.user.collectAsState()
@@ -37,7 +39,7 @@ fun NavGraph(
         startDestination = startDestination
     ) {
 
-        // ── Auth ────────────────────────────────────────────────────────────
+        // ── Auth ─────────────────────────────────────────────
         composable(NavRoutes.Auth.ROUTE) {
             LoginScreen(
                 viewModel = authViewModel,
@@ -54,12 +56,12 @@ fun NavGraph(
             )
         }
 
-        // ── User / Home ────────────────────────────────────────────────────
+        // ── Home ─────────────────────────────────────────────
         composable(NavRoutes.Home.ROUTE) {
             HomeScreen(paddingValues, recipeViewModel)
         }
 
-        // ── Admin ───────────────────────────────────────────────────────────
+        // ── Admin ────────────────────────────────────────────
         composable(NavRoutes.AdminDashboard.ROUTE) {
             AdminDashboardScreen(
                 navController = navController,
@@ -73,12 +75,21 @@ fun NavGraph(
             )
         }
 
-        // Recipes screen (bottom navigation destination)
-        composable(NavRoutes.Recipes.ROUTE) {
-            RecipesScreen(paddingValues)
+//        // ── Recipes ──────────────────────────────────────────
+//        composable(NavRoutes.Recipes.ROUTE) {
+//            RecipesScreen(paddingValues)
+//        }
+
+
+        composable(NavRoutes.Chats.ROUTE) {
+            ChatScreen(
+                paddingValues = paddingValues,
+                chatViewModel = chatViewModel,
+                authViewModel = authViewModel
+            )
         }
 
-        // Profile screen (bottom navigation destination)
+        // ── Profile ──────────────────────────────────────────
         composable(NavRoutes.Profile.ROUTE) {
             ProfileScreen(
                 user = user,

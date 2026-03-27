@@ -43,8 +43,8 @@ sealed class NavRoutes {
      * Defines the route for the recipes screen.
      * This is one of the bottom navigation destinations.
      */
-    data object Recipes : NavRoutes() {
-        const val ROUTE = "recipes"
+    data object Chats : NavRoutes() {
+        const val ROUTE = "chats"
     }
 
     /**

@@ -28,7 +28,7 @@ sealed class BottomNavItem(
     )
 
     data object Chat : BottomNavItem(
-        route = NavRoutes.Recipes.ROUTE,
+        route = NavRoutes.Chats.ROUTE,
         title = "Chat",
         icon = Icons.Default.Email
     )
