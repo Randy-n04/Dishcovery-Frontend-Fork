@@ -4,22 +4,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.dishcovery.app.data.datasource.ProfileDataSourceImpl
-import com.dishcovery.app.data.mapper.KitchenCategoryMapper
-import com.dishcovery.app.data.mapper.ProfileMapper
-import com.dishcovery.app.data.mapper.UserMapper
-import com.dishcovery.app.data.repository.ProfileRepositoryImpl
 import com.dishcovery.app.domain.model.UserRole
-import com.dishcovery.app.presentation.factory.ProfileViewModelFactory
 import com.dishcovery.app.presentation.ui.screens.AdminDashboardScreen
+import com.dishcovery.app.presentation.ui.screens.AdminStatisticsScreen
 import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
 import com.dishcovery.app.presentation.ui.screens.ProfileScreen
-import com.dishcovery.app.presentation.ui.screens.RecipesScreen
 import com.dishcovery.app.presentation.ui.screens.ChatScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
@@ -40,7 +33,7 @@ fun NavGraph(
 
     val startDestination = when {
         user == null                 -> NavRoutes.Auth.ROUTE
-        user?.role is UserRole.Admin -> NavRoutes.AdminDashboard.ROUTE
+        user?.role is UserRole.Admin -> NavRoutes.AdminManagement.ROUTE
         else                         -> NavRoutes.Home.ROUTE
     }
 
@@ -55,7 +48,7 @@ fun NavGraph(
                 viewModel = authViewModel,
                 onLoginSuccess = {
                     val destination = if (user?.role is UserRole.Admin) {
-                        NavRoutes.AdminDashboard.ROUTE
+                        NavRoutes.AdminManagement.ROUTE
                     } else {
                         NavRoutes.Home.ROUTE
                     }
@@ -72,14 +65,53 @@ fun NavGraph(
         }
 
         // ── Admin ────────────────────────────────────────────
-        composable(NavRoutes.AdminDashboard.ROUTE) {
+        composable(NavRoutes.AdminManagement.ROUTE) {
             AdminDashboardScreen(
-                navController = navController,
                 paddingValues = paddingValues,
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) {
-                        popUpTo(NavRoutes.AdminDashboard.ROUTE) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.AdminStats.ROUTE) {
+            AdminStatisticsScreen(
+                paddingValues = paddingValues,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavRoutes.Auth.ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(NavRoutes.AdminProfile.ROUTE) {
+            ProfileScreen(
+                paddingValues = paddingValues,
+                user = user,
+                onBack = { navController.popBackStack() },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavRoutes.Auth.ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                viewModel = profileViewModel
+            )
+        }
+
+        // Legacy route kept for compatibility.
+        composable(NavRoutes.AdminDashboard.ROUTE) {
+            AdminDashboardScreen(
+                paddingValues = paddingValues,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavRoutes.Auth.ROUTE) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )

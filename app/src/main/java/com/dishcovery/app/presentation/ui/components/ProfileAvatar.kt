@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -29,7 +32,12 @@ import com.dishcovery.app.presentation.ui.theme.TextPrimary
  * Avatar with the user's photo, public name and bio.
  */
 @Composable
-fun ProfileAvatar(photoUrl: String, publicName: String, bio: String) {
+fun ProfileAvatar(
+    photoUrl: String,
+    publicName: String,
+    bio: String,
+    showBio: Boolean = true
+) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.TopCenter
@@ -52,23 +60,34 @@ fun ProfileAvatar(photoUrl: String, publicName: String, bio: String) {
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Naranja.copy(.3f)),
+                    .background(Naranja),
                 contentAlignment = Alignment.Center
             ) {
-                AsyncImage(
-                    model = photoUrl,
-                    contentDescription = publicName,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (photoUrl.isBlank()) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Avatar por defecto",
+                        tint = TextPrimary.copy(.5f),
+                        modifier = Modifier.size(58.dp)
+                    )
+                } else {
+                    AsyncImage(
+                        model = photoUrl,
+                        contentDescription = publicName,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
             Text(publicName, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = TextPrimary)
-            Text(
-                text = "\"$bio\"",
-                fontSize = 13.sp,
-                color = TextPrimary.copy(.6f),
-                fontStyle = FontStyle.Italic
-            )
+            if (showBio && bio.isNotBlank()) {
+                Text(
+                    text = "\"$bio\"",
+                    fontSize = 13.sp,
+                    color = TextPrimary.copy(.6f),
+                    fontStyle = FontStyle.Italic
+                )
+            }
         }
     }
 }

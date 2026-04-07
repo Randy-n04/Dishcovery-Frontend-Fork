@@ -55,6 +55,18 @@ sealed class NavRoutes {
         const val ROUTE = "profile"
     }
 
+    data object AdminProfile : NavRoutes() {
+        const val ROUTE = "admin_profile"
+    }
+
+    data object AdminManagement : NavRoutes() {
+        const val ROUTE = "admin_management"
+    }
+
+    data object AdminStats : NavRoutes() {
+        const val ROUTE = "admin_stats"
+    }
+
     data object ChatDetail : NavRoutes() {
         const val ROUTE = "chat_detail/{chatId}/{chatName}"
 

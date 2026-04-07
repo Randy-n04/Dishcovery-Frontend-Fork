@@ -15,6 +15,7 @@ import com.dishcovery.app.presentation.ui.theme.BottomNavIndicator
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
+    items: List<BottomNavItem> = BottomNavItem.userItems(),
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -25,7 +26,7 @@ fun BottomNavigationBar(
         containerColor = BottomNavBackground,
         tonalElevation = 0.dp
     ) {
-        BottomNavItem.items().forEach { item ->
+        items.forEach { item ->
             NavigationBarItem(
                 icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(text = item.title) },

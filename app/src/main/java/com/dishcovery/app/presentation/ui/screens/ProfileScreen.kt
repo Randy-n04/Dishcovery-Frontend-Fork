@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.User
+import com.dishcovery.app.domain.model.UserRole
 import com.dishcovery.app.presentation.ui.components.ProfileAvatar
 import com.dishcovery.app.presentation.ui.components.ProfileHeader
 import com.dishcovery.app.presentation.ui.components.ProfileMenuSection
@@ -37,15 +38,45 @@ fun ProfileScreen(
     val profile   by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error     by viewModel.error.collectAsState()
+    val isAdmin = user?.role is UserRole.Admin
 
-    LaunchedEffect(user?.id) {
-        user?.id?.let { viewModel.loadProfile(it) }
+    LaunchedEffect(user?.id, isAdmin) {
+        if (!isAdmin) {
+            user?.id?.let { viewModel.loadProfile(it) }
+        }
     }
 
     Column(Modifier.fillMaxSize().background(Beige).padding(paddingValues)) {
         ProfileHeader(onBack = onBack)
 
         when {
+            isAdmin && user != null -> {
+                Column(
+                    Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    ProfileAvatar(
+                        photoUrl = "",
+                        publicName = user.username,
+                        bio = "",
+                        showBio = false
+                    )
+                    ProfileMenuSection(
+                        title = stringResource(R.string.settings_section_title),
+                        items = listOf(
+                            Triple(stringResource(R.string.account_settings_item), { }, TextPrimary)
+                        )
+                    )
+                    ProfileMenuSection(
+                        title = stringResource(R.string.other_section_title),
+                        items = listOf(
+                            Triple(stringResource(R.string.faq_item), { }, TextPrimary),
+                            Triple(stringResource(R.string.logout_item), onLogout, Rojo)
+                        )
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
             isLoading -> {
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
                     CircularProgressIndicator(color = Rojo)

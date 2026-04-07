@@ -27,6 +27,7 @@ import com.dishcovery.app.presentation.factory.AuthViewModelFactory
 import com.dishcovery.app.presentation.factory.ChatViewModelFactory
 import com.dishcovery.app.presentation.factory.ProfileViewModelFactory
 import com.dishcovery.app.presentation.factory.RecipeViewModelFactory
+import com.dishcovery.app.presentation.navigation.BottomNavItem
 import com.dishcovery.app.presentation.navigation.NavGraph
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.BottomNavigationBar
@@ -81,14 +82,23 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val user by authViewModel.user.collectAsState()
+                val isAdmin = user?.role is UserRole.Admin
                 val isChatDetailRoute = currentRoute == NavRoutes.ChatDetail.ROUTE ||
                     currentRoute?.startsWith("chat_detail/") == true
-                val showBottomBar = user?.role is UserRole.User && !isChatDetailRoute
+                val showBottomBar = user != null && !(isChatDetailRoute && !isAdmin)
+                val bottomNavItems = if (isAdmin) {
+                    BottomNavItem.adminItems()
+                } else {
+                    BottomNavItem.userItems()
+                }
 
                 Scaffold(
                     bottomBar = {
                         if (showBottomBar) {
-                            BottomNavigationBar(navController = navController)
+                            BottomNavigationBar(
+                                navController = navController,
+                                items = bottomNavItems
+                            )
                         }
                     }
                 ) { paddingValues ->

@@ -2,9 +2,11 @@ package com.dishcovery.app.presentation.navigation
 
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -33,9 +35,31 @@ sealed class BottomNavItem(
         icon = Icons.Default.Email
     )
 
+    data object AdminProfile : BottomNavItem(
+        route = NavRoutes.AdminProfile.ROUTE,
+        title = "Perfil",
+        icon = Icons.Default.Person
+    )
+
+    data object AdminManagement : BottomNavItem(
+        route = NavRoutes.AdminManagement.ROUTE,
+        title = "Gestion",
+        icon = Icons.Default.Settings
+    )
+
+    data object AdminStats : BottomNavItem(
+        route = NavRoutes.AdminStats.ROUTE,
+        title = "Estadisticas",
+        icon = Icons.AutoMirrored.Filled.List
+    )
+
 
 
     companion object {
-        fun items() = listOf(Profile, Home, Chat)
+        fun items() = userItems()
+
+        fun userItems() = listOf(Profile, Home, Chat)
+
+        fun adminItems() = listOf(AdminProfile, AdminManagement, AdminStats)
     }
 }
