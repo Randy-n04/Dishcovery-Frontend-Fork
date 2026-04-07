@@ -21,6 +21,7 @@ import com.dishcovery.app.presentation.ui.theme.TextPrimary
 @Composable
 fun AdminDashboardScreen(
     paddingValues: androidx.compose.foundation.layout.PaddingValues,
+    username: String,
     onLogout: () -> Unit
 ) {
     Column(
@@ -29,7 +30,7 @@ fun AdminDashboardScreen(
             .background(Beige)
             .padding(paddingValues)
     ) {
-        AdminHeader(onLogout = onLogout)
+        AdminHeader(onLogout = onLogout, username = username)
         Column(
             Modifier
                 .fillMaxSize()

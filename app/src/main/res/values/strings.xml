@@ -11,6 +11,7 @@
     <string name="back_button_desc">Volver</string>
     <string name="profile_title">Mi Perfil</string>
     <string name="admin_panel_title">Panel Administrativo</string>
+    <string name="admin_display_name">Administrador</string>
     <string name="logout_button_desc">Cerrar sesión</string>
     <string name="collapse_desc">Colapsar</string>
     <string name="expand_desc">Expandir</string>

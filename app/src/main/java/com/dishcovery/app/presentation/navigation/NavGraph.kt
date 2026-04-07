@@ -68,6 +68,7 @@ fun NavGraph(
         composable(NavRoutes.AdminManagement.ROUTE) {
             AdminDashboardScreen(
                 paddingValues = paddingValues,
+                username = user?.username.orEmpty(),
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) {
@@ -80,6 +81,7 @@ fun NavGraph(
         composable(NavRoutes.AdminStats.ROUTE) {
             AdminStatisticsScreen(
                 paddingValues = paddingValues,
+                username = user?.username.orEmpty(),
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) {
@@ -108,6 +110,7 @@ fun NavGraph(
         composable(NavRoutes.AdminDashboard.ROUTE) {
             AdminDashboardScreen(
                 paddingValues = paddingValues,
+                username = user?.username.orEmpty(),
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) {

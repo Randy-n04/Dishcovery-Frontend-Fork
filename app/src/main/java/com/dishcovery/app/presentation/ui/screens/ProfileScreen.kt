@@ -50,14 +50,20 @@ fun ProfileScreen(
         ProfileHeader(onBack = onBack)
 
         when {
-            isAdmin && user != null -> {
+            isAdmin -> {
+                val adminDisplayName = if (user.username.equals("admin", ignoreCase = true)) {
+                    stringResource(R.string.admin_display_name)
+                } else {
+                    user.username
+                }
+
                 Column(
                     Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     ProfileAvatar(
                         photoUrl = "",
-                        publicName = user.username,
+                        publicName = adminDisplayName,
                         bio = "",
                         showBio = false
                     )

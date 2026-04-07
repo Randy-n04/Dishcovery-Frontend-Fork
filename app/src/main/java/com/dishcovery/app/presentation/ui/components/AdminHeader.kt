@@ -21,7 +21,16 @@ import com.dishcovery.app.R
 import com.dishcovery.app.presentation.ui.theme.Rojo
 
 @Composable
-fun AdminHeader(onLogout: () -> Unit) {
+fun AdminHeader(
+    onLogout: () -> Unit,
+    username: String
+) {
+    val displayName = if (username.equals("admin", ignoreCase = true)) {
+        stringResource(R.string.admin_display_name)
+    } else {
+        username
+    }
+
     Row(
         Modifier.fillMaxWidth().background(Rojo).padding(16.dp, 12.dp),
          Arrangement.SpaceBetween, Alignment.CenterVertically
@@ -31,7 +40,7 @@ fun AdminHeader(onLogout: () -> Unit) {
                 Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(28.dp))
             }
             Column {
-                Text("James S.", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(displayName, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text(stringResource(R.string.admin_panel_title), color = Color.White.copy(.85f), fontSize = 12.sp)
             }
         }
