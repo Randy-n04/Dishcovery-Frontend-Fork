@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,9 +25,6 @@ import com.dishcovery.app.presentation.ui.screens.ChatDetailScreen
 fun NavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    recipeViewModel: RecipeViewModel,
-    chatViewModel: ChatViewModel,
-    profileViewModel: ProfileViewModel,
     paddingValues: PaddingValues
 ) {
     val user by authViewModel.user.collectAsState()
@@ -61,6 +59,7 @@ fun NavGraph(
 
         // ── Home ─────────────────────────────────────────────
         composable(NavRoutes.Home.ROUTE) {
+            val recipeViewModel: RecipeViewModel = hiltViewModel()
             HomeScreen(paddingValues, recipeViewModel)
         }
 
@@ -92,6 +91,7 @@ fun NavGraph(
         }
 
         composable(NavRoutes.AdminProfile.ROUTE) {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 paddingValues = paddingValues,
                 user = user,
@@ -123,6 +123,7 @@ fun NavGraph(
 
 
         composable(NavRoutes.Chats.ROUTE) {
+            val chatViewModel: ChatViewModel = hiltViewModel()
             ChatScreen(
                 paddingValues = paddingValues,
                 chatViewModel = chatViewModel,
@@ -133,6 +134,7 @@ fun NavGraph(
 
         // ── Profile ──────────────────────────────────────────
         composable(NavRoutes.Profile.ROUTE) {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 paddingValues = paddingValues,
                 user          = user,
@@ -149,6 +151,7 @@ fun NavGraph(
 
 
         composable(NavRoutes.ChatDetail.ROUTE) { backStackEntry ->
+            val chatViewModel: ChatViewModel = hiltViewModel()
             val chatId = backStackEntry.arguments?.getString("chatId")?.toLong() ?: 0
             val chatName = backStackEntry.arguments?.getString("chatName") ?: ""
 

@@ -16,9 +16,6 @@ import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.BottomNavigationBar
 import com.dishcovery.app.presentation.ui.theme.FrontendDishcoveryTheme
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
-import com.dishcovery.app.presentation.viewmodel.ChatViewModel
-import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
-import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,18 +25,18 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FrontendDishcoveryTheme {
-                val authViewModel: AuthViewModel = hiltViewModel()
-                val recipeViewModel: RecipeViewModel = hiltViewModel()
-                val chatViewModel: ChatViewModel = hiltViewModel()
-                val profileViewModel: ProfileViewModel = hiltViewModel()
-
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+                
+                // We keep AuthViewModel at the Activity level to manage global session state (user login/logout)
+                val authViewModel: AuthViewModel = hiltViewModel()
                 val user by authViewModel.user.collectAsState()
+                
                 val isAdmin = user?.role is UserRole.Admin
                 val isChatDetailRoute = currentRoute == NavRoutes.ChatDetail.ROUTE ||
                     currentRoute?.startsWith("chat_detail/") == true
+                
                 val showBottomBar = user != null && !(isChatDetailRoute && !isAdmin)
                 val bottomNavItems = if (isAdmin) {
                     BottomNavItem.adminItems()
@@ -60,9 +57,6 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         navController = navController,
                         authViewModel = authViewModel,
-                        recipeViewModel = recipeViewModel,
-                        chatViewModel = chatViewModel,
-                        profileViewModel = profileViewModel,
                         paddingValues = paddingValues
                     )
                 }
