@@ -12,7 +12,8 @@ class MessageMapper @Inject constructor() {
             chatId = dto.chatId,
             senderId = dto.senderId,
             message = dto.message,
-            time = dto.time
+            time = dto.time,
+            edited = dto.edited
         )
     }
 }
