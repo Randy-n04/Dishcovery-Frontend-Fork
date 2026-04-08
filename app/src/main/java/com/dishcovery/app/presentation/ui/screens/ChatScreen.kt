@@ -37,8 +37,10 @@ fun ChatScreen(
     var search by remember { mutableStateOf("") }
 
 
-    LaunchedEffect(Unit) {
-        chatViewModel.loadChats()
+    LaunchedEffect(user) {
+        user?.let {
+            chatViewModel.loadChats(it.id)
+        }
     }
 
 

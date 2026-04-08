@@ -26,7 +26,7 @@ class ChatMapper @Inject constructor() {
             lastMessage = dto.lastMessage,
             time = dto.time,
             unreadCount = dto.unreadCount,
-            avatarUrl = dto.avatarUrl
+            avatarUrl = dto.avatarUrl ?: ""
         )
     }
 }

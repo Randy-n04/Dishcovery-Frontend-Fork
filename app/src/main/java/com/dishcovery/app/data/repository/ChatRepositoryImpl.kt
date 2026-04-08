@@ -16,8 +16,8 @@ class ChatRepositoryImpl @Inject constructor(
     private val messageMapper: MessageMapper
 ) : ChatRepository {
 
-    override suspend fun getChats(): Result<List<Chat>> = try {
-        val chats = dataSource.getChats().map {
+    override suspend fun getChats(userId: Long): Result<List<Chat>> = try {
+        val chats = dataSource.getChats(userId).map {
             chatMapper.toDomain(it)
         }
         Result.success(chats)

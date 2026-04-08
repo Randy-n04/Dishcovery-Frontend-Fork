@@ -19,9 +19,9 @@ class ChatViewModel @Inject constructor(
     private val _chats = MutableStateFlow<List<Chat>>(emptyList())
     val chats: StateFlow<List<Chat>> = _chats
 
-    fun loadChats() {
+    fun loadChats(userId: Long) {
         viewModelScope.launch {
-            repository.getChats()
+            repository.getChats(userId)
                 .onSuccess { _chats.value = it }
         }
     }
@@ -41,7 +41,6 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             repository.sendMessage(chatId, senderId, text)
                 .onSuccess {
-                    // Opcionalmente recargar mensajes o actualizar lista local
                     loadMessages(chatId)
                 }
         }

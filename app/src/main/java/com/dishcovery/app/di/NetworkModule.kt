@@ -13,9 +13,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    // Cambia esta URL por la de tu mock local de Mockoon
-    // Ejemplo: "http://10.0.2.2:3000/" para el emulador de Android
-    private const val BASE_URL = "http://10.0.2.2:3000/"
+    // URL para el emulador de Android (10.0.2.2) y puerto 3002 según tu Mockoon
+    private const val BASE_URL = "http://10.0.2.2:3002/"
 
     @Provides
     @Singleton
