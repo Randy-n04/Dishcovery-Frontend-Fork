@@ -5,8 +5,9 @@ import com.dishcovery.app.data.mapper.ProfileMapper
 import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.repository.ProfileRepository
 import com.dishcovery.app.domain.model.Profile
+import javax.inject.Inject
 
-class ProfileRepositoryImpl(
+class ProfileRepositoryImpl @Inject constructor(
     private val dataSource: ProfileDataSource,
     private val mapper: ProfileMapper
 ) : ProfileRepository {

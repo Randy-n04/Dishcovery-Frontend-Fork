@@ -4,8 +4,9 @@ import com.dishcovery.app.data.datasource.model.ChatDto
 import com.dishcovery.app.data.datasource.model.MessageDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class ChatDataSourceImpl(
+class ChatDataSourceImpl @Inject constructor(
     private val mapper: com.dishcovery.app.data.mapper.ChatMapper
 ) : ChatDataSource {
 

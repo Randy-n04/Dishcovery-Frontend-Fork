@@ -2,8 +2,9 @@ package com.dishcovery.app.data.mapper
 
 import com.dishcovery.app.data.datasource.model.ChatDto
 import com.dishcovery.app.domain.model.Chat
+import javax.inject.Inject
 
-class ChatMapper {
+class ChatMapper @Inject constructor() {
 
     fun toDto(chat: Chat): ChatDto {
         return ChatDto(

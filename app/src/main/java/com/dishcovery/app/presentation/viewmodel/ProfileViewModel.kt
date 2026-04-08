@@ -4,16 +4,19 @@ import com.dishcovery.app.domain.model.Profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.repository.ProfileRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for the profile screen.
  * Loads and exposes the profile of the given user.
  */
-class ProfileViewModel(
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     private val repository: ProfileRepository
 ) : ViewModel() {
 

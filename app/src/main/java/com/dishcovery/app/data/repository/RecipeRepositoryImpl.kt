@@ -6,9 +6,10 @@ import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.domain.repository.RecipeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RecipeRepositoryImpl(
-    private val mapper: RecipeMapper = RecipeMapper()
+class RecipeRepositoryImpl @Inject constructor(
+    private val mapper: RecipeMapper
 ) : RecipeRepository {
 
     // Simulated local storage for saved recipes

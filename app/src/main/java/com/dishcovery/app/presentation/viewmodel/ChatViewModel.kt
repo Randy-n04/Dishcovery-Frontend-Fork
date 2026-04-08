@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.model.Chat
 import com.dishcovery.app.domain.repository.ChatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.dishcovery.app.domain.model.Message
+import javax.inject.Inject
 
-
-class ChatViewModel(
+@HiltViewModel
+class ChatViewModel @Inject constructor(
     private val repository: ChatRepository
 ) : ViewModel() {
 
