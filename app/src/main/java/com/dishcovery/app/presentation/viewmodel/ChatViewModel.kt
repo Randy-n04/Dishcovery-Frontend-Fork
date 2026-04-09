@@ -48,8 +48,11 @@ class ChatViewModel @Inject constructor(
     fun loadMessages(chatId: Long) {
         viewModelScope.launch {
             repository.getMessages(chatId)
-                .onSuccess {
-                    _messages.value = it
+                .onSuccess { allMessages ->
+                    // El endpoint puede devolver todo; filtramos en app segun el chat abierto.
+                    _messages.value = allMessages.filter { message ->
+                        message.chatId == chatId
+                    }
                     _messagesError.value = null
                 }
                 .onFailure { throwable ->
