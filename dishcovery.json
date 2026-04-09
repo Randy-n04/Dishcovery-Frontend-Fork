@@ -231,9 +231,45 @@
       "responses": [
         {
           "uuid": "ec89c6aa-f280-4d3b-98fd-24acf5aa4baa",
-          "body": "{\r\n  \"id\": 999,\r\n  \"chatId\": 1,\r\n  \"senderId\": 2,\r\n  \"message\": \"Mensaje creado desde mock\",\r\n  \"time\": \"4:45 PM\",\r\n  \"edited\": false\r\n}",
+          "body": "{\n  \"id\": 999,\n  \"chatId\": {{body 'chatId'}},\n  \"senderId\": {{body 'senderId'}},\n  \"message\": \"{{body 'message'}}\",\n  \"time\": \"4:45 PM\",\n  \"edited\": false\n}",
           "latency": 0,
           "statusCode": 201,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d08c62c0-5bbe-4e9e-9db8-b6a62616ceb8",
+      "type": "http",
+      "documentation": "Update message",
+      "method": "put",
+      "endpoint": "messages/:id",
+      "responses": [
+        {
+          "uuid": "99c0757a-1912-4fdf-8bea-ee85fc8f4c35",
+          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"chatId\": 1,\n  \"senderId\": 1,\n  \"message\": \"{{body 'message'}}\",\n  \"time\": \" (editado)\",\n  \"edited\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
           "label": "",
           "headers": [
             {
@@ -287,6 +323,10 @@
     {
       "type": "route",
       "uuid": "8a4655f4-5cf8-4654-b7cf-9ac2aa7a9df7"
+    },
+    {
+      "type": "route",
+      "uuid": "d08c62c0-5bbe-4e9e-9db8-b6a62616ceb8"
     }
   ],
   "proxyMode": false,

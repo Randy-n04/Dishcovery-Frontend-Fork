@@ -3,6 +3,7 @@ package com.dishcovery.app.presentation.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,10 +24,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.Message
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
@@ -42,7 +48,14 @@ fun ChatDetailScreen(
     val messages by chatViewModel.messages.collectAsState()
     val messagesError by chatViewModel.messagesError.collectAsState()
     val sendError by chatViewModel.sendError.collectAsState()
+
     var draft by remember { mutableStateOf("") }
+    var editingMessageId by remember { mutableStateOf<Long?>(null) }
+
+    var selectedMessage by remember { mutableStateOf<Message?>(null) }
+    var showOptions by remember { mutableStateOf(false) }
+
+    val clipboardManager = LocalClipboardManager.current
 
     LaunchedEffect(chatId) {
         chatViewModel.loadMessages(chatId)
@@ -54,20 +67,25 @@ fun ChatDetailScreen(
             .background(Beige)
     ) {
 
-
+        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
         ) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_desc))
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button_desc)
+                    )
                 }
 
                 Text(
@@ -78,72 +96,116 @@ fun ChatDetailScreen(
                 )
 
                 Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search_placeholder), tint = Primary)
+
                 Spacer(modifier = Modifier.width(10.dp))
+
                 Icon(Icons.Default.Call, contentDescription = null, tint = Primary)
+
                 Spacer(modifier = Modifier.width(10.dp))
             }
         }
 
         HorizontalDivider(color = Color(0xFFE8E8E8), thickness = 1.dp)
 
+        Box(modifier = Modifier.weight(1f)) {
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            reverseLayout = false
-        ) {
-            itemsIndexed(messages) { index, message ->
-                MessageBubble(
-                    message = message,
-                    currentUserId = currentUserId,
-                    isFirstChatHighlight = index == 0
-                )
-            }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
 
-            if (messages.isNotEmpty()) {
-                item {
-                    Text(
-                        text = "Today 8:43 AM",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextPrimary.copy(alpha = 0.7f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                itemsIndexed(messages) { index, message ->
+
+                    MessageBubble(
+                        message = message,
+                        isFirstChatHighlight = index == 0,
+                        onLongClick = {
+                            selectedMessage = message
+                            showOptions = true
+                        }
                     )
                 }
 
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(18.dp),
-                            color = Color.Transparent,
-                            modifier = Modifier.widthIn(max = 260.dp)
+                if (messages.isNotEmpty()) {
+
+                    item {
+                        Text(
+                            text = "Today 8:43 AM",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary.copy(alpha = 0.7f),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    item {
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterEnd
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(Color(0xFFF1B96C), Color(0xFFE9664D))
-                                        ),
-                                        shape = RoundedCornerShape(18.dp)
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 14.dp)
+
+                            Surface(
+                                shape = RoundedCornerShape(18.dp),
+                                color = Color.Transparent,
+                                modifier = Modifier.widthIn(max = 260.dp)
                             ) {
-                                Text(
-                                    text = stringResource(R.string.ai_suggestion_prefix) + stringResource(R.string.ai_suggestion_chat_detail),
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color(0xFFF1B96C),
+                                                    Color(0xFFE9664D)
+                                                )
+                                            ),
+                                            shape = RoundedCornerShape(18.dp)
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 14.dp)
+                                ) {
+
+                                    Text(
+                                        text = stringResource(R.string.ai_suggestion_prefix) +
+                                                stringResource(R.string.ai_suggestion_chat_detail),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
                         }
+                    }
+                }
+            }
+
+            DropdownMenu(
+                expanded = showOptions,
+                onDismissRequest = { showOptions = false }
+            ) {
+
+                selectedMessage?.let { message ->
+
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.copy_message)) },
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(message.message))
+                            showOptions = false
+                        }
+                    )
+
+                    if (message.senderId == currentUserId) {
+
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.edit_message)) },
+                            onClick = {
+                                draft = message.message
+                                editingMessageId = message.id
+                                showOptions = false
+                            }
+                        )
                     }
                 }
             }
@@ -154,6 +216,39 @@ fun ChatDetailScreen(
                 .fillMaxWidth()
                 .navigationBarsPadding()
         ) {
+
+            if (editingMessageId != null) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFFFE1DB))
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.cancel_button),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable {
+                                editingMessageId = null
+                                draft = ""
+                            },
+                        tint = Primary
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(R.string.edit_message),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Primary
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,19 +270,19 @@ fun ChatDetailScreen(
                         color = Color(0xFFE4E4E4),
                         shape = RoundedCornerShape(26.dp)
                     )
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(26.dp)
-                    )
+                    .background(Color.White, RoundedCornerShape(26.dp))
                     .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Surface(
                     shape = CircleShape,
                     color = Color(0xFFFFE1DB),
                     modifier = Modifier.size(30.dp)
                 ) {
+
                     Box(contentAlignment = Alignment.Center) {
+
                         CameraGlyph(
                             tint = Primary,
                             modifier = Modifier.size(18.dp)
@@ -203,7 +298,12 @@ fun ChatDetailScreen(
                         draft = it
                         if (sendError != null) chatViewModel.clearSendError()
                     },
-                    placeholder = { Text(stringResource(R.string.message_placeholder), color = Color(0xFF7E7E7E)) },
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.message_placeholder),
+                            color = Color(0xFF7E7E7E)
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -220,24 +320,49 @@ fun ChatDetailScreen(
 
                 TextButton(
                     onClick = {
+
                         val textToSend = draft.trim()
+
                         if (textToSend.isNotEmpty()) {
-                            chatViewModel.sendMessage(
-                                chatId = chatId,
-                                senderId = currentUserId,
-                                text = textToSend
-                            )
+
+                            if (editingMessageId != null) {
+
+                                chatViewModel.editMessage(
+                                    editingMessageId!!,
+                                    textToSend,
+                                    chatId
+                                )
+
+                                editingMessageId = null
+                            } else {
+
+                                chatViewModel.sendMessage(
+                                    chatId = chatId,
+                                    senderId = currentUserId,
+                                    text = textToSend
+                                )
+                            }
+
                             draft = ""
                         }
                     }
                 ) {
-                    Text(text = stringResource(R.string.send_button_label))
+
+                    Text(
+                        text =
+                            if (editingMessageId != null)
+                                "Update"
+                            else
+                                stringResource(R.string.send_button_label),
+                        color = Primary
+                    )
                 }
             }
 
-            if (messagesError != null) {
+            if (sendError != null) {
+
                 Text(
-                    text = messagesError.orEmpty(),
+                    text = sendError.orEmpty(),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
@@ -246,9 +371,10 @@ fun ChatDetailScreen(
                 )
             }
 
-            if (sendError != null) {
+            if (messagesError != null) {
+
                 Text(
-                    text = sendError.orEmpty(),
+                    text = messagesError.orEmpty(),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
@@ -259,6 +385,7 @@ fun ChatDetailScreen(
         }
     }
 }
+
 
 @Composable
 private fun CameraGlyph(

@@ -62,4 +62,8 @@
     <string name="logout_label">Cerrar Sesión</string>
     <string name="system_label">Sistema</string>
     <string name="invalid_credentials_error">Credenciales invalidas</string>
+    <string name="edited_label">(editado)</string>
+    <string name="edit_message">Editar mensaje</string>
+    <string name="copy_message">Copiar mensaje</string>
+    <string name="cancel_button">Cancelar</string>
 </resources>
