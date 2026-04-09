@@ -19,9 +19,11 @@ class ChatRepositoryImpl @Inject constructor(
     private val messageMapper: MessageMapper
 ) : ChatRepository {
 
+    private val cachedMessagesByChatId = mutableMapOf<Long, MutableList<Message>>()
+
     override suspend fun getChats(userId: Long): Result<List<Chat>> = try {
         val chats = dataSource.getChats(userId).map {
-            chatMapper.toDomain(it)
+            mergeChatPreview(chatMapper.toDomain(it))
         }
         Result.success(chats)
     } catch (e: Exception) {
@@ -29,9 +31,12 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMessages(chatId: Long): Result<List<Message>> = try {
-        val messages = dataSource.getMessages(chatId).map {
+        val messages = dataSource.getMessages(chatId)
+            .filter { it.chatId == chatId }
+            .map {
             messageMapper.mapToDomain(it)
         }
+        cacheMessages(chatId, messages)
         Result.success(messages)
     } catch (e: Exception) {
         Result.failure(mapToUserFriendlyException(e))
@@ -40,7 +45,8 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun sendMessage(chatId: Long, senderId: Long, text: String): Result<Message> = try {
         val request = MessageCreateRequest(chatId, senderId, text)
         val dto = dataSource.sendMessage(request)
-        Result.success(messageMapper.mapToDomain(dto))
+        messageMapper.mapToDomain(dto).also { cacheMessage(it) }
+            .let { Result.success(it) }
     } catch (e: Exception) {
         Result.failure(mapToUserFriendlyException(e))
     }
@@ -48,9 +54,32 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun updateMessage(id: Long, text: String): Result<Message> = try {
         val request = MessageUpdateRequest(text)
         val dto = dataSource.updateMessage(id, request)
-        Result.success(messageMapper.mapToDomain(dto))
+        messageMapper.mapToDomain(dto).also { cacheMessage(it) }
+            .let { Result.success(it) }
     } catch (e: Exception) {
         Result.failure(mapToUserFriendlyException(e))
+    }
+
+    private fun mergeChatPreview(chat: Chat): Chat {
+        val latestMessage = cachedMessagesByChatId[chat.id]?.lastOrNull() ?: return chat
+        return chat.copy(
+            lastMessage = latestMessage.message,
+            time = latestMessage.time
+        )
+    }
+
+    private fun cacheMessages(chatId: Long, messages: List<Message>) {
+        cachedMessagesByChatId[chatId] = messages.toMutableList()
+    }
+
+    private fun cacheMessage(message: Message) {
+        val messages = cachedMessagesByChatId.getOrPut(message.chatId) { mutableListOf() }
+        val index = messages.indexOfFirst { it.id == message.id }
+        if (index >= 0) {
+            messages[index] = message
+        } else {
+            messages.add(message)
+        }
     }
 
     private fun mapToUserFriendlyException(exception: Exception): Exception {

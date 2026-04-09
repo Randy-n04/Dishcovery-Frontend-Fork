@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.dishcovery.app.R
 import com.dishcovery.app.presentation.navigation.NavRoutes
@@ -34,6 +37,7 @@ fun ChatScreen(
     val user by authViewModel.user.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
     val chatsError by chatViewModel.chatsError.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var search by remember { mutableStateOf("") }
 
@@ -41,6 +45,19 @@ fun ChatScreen(
     LaunchedEffect(user) {
         user?.let {
             chatViewModel.loadChats(it.id)
+        }
+    }
+
+    DisposableEffect(lifecycleOwner, user) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                user?.let { chatViewModel.loadChats(it.id) }
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
