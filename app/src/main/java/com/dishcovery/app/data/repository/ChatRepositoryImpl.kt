@@ -8,6 +8,9 @@ import com.dishcovery.app.data.mapper.MessageMapper
 import com.dishcovery.app.domain.model.Chat
 import com.dishcovery.app.domain.model.Message
 import com.dishcovery.app.domain.repository.ChatRepository
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
@@ -22,7 +25,7 @@ class ChatRepositoryImpl @Inject constructor(
         }
         Result.success(chats)
     } catch (e: Exception) {
-        Result.failure(e)
+        Result.failure(mapToUserFriendlyException(e))
     }
 
     override suspend fun getMessages(chatId: Long): Result<List<Message>> = try {
@@ -31,7 +34,7 @@ class ChatRepositoryImpl @Inject constructor(
         }
         Result.success(messages)
     } catch (e: Exception) {
-        Result.failure(e)
+        Result.failure(mapToUserFriendlyException(e))
     }
 
     override suspend fun sendMessage(chatId: Long, senderId: Long, text: String): Result<Message> = try {
@@ -39,7 +42,7 @@ class ChatRepositoryImpl @Inject constructor(
         val dto = dataSource.sendMessage(request)
         Result.success(messageMapper.mapToDomain(dto))
     } catch (e: Exception) {
-        Result.failure(e)
+        Result.failure(mapToUserFriendlyException(e))
     }
 
     override suspend fun updateMessage(id: Long, text: String): Result<Message> = try {
@@ -47,6 +50,16 @@ class ChatRepositoryImpl @Inject constructor(
         val dto = dataSource.updateMessage(id, request)
         Result.success(messageMapper.mapToDomain(dto))
     } catch (e: Exception) {
-        Result.failure(e)
+        Result.failure(mapToUserFriendlyException(e))
+    }
+
+    private fun mapToUserFriendlyException(exception: Exception): Exception {
+        val message = when (exception) {
+            is UnknownHostException,
+            is SocketTimeoutException -> "Sin conexion. Verifica internet o que Mockoon este encendido."
+            is IOException -> "Error de red. Intenta nuevamente."
+            else -> exception.message ?: "Ocurrio un error inesperado."
+        }
+        return Exception(message, exception)
     }
 }

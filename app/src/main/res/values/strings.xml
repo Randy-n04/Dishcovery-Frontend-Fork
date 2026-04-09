@@ -53,6 +53,7 @@
     <string name="recipe_tips_chip">Tips recetas</string>
     <string name="plan_schedules_chip">Planear horarios</string>
     <string name="message_placeholder">Mensaje</string>
+    <string name="send_button_label">Enviar</string>
     <string name="popular_recipes_title">Recetas Populares</string>
     <string name="saved_recipes_title">Recetas Guardadas</string>
     <string name="recipes_screen_title">Pantalla de Recetas</string>

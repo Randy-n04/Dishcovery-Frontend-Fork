@@ -158,6 +158,7 @@ fun NavGraph(
             ChatDetailScreen(
                 chatId = chatId,
                 chatName = chatName,
+                currentUserId = user?.id ?: 2L,
                 chatViewModel = chatViewModel,
                 navController = navController
             )

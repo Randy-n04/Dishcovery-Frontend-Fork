@@ -221,6 +221,42 @@
       "type": "http",
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "8a4655f4-5cf8-4654-b7cf-9ac2aa7a9df7",
+      "type": "http",
+      "documentation": "Create message",
+      "method": "post",
+      "endpoint": "messages",
+      "responses": [
+        {
+          "uuid": "ec89c6aa-f280-4d3b-98fd-24acf5aa4baa",
+          "body": "{\r\n  \"id\": 999,\r\n  \"chatId\": 1,\r\n  \"senderId\": 2,\r\n  \"message\": \"Mensaje creado desde mock\",\r\n  \"time\": \"4:45 PM\",\r\n  \"edited\": false\r\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -247,6 +283,10 @@
     {
       "type": "route",
       "uuid": "f8af8f1f-9b31-4d32-b66f-077e5eb9bedc"
+    },
+    {
+      "type": "route",
+      "uuid": "8a4655f4-5cf8-4654-b7cf-9ac2aa7a9df7"
     }
   ],
   "proxyMode": false,

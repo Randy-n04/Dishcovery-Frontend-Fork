@@ -33,6 +33,7 @@ fun ChatScreen(
 ) {
     val user by authViewModel.user.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
+    val chatsError by chatViewModel.chatsError.collectAsState()
 
     var search by remember { mutableStateOf("") }
 
@@ -122,6 +123,17 @@ fun ChatScreen(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        if (chatsError != null) {
+            Text(
+                text = chatsError.orEmpty(),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            )
+        }
 
 
         LazyColumn {

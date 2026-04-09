@@ -16,10 +16,11 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun MessageBubble(
     message: Message,
+    currentUserId: Long,
     isFirstChatHighlight: Boolean = false
 ) {
 
-    val isMe = message.senderId == 2L
+    val isMe = message.senderId == currentUserId
 
     val bubbleShape = RoundedCornerShape(18.dp)
 

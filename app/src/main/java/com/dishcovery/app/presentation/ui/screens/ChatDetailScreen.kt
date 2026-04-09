@@ -34,11 +34,14 @@ import com.dishcovery.app.presentation.ui.components.MessageBubble
 fun ChatDetailScreen(
     chatId: Long,
     chatName: String,
+    currentUserId: Long,
     chatViewModel: ChatViewModel,
     navController: NavController
 ) {
 
     val messages by chatViewModel.messages.collectAsState()
+    val messagesError by chatViewModel.messagesError.collectAsState()
+    val sendError by chatViewModel.sendError.collectAsState()
     var draft by remember { mutableStateOf("") }
 
     LaunchedEffect(chatId) {
@@ -95,6 +98,7 @@ fun ChatDetailScreen(
             itemsIndexed(messages) { index, message ->
                 MessageBubble(
                     message = message,
+                    currentUserId = currentUserId,
                     isFirstChatHighlight = index == 0
                 )
             }
@@ -195,7 +199,10 @@ fun ChatDetailScreen(
 
                 TextField(
                     value = draft,
-                    onValueChange = { draft = it },
+                    onValueChange = {
+                        draft = it
+                        if (sendError != null) chatViewModel.clearSendError()
+                    },
                     placeholder = { Text(stringResource(R.string.message_placeholder), color = Color(0xFF7E7E7E)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
@@ -209,6 +216,44 @@ fun ChatDetailScreen(
                         focusedTextColor = TextPrimary,
                         unfocusedTextColor = TextPrimary
                     )
+                )
+
+                TextButton(
+                    onClick = {
+                        val textToSend = draft.trim()
+                        if (textToSend.isNotEmpty()) {
+                            chatViewModel.sendMessage(
+                                chatId = chatId,
+                                senderId = currentUserId,
+                                text = textToSend
+                            )
+                            draft = ""
+                        }
+                    }
+                ) {
+                    Text(text = stringResource(R.string.send_button_label))
+                }
+            }
+
+            if (messagesError != null) {
+                Text(
+                    text = messagesError.orEmpty(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 4.dp)
+                )
+            }
+
+            if (sendError != null) {
+                Text(
+                    text = sendError.orEmpty(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 4.dp)
                 )
             }
         }
