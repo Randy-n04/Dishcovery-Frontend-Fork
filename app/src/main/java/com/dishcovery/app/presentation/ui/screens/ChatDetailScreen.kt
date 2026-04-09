@@ -24,7 +24,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +38,7 @@ import com.dishcovery.app.domain.model.Message
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
+import com.dishcovery.app.presentation.ui.components.MessageContextMenu
 
 @Composable
 fun ChatDetailScreen(
@@ -53,9 +57,13 @@ fun ChatDetailScreen(
     var editingMessageId by remember { mutableStateOf<Long?>(null) }
 
     var selectedMessage by remember { mutableStateOf<Message?>(null) }
+    var showMenuAbove by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     val clipboardManager = LocalClipboardManager.current
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
 
     LaunchedEffect(chatId) {
         chatViewModel.loadMessages(chatId)
@@ -117,14 +125,53 @@ fun ChatDetailScreen(
 
                 itemsIndexed(messages) { index, message ->
 
-                    MessageBubble(
+                    val isSelected = selectedMessage?.id == message.id
+                    val isMe = message.senderId == currentUserId
+
+                    val menuActions = rememberMenuActions(
                         message = message,
-                        isFirstChatHighlight = index == 0,
-                        onLongClick = {
-                            selectedMessage = message
-                            showOptions = true
+                        isMe = isMe,
+                        clipboardManager = clipboardManager,
+                        onDone = { selectedMessage = null },
+                        onEdit = {
+                            draft = message.message
+                            editingMessageId = message.id
+                            selectedMessage = null
                         }
                     )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = if (isMe) Alignment.End else Alignment.Start
+                    ) {
+                        if (isSelected && showMenuAbove) {
+                            MessageContextMenu(
+                                visible = true,
+                                showAbove = true,
+                                actions = menuActions,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+
+                        MessageBubble(
+                            message = message,
+                            isFirstChatHighlight = index == 0,
+                            screenHeightPx = screenHeightPx,
+                            onLongClick = { yFraction ->
+                                selectedMessage = if (selectedMessage?.id == message.id) null else message
+                                showMenuAbove = yFraction > 0.5f
+                            }
+                        )
+
+                        if (isSelected && !showMenuAbove) {
+                            MessageContextMenu(
+                                visible = true,
+                                showAbove = false,
+                                actions = menuActions,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
 
                 if (messages.isNotEmpty()) {
@@ -443,6 +490,30 @@ private fun SuggestionChip(
                 color = if (selected) Color.White else Color(0xFFAD6E44),
                 style = MaterialTheme.typography.labelLarge
             )
+        }
+    }
+}
+
+@Composable
+private fun rememberMenuActions(
+    message: Message,
+    isMe: Boolean,
+    clipboardManager: ClipboardManager,
+    onDone: () -> Unit,
+    onEdit: () -> Unit
+): List<Pair<String, () -> Unit>> {
+    val labelCopy = stringResource(R.string.copy_message)
+    val labelEdit = stringResource(R.string.edit_message)
+
+    return remember(message.id, isMe) {
+        buildList {
+            add(labelCopy to {
+                clipboardManager.setText(AnnotatedString(message.message))
+                onDone()
+            })
+            if (isMe) {
+                add(labelEdit to onEdit)
+            }
         }
     }
 }
