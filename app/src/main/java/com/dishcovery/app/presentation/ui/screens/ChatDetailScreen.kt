@@ -55,7 +55,6 @@ fun ChatDetailScreen(
     val messages by chatViewModel.messages.collectAsState()
     val messagesError by chatViewModel.messagesError.collectAsState()
     val sendError by chatViewModel.sendError.collectAsState()
-    val lastMessageTime = messages.lastOrNull()?.time
 
     var draft by remember { mutableStateOf("") }
     var editingMessageId by remember { mutableStateOf<Long?>(null) }
@@ -190,20 +189,6 @@ fun ChatDetailScreen(
                     }
                 }
 
-                if (!lastMessageTime.isNullOrBlank()) {
-
-                    item {
-                        Text(
-                            text = lastMessageTime,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextPrimary.copy(alpha = 0.7f),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
             }
 
             if (isLoadingMessages) {

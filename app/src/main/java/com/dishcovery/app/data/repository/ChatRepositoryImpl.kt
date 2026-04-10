@@ -76,7 +76,7 @@ class ChatRepositoryImpl @Inject constructor(
         val latestMessage = cachedMessagesByChatId[chat.id]?.lastOrNull() ?: return chat
         return chat.copy(
             lastMessage = latestMessage.message,
-            time = latestMessage.time
+            time = chat.time
         )
     }
 
