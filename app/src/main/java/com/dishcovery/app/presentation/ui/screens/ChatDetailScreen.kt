@@ -39,6 +39,7 @@ import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
 import com.dishcovery.app.presentation.ui.components.MessageContextMenu
+import com.dishcovery.app.presentation.ui.components.ScreenErrorState
 
 @Composable
 fun ChatDetailScreen(
@@ -67,6 +68,13 @@ fun ChatDetailScreen(
 
     LaunchedEffect(chatId) {
         chatViewModel.loadMessages(chatId)
+    }
+
+    LaunchedEffect(sendError) {
+        if (sendError == null && editingMessageId != null) {
+            editingMessageId = null
+            draft = ""
+        }
     }
 
     Column(
@@ -228,6 +236,10 @@ fun ChatDetailScreen(
                 }
             }
 
+            if (messagesError != null) {
+                ScreenErrorState(message = messagesError.orEmpty())
+            }
+
             DropdownMenu(
                 expanded = showOptions,
                 onDismissRequest = { showOptions = false }
@@ -367,29 +379,14 @@ fun ChatDetailScreen(
 
                 TextButton(
                     onClick = {
-
                         val textToSend = draft.trim()
-
                         if (textToSend.isNotEmpty()) {
-
                             if (editingMessageId != null) {
-
-                                chatViewModel.editMessage(
-                                    editingMessageId!!,
-                                    textToSend,
-                                    chatId
-                                )
-
-                                editingMessageId = null
+                                chatViewModel.editMessage(editingMessageId!!, textToSend, chatId)
                             } else {
+                                chatViewModel.sendMessage(chatId, currentUserId, textToSend)
 
-                                chatViewModel.sendMessage(
-                                    chatId = chatId,
-                                    senderId = currentUserId,
-                                    text = textToSend
-                                )
                             }
-
                             draft = ""
                         }
                     }
@@ -418,17 +415,6 @@ fun ChatDetailScreen(
                 )
             }
 
-            if (messagesError != null) {
-
-                Text(
-                    text = messagesError.orEmpty(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 4.dp)
-                )
-            }
         }
     }
 }

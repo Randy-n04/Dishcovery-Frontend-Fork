@@ -31,7 +31,7 @@ class ChatViewModel @Inject constructor(
                 }
                 .onFailure { throwable ->
                     _chats.value = emptyList()
-                    _chatsError.value = throwable.message ?: "No se pudieron cargar los chats"
+                    _chatsError.value = "No se puede acceder a la lista de chats. ${throwable.message}"
                 }
         }
     }
@@ -49,15 +49,12 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getMessages(chatId)
                 .onSuccess { allMessages ->
-                    // El endpoint puede devolver todo; filtramos en app segun el chat abierto.
-                    _messages.value = allMessages.filter { message ->
-                        message.chatId == chatId
-                    }
+                    _messages.value = allMessages.filter { it.chatId == chatId }
                     _messagesError.value = null
                 }
                 .onFailure { throwable ->
                     _messages.value = emptyList()
-                    _messagesError.value = throwable.message ?: "No se pudieron cargar los mensajes"
+                    _messagesError.value = "No se puede acceder a ese chat. ${throwable.message}"
                 }
         }
     }
@@ -84,8 +81,16 @@ class ChatViewModel @Inject constructor(
     fun editMessage(id: Long, text: String, chatId: Long) {
         viewModelScope.launch {
             repository.updateMessage(id, text)
-                .onSuccess {
-                    loadMessages(chatId)
+                .onSuccess { updatedMessage ->
+                    _messages.value = _messages.value.map { message ->
+                        if (message.id == id)
+                            updatedMessage.copy(senderId = message.senderId)
+                        else message
+                    }
+                    _sendError.value = null
+                }
+                .onFailure { throwable ->
+                    _sendError.value = "No se pudo editar el mensaje."
                 }
         }
     }

@@ -66,4 +66,5 @@
     <string name="edit_message">Editar mensaje</string>
     <string name="copy_message">Copiar mensaje</string>
     <string name="cancel_button">Cancelar</string>
+    <string name="update_button_label">Actualizar</string>
 </resources>

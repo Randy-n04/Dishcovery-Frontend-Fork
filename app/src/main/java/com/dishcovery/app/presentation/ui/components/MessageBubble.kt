@@ -85,10 +85,19 @@ fun MessageBubble(
                 }
                 .padding(12.dp)
         ) {
-            Text(
-                text = message.message,
-                color = if (isMe) Color.White else TextPrimary
-            )
+            Column {
+                Text(
+                    text = message.message,
+                    color = if (isMe) Color.White else TextPrimary
+                )
+                if (message.edited) {
+                    Text(
+                        text = stringResource(R.string.edited_label),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isMe) Color.White.copy(alpha = 0.7f) else TextPrimary.copy(alpha = 0.5f)
+                    )
+                }
+            }
         }
     }
 }
