@@ -100,7 +100,7 @@ class ChatViewModel @Inject constructor(
                 .onSuccess { updatedMessage ->
                     _messages.value = _messages.value.map { message ->
                         if (message.id == id)
-                            updatedMessage.copy(senderId = message.senderId)
+                            updatedMessage.copy(edited = true)
                         else message
                     }
                     _sendError.value = null

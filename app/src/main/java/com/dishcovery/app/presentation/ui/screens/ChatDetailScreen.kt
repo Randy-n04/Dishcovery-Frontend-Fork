@@ -58,6 +58,7 @@ fun ChatDetailScreen(
 
     var draft by remember { mutableStateOf("") }
     var editingMessageId by remember { mutableStateOf<Long?>(null) }
+    var wasLoading by remember { mutableStateOf(false) }
 
     var selectedMessage by remember { mutableStateOf<Message?>(null) }
     var showMenuAbove by remember { mutableStateOf(false) }
@@ -81,6 +82,14 @@ fun ChatDetailScreen(
             editingMessageId = null
             draft = ""
         }
+    }
+
+    LaunchedEffect(isLoadingMessage) {
+        if (wasLoading && !isLoadingMessage && sendError == null) {
+            draft = ""
+            focusManager.clearFocus()
+        }
+        wasLoading = isLoadingMessage
     }
 
     Column(
@@ -342,14 +351,12 @@ fun ChatDetailScreen(
                     onClick = {
                         val textToSend = draft.trim()
                         if (textToSend.isNotEmpty()) {
-                            focusManager.clearFocus()
                             if (editingMessageId != null) {
                                 chatViewModel.editMessage(editingMessageId!!, textToSend, chatId)
+                                editingMessageId = null
                             } else {
                                 chatViewModel.sendMessage(chatId, currentUserId, textToSend)
-
                             }
-                            draft = ""
                         }
                     }
                 ) {
