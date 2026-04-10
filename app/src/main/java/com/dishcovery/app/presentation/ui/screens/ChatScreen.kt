@@ -162,8 +162,5 @@ fun ChatScreen(
             }
         }
 
-        if (chatsError != null) {
-            ScreenErrorState(message = chatsError.orEmpty())
-        }
     }
 }
