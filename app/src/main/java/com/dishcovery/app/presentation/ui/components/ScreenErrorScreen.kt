@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
+import com.dishcovery.app.presentation.ui.theme.Primary
 
 
 @Composable
@@ -27,6 +28,7 @@ fun ScreenErrorState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
@@ -34,5 +36,19 @@ fun ScreenErrorState(
                 modifier = Modifier.padding(horizontal = 32.dp)
             )
         }
+    }
+}
+
+@Composable
+fun ScreenLoadingState(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Primary
+        )
     }
 }
