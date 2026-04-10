@@ -14,7 +14,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     // URL para el emulador de Android (10.0.2.2) y puerto 3002 según tu Mockoon
-    private const val BASE_URL = "https://69d842ea0576c938825941cd.mockapi.io/"
+    private const val BASE_URL = "https://69d84e1e0576c93882594d26.mockapi.io/"
 
     @Provides
     @Singleton

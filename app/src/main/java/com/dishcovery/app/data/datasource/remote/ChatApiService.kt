@@ -14,7 +14,7 @@ import retrofit2.http.Query
 interface ChatApiService {
 
     @GET("chats")
-    suspend fun getChats(@Query("userId") userId: Long): List<ChatDto>
+    suspend fun getChats(): List<ChatDto>
 
     @POST("chats")
     suspend fun createChat(@Body chat: ChatDto): ChatDto

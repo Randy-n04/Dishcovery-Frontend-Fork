@@ -33,11 +33,12 @@ import com.dishcovery.app.R
 @Composable
 fun MessageBubble(
     message: Message,
+    currentUserId: Long,
     isFirstChatHighlight: Boolean = false,
     screenHeightPx: Float,
     onLongClick: (yFraction: Float) -> Unit = {}
 ) {
-    val isMe = message.senderId == 2L
+    val isMe = message.senderId == currentUserId
     val bubbleShape = RoundedCornerShape(18.dp)
 
     var isPressed by remember { mutableStateOf(false) }

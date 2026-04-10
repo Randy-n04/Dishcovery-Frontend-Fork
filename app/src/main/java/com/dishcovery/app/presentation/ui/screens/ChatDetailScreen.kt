@@ -55,6 +55,7 @@ fun ChatDetailScreen(
     val messages by chatViewModel.messages.collectAsState()
     val messagesError by chatViewModel.messagesError.collectAsState()
     val sendError by chatViewModel.sendError.collectAsState()
+    val lastMessageTime = messages.lastOrNull()?.time
 
     var draft by remember { mutableStateOf("") }
     var editingMessageId by remember { mutableStateOf<Long?>(null) }
@@ -169,6 +170,7 @@ fun ChatDetailScreen(
 
                         MessageBubble(
                             message = message,
+                            currentUserId = currentUserId,
                             isFirstChatHighlight = index == 0,
                             screenHeightPx = screenHeightPx,
                             onLongClick = { yFraction ->
@@ -188,11 +190,11 @@ fun ChatDetailScreen(
                     }
                 }
 
-                if (messages.isNotEmpty()) {
+                if (!lastMessageTime.isNullOrBlank()) {
 
                     item {
                         Text(
-                            text = "Today 8:43 AM",
+                            text = lastMessageTime,
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextPrimary.copy(alpha = 0.7f),
                             modifier = Modifier
@@ -200,44 +202,6 @@ fun ChatDetailScreen(
                                 .padding(vertical = 10.dp),
                             textAlign = TextAlign.Center
                         )
-                    }
-
-                    item {
-
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-
-                            Surface(
-                                shape = RoundedCornerShape(18.dp),
-                                color = Color.Transparent,
-                                modifier = Modifier.widthIn(max = 260.dp)
-                            ) {
-
-                                Box(
-                                    modifier = Modifier
-                                        .background(
-                                            brush = Brush.verticalGradient(
-                                                colors = listOf(
-                                                    Color(0xFFF1B96C),
-                                                    Color(0xFFE9664D)
-                                                )
-                                            ),
-                                            shape = RoundedCornerShape(18.dp)
-                                        )
-                                        .padding(horizontal = 16.dp, vertical = 14.dp)
-                                ) {
-
-                                    Text(
-                                        text = stringResource(R.string.ai_suggestion_prefix) +
-                                                stringResource(R.string.ai_suggestion_chat_detail),
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }

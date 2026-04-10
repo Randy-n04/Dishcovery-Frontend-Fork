@@ -11,10 +11,21 @@ class ChatDataSourceImpl @Inject constructor(
     private val apiService: ChatApiService
 ) : ChatDataSource {
 
+    private val usernamesById: Map<Long, String> by lazy {
+        AuthProvider.getUsers().associate { it.id to it.username }
+    }
+
     override suspend fun getChats(userId: Long): List<ChatDto> {
-        // Algunas APIs de prueba como MockAPI pueden hacer búsqueda parcial (ej: filtrar por '2' trae '12').
-        // Aplicamos un filtro extra local para asegurar coincidencia exacta del userId.
-        return apiService.getChats(userId).filter { it.userId == userId }
+        // Traemos todos y filtramos localmente por ambos participantes.
+        return apiService.getChats()
+            .filter { it.userId1 == userId || it.userId2 == userId }
+            .map { chat ->
+                val otherUserId = if (chat.userId1 == userId) chat.userId2 else chat.userId1
+                val otherUsername = usernamesById[otherUserId] ?: chat.name
+                val otherAvatarUrl = ProfileProvider.getProfileByUserId(otherUserId)?.photoUrl
+                    ?: chat.avatarUrl
+                chat.copy(name = otherUsername, avatarUrl = otherAvatarUrl)
+            }
     }
 
     override suspend fun createChat(chat: ChatDto): ChatDto {
