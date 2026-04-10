@@ -1,5 +1,5 @@
 {
-  "uuid": "e38723bc-94fa-4d15-bebb-608cf673b29b",
+  "uuid": "ed3939bf-5586-4f27-9651-7f8fe1cc9454",
   "lastMigration": 33,
   "name": "Dishcovery",
   "endpointPrefix": "",
@@ -7,13 +7,13 @@
   "port": 3002,
   "routes": [
     {
-      "uuid": "33b1a1a5-e516-4fc4-b6bc-8cc62fe767e5",
+      "uuid": "1b23b36c-52f9-4f8c-b424-f462de458f26",
       "documentation": "Users",
       "method": "get",
       "endpoint": "auth/users",
       "responses": [
         {
-          "uuid": "8c44c1a5-92dc-451e-b3cb-d4f15f2a5736",
+          "uuid": "f57d18c5-67be-412f-93d8-aca2844c08e2",
           "statusCode": 200,
           "body": "[\n{\"id\":1,\"username\":\"admin\",\"password\":\"1234\",\"role\":\"admin\"},\n{\"id\":2,\"username\":\"juan\",\"password\":\"1234\",\"role\":\"user\"},\n{\"id\":3,\"username\":\"maria\",\"password\":\"1234\",\"role\":\"user\"}\n]",
           "headers": [
@@ -43,13 +43,13 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "ceccfdbe-ff74-4683-b23b-0417027f2b24",
+      "uuid": "d059f5a8-e9f0-4f5b-8ddb-3c7aeae99b2e",
       "documentation": "Profiles",
       "method": "get",
       "endpoint": "profiles",
       "responses": [
         {
-          "uuid": "d511ded3-b6c2-4de8-9ada-46ead9e59059",
+          "uuid": "1a4b27fb-2e63-49c8-aac9-b3357cb45033",
           "statusCode": 200,
           "body": "[\n  {\"id\":1,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=1\",\"skills\":[{\"id\":1,\"name\":\"Comida Italiana\"}]}\n  ,{\"id\":2,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=2\",\"skills\":[{\"id\":2,\"name\":\"Comida Mexicana\"}]}\n  ,{\"id\":3,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=3\",\"skills\":[{\"id\":3,\"name\":\"Repostería\"}]}\n  ]",
           "headers": [
@@ -79,13 +79,13 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "894c7926-afdf-49f2-ae31-697fe31ad0e3",
+      "uuid": "656d66cf-738e-4460-8695-19542cb1ba16",
       "documentation": "Kitchen categories",
       "method": "get",
       "endpoint": "categories",
       "responses": [
         {
-          "uuid": "de3e764c-53ec-4bb1-b954-d80de36d01c9",
+          "uuid": "e08cd6d8-85d2-45e8-a192-c2139bd680ce",
           "statusCode": 200,
           "body": "[{\"id\":1,\"name\":\"Italiana\"},{\"id\":2,\"name\":\"Mexicana\"},{\"id\":3,\"name\":\"Asiática\"}]",
           "headers": [
@@ -115,13 +115,13 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "02747f9e-4c30-4ffd-9bf5-984646fa70b5",
+      "uuid": "6756b022-ed00-47cf-9817-36638835ffd6",
       "documentation": "Recipes",
       "method": "get",
       "endpoint": "recipes",
       "responses": [
         {
-          "uuid": "30680b30-440d-4001-b823-b806948d7fdb",
+          "uuid": "85eba875-1d83-4ca8-832e-edc70ad9bba9",
           "statusCode": 200,
           "body": "[{\"id\":1,\"name\":\"Pasta Carbonara\",\"description\":\"Clásica pasta italiana con huevo, queso y panceta.\",\"iconUrl\":\"https://i.blogs.es/e0be61/salsa_carbonara/1200_900.jpg\",\"weight\":450,\"categories\":[{\"id\":1,\"name\":\"Italiana\"}]},{\"id\":2,\"name\":\"Tacos al Pastor\",\"description\":\"Tacos de cerdo marinado con piña.\",\"iconUrl\":\"https://lastaquerias.com/wp-content/uploads/2022/11/tacos-pastor-gaacc26fa8_1920.jpg\",\"weight\":300,\"categories\":[{\"id\":2,\"name\":\"Mexicana\"}]},{\"id\":3,\"name\":\"Sushi Roll Salmón\",\"description\":\"Roll de arroz con salmón y aguacate.\",\"iconUrl\":\"https://www.oliveradatenea.com/wp-content/uploads/2023/06/Sushi-rolls-de-salmon-y-Olivada-Olivera-dAtenea.jpg\",\"weight\":250,\"categories\":[{\"id\":3,\"name\":\"Asiática\"}]}]",
           "headers": [
@@ -151,13 +151,13 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "41e9df8a-304c-4606-be8a-991fd3c771ed",
+      "uuid": "212893ba-fcc4-45b8-a751-bc0921e7d4a2",
       "documentation": "Chats",
       "method": "get",
       "endpoint": "chats",
       "responses": [
         {
-          "uuid": "7a845153-f20b-46e8-be8b-3b3face4d2dd",
+          "uuid": "39a00c40-2e05-4110-9967-806c53e4c315",
           "statusCode": 200,
           "body": "[\r\n  {\"id\":1,\"userId\":2,\"name\":\"Javier\",\"lastMessage\":\"¿Cuándo te gustaría empezar...?\",\"time\":\"4:30 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=4\"},\r\n  {\"id\":2,\"userId\":2,\"name\":\"Kari\",\"lastMessage\":\"Looks great!\",\"time\":\"4:23 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=maria\"},\r\n  {\"id\":3,\"userId\":2,\"name\":\"Diana\",\"lastMessage\":\"Lunch on Monday?\",\"time\":\"4:12 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=camila\"},\r\n  {\"id\":4,\"userId\":2,\"name\":\"Ben\",\"lastMessage\":\"You sent a photo.\",\"time\":\"3:58 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=1\"},\r\n  {\"id\":5,\"userId\":2,\"name\":\"Chafcito AI\",\"lastMessage\":\"That's an amazing pizza!\",\"time\":\"3:31 PM\",\"unread\":0,\"avatarUrl\":\"https://cdn-icons-png.flaticon.com/512/4712/4712027.png\"},\r\n  {\"id\":6,\"userId\":2,\"name\":\"Alicia\",\"lastMessage\":\"See you at 8.\",\"time\":\"3:30 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=5\"},\r\n  {\"id\":7,\"userId\":3,\"name\":\"Marco\",\"lastMessage\":\"Perfecto, llevo los ingredientes.\",\"time\":\"5:40 PM\",\"unread\":1,\"avatarUrl\":\"https://i.pravatar.cc/150?img=sofia\"},\r\n  {\"id\":8,\"userId\":3,\"name\":\"Luisa\",\"lastMessage\":\"Nos vemos el domingo para cocinar.\",\"time\":\"2:10 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=3\"},\r\n  {\"id\":9,\"userId\":4,\"name\":\"Mateo\",\"lastMessage\":\"Te comparto la receta de ramen.\",\"time\":\"6:05 PM\",\"unread\":2,\"avatarUrl\":\"https://i.pravatar.cc/150?img=valeria\"},\r\n  {\"id\":10,\"userId\":4,\"name\":\"Paola\",\"lastMessage\":\"Gracias por el tip de salsas.\",\"time\":\"1:35 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=david\"},\r\n  {\"id\":11,\"userId\":5,\"name\":\"Rosa\",\"lastMessage\":\"Esa pasta te quedo genial.\",\"time\":\"7:01 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=9\"},\r\n  {\"id\":12,\"userId\":5,\"name\":\"Daniel\",\"lastMessage\":\"Mañana tacos veganos.\",\"time\":\"12:48 PM\",\"unread\":1,\"avatarUrl\":\"https://i.pravatar.cc/150?img=10\"},\r\n  {\"id\":13,\"userId\":6,\"name\":\"Emma\",\"lastMessage\":\"Ya hice la lista del mercado.\",\"time\":\"4:09 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=11\"},\r\n  {\"id\":14,\"userId\":6,\"name\":\"Nico\",\"lastMessage\":\"Te mando foto del emplatado.\",\"time\":\"10:20 AM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=4\"},\r\n  {\"id\":15,\"userId\":7,\"name\":\"Andrea\",\"lastMessage\":\"Arranco con la masa.\",\"time\":\"8:15 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=maria\"},\r\n  {\"id\":16,\"userId\":7,\"name\":\"Leo\",\"lastMessage\":\"Hoy hacemos postres rapidos.\",\"time\":\"11:02 AM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=5\"},\r\n  {\"id\":17,\"userId\":8,\"name\":\"Santiago\",\"lastMessage\":\"Te ayudo con el marinado.\",\"time\":\"3:25 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=andres\"},\r\n  {\"id\":18,\"userId\":8,\"name\":\"Ines\",\"lastMessage\":\"Quedo muy bien el arroz.\",\"time\":\"9:12 AM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=luis\"},\r\n  {\"id\":19,\"userId\":9,\"name\":\"Marta\",\"lastMessage\":\"Ajusta la sal.\",\"time\":\"5:55 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=sofia\"},\r\n  {\"id\":20,\"userId\":9,\"name\":\"Hugo\",\"lastMessage\":\"Te veo en la clase online.\",\"time\":\"2:44 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=3\"},\r\n  {\"id\":21,\"userId\":10,\"name\":\"Julia\",\"lastMessage\":\"Hornearlo 5 min mas.\",\"time\":\"6:33 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=valeria\"},\r\n  {\"id\":22,\"userId\":10,\"name\":\"Tomas\",\"lastMessage\":\"Me encanto esa combinacion.\",\"time\":\"1:19 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=david\"},\r\n  {\"id\":23,\"userId\":11,\"name\":\"Sara\",\"lastMessage\":\"Te paso mis brownies.\",\"time\":\"7:45 PM\",\"unread\":1,\"avatarUrl\":\"https://i.pravatar.cc/150?img=laura\"},\r\n  {\"id\":24,\"userId\":11,\"name\":\"Bruno\",\"lastMessage\":\"Salsa picante despues.\",\"time\":\"4:56 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=1\"},\r\n  {\"id\":25,\"userId\":12,\"name\":\"Elena\",\"lastMessage\":\"Tengo todo para la sopa.\",\"time\":\"8:02 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=camila\"},\r\n  {\"id\":26,\"userId\":12,\"name\":\"Raul\",\"lastMessage\":\"Hoy toca cocina asiatica.\",\"time\":\"9:28 AM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=4\"},\r\n  {\"id\":27,\"userId\":13,\"name\":\"Noa\",\"lastMessage\":\"Que buena pinta ese curry.\",\"time\":\"5:17 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=maria\"},\r\n  {\"id\":28,\"userId\":13,\"name\":\"Ivan\",\"lastMessage\":\"Luego te envio otra idea.\",\"time\":\"12:03 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=5\"}\r\n]",
           "headers": [
@@ -187,13 +187,13 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "f8af8f1f-9b31-4d32-b66f-077e5eb9bedc",
+      "uuid": "507aef73-1db6-4c1d-8d96-6cd99e7c888d",
       "documentation": "Messages",
       "method": "get",
       "endpoint": "messages",
       "responses": [
         {
-          "uuid": "79e852d3-f0b6-4487-9ae5-22eb60c835a3",
+          "uuid": "8bcbdb5b-2e73-4f39-b96a-728c99d7e9ec",
           "statusCode": 200,
           "body": "[{\"id\":1,\"chatId\":1,\"senderId\":1,\"message\":\"Hola! Me encanta la cocina mexicana.\",\"time\":\"8:30 AM\"},{\"id\":2,\"chatId\":1,\"senderId\":2,\"message\":\"Genial! Yo quiero aprender cocina italiana.\",\"time\":\"8:31 AM\"},{\"id\":3,\"chatId\":2,\"senderId\":1,\"message\":\"Hoy preparo pasta carbonara.\",\"time\":\"9:10 AM\"}]",
           "headers": [
@@ -298,27 +298,27 @@
   "rootChildren": [
     {
       "type": "route",
-      "uuid": "33b1a1a5-e516-4fc4-b6bc-8cc62fe767e5"
+      "uuid": "1b23b36c-52f9-4f8c-b424-f462de458f26"
     },
     {
       "type": "route",
-      "uuid": "ceccfdbe-ff74-4683-b23b-0417027f2b24"
+      "uuid": "d059f5a8-e9f0-4f5b-8ddb-3c7aeae99b2e"
     },
     {
       "type": "route",
-      "uuid": "894c7926-afdf-49f2-ae31-697fe31ad0e3"
+      "uuid": "656d66cf-738e-4460-8695-19542cb1ba16"
     },
     {
       "type": "route",
-      "uuid": "02747f9e-4c30-4ffd-9bf5-984646fa70b5"
+      "uuid": "6756b022-ed00-47cf-9817-36638835ffd6"
     },
     {
       "type": "route",
-      "uuid": "41e9df8a-304c-4606-be8a-991fd3c771ed"
+      "uuid": "212893ba-fcc4-45b8-a751-bc0921e7d4a2"
     },
     {
       "type": "route",
-      "uuid": "f8af8f1f-9b31-4d32-b66f-077e5eb9bedc"
+      "uuid": "507aef73-1db6-4c1d-8d96-6cd99e7c888d"
     },
     {
       "type": "route",
@@ -349,7 +349,7 @@
   "proxyResHeaders": [],
   "data": [
     {
-      "uuid": "c18fa404-a9b2-42d4-b0b3-415fc8ef97b7",
+      "uuid": "289b5564-4ff3-4a10-bffb-2be86738b726",
       "id": "wb11",
       "name": "Chats",
       "documentation": "",

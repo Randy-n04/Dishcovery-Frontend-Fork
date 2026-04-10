@@ -12,7 +12,8 @@ class ChatDataSourceImpl @Inject constructor(
 ) : ChatDataSource {
 
     override suspend fun getChats(userId: Long): List<ChatDto> {
-        // Obtenemos todos los chats y filtramos localmente ya que el mock no lo hace
+        // Algunas APIs de prueba como MockAPI pueden hacer búsqueda parcial (ej: filtrar por '2' trae '12').
+        // Aplicamos un filtro extra local para asegurar coincidencia exacta del userId.
         return apiService.getChats(userId).filter { it.userId == userId }
     }
 
@@ -21,7 +22,8 @@ class ChatDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getMessages(chatId: Long): List<MessageDto> {
-        return apiService.getMessagesByChat(chatId)
+        // Aplicamos filtro exacto también para los mensajes por seguridad.
+        return apiService.getMessagesByChat(chatId).filter { it.chatId == chatId }
     }
 
     override suspend fun sendMessage(request: MessageCreateRequest): MessageDto {
