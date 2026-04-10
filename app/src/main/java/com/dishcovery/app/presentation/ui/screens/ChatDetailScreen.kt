@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,7 @@ import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
 import com.dishcovery.app.presentation.ui.components.MessageContextMenu
 import com.dishcovery.app.presentation.ui.components.ScreenErrorState
+import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
 
 @Composable
 fun ChatDetailScreen(
@@ -61,10 +63,14 @@ fun ChatDetailScreen(
     var showMenuAbove by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
     val clipboardManager = LocalClipboardManager.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+
+    val isLoadingMessage by chatViewModel.isLoadingMessage.collectAsState()
+    val isLoadingMessages by chatViewModel.isLoadingMessages.collectAsState()
 
     LaunchedEffect(chatId) {
         chatViewModel.loadMessages(chatId)
@@ -236,6 +242,12 @@ fun ChatDetailScreen(
                 }
             }
 
+            if (isLoadingMessages) {
+                ScreenLoadingState()
+            } else if (messagesError != null) {
+                ScreenErrorState(message = messagesError.orEmpty())
+            }
+
             if (messagesError != null) {
                 ScreenErrorState(message = messagesError.orEmpty())
             }
@@ -381,6 +393,7 @@ fun ChatDetailScreen(
                     onClick = {
                         val textToSend = draft.trim()
                         if (textToSend.isNotEmpty()) {
+                            focusManager.clearFocus()
                             if (editingMessageId != null) {
                                 chatViewModel.editMessage(editingMessageId!!, textToSend, chatId)
                             } else {
@@ -391,15 +404,22 @@ fun ChatDetailScreen(
                         }
                     }
                 ) {
-
-                    Text(
-                        text =
-                            if (editingMessageId != null)
-                                "Update"
-                            else
-                                stringResource(R.string.send_button_label),
-                        color = Primary
-                    )
+                    if (isLoadingMessage) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = Primary
+                        )
+                    } else {
+                        Text(
+                            text =
+                                if (editingMessageId != null)
+                                    stringResource(R.string.update_button_label)
+                                else
+                                    stringResource(R.string.send_button_label),
+                            color = Primary
+                        )
+                    }
                 }
             }
 

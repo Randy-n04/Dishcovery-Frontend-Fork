@@ -22,19 +22,14 @@ class ChatViewModel @Inject constructor(
     private val _chatsError = MutableStateFlow<String?>(null)
     val chatsError: StateFlow<String?> = _chatsError
 
-    fun loadChats(userId: Long) {
-        viewModelScope.launch {
-            repository.getChats(userId)
-                .onSuccess {
-                    _chats.value = it
-                    _chatsError.value = null
-                }
-                .onFailure { throwable ->
-                    _chats.value = emptyList()
-                    _chatsError.value = "No se puede acceder a la lista de chats. ${throwable.message}"
-                }
-        }
-    }
+    private val _isLoadingChats = MutableStateFlow(false)
+    val isLoadingChats: StateFlow<Boolean> = _isLoadingChats
+
+    private val _isLoadingMessage = MutableStateFlow(false)
+    val isLoadingMessage: StateFlow<Boolean> = _isLoadingMessage
+
+    private val _isLoadingMessages = MutableStateFlow(false)
+    val isLoadingMessages: StateFlow<Boolean> = _isLoadingMessages
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages
@@ -45,8 +40,25 @@ class ChatViewModel @Inject constructor(
     private val _sendError = MutableStateFlow<String?>(null)
     val sendError: StateFlow<String?> = _sendError
 
+    fun loadChats(userId: Long) {
+        viewModelScope.launch {
+            _isLoadingChats.value = true
+            repository.getChats(userId)
+                .onSuccess {
+                    _chats.value = it
+                    _chatsError.value = null
+                }
+                .onFailure { throwable ->
+                    _chats.value = emptyList()
+                    _chatsError.value = "No se puede acceder a la lista de chats. ${throwable.message}"
+                }
+            _isLoadingChats.value = false
+        }
+    }
+
     fun loadMessages(chatId: Long) {
         viewModelScope.launch {
+            _isLoadingMessages.value = true
             repository.getMessages(chatId)
                 .onSuccess { allMessages ->
                     _messages.value = allMessages.filter { it.chatId == chatId }
@@ -56,6 +68,7 @@ class ChatViewModel @Inject constructor(
                     _messages.value = emptyList()
                     _messagesError.value = "No se puede acceder a ese chat. ${throwable.message}"
                 }
+            _isLoadingMessages.value = false
         }
     }
 
@@ -63,6 +76,7 @@ class ChatViewModel @Inject constructor(
         if (text.isBlank()) return
 
         viewModelScope.launch {
+            _isLoadingMessage.value = true
             _sendError.value = null
             repository.sendMessage(chatId, senderId, text)
                 .onSuccess { createdMessage ->
@@ -71,6 +85,7 @@ class ChatViewModel @Inject constructor(
                 .onFailure { throwable ->
                     _sendError.value = throwable.message ?: "No se pudo enviar el mensaje"
                 }
+            _isLoadingMessage.value = false
         }
     }
 
@@ -80,6 +95,7 @@ class ChatViewModel @Inject constructor(
 
     fun editMessage(id: Long, text: String, chatId: Long) {
         viewModelScope.launch {
+            _isLoadingMessage.value = true
             repository.updateMessage(id, text)
                 .onSuccess { updatedMessage ->
                     _messages.value = _messages.value.map { message ->
@@ -92,6 +108,9 @@ class ChatViewModel @Inject constructor(
                 .onFailure { throwable ->
                     _sendError.value = "No se pudo editar el mensaje."
                 }
+            _isLoadingMessage.value = false
         }
     }
+
+
 }

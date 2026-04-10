@@ -27,6 +27,7 @@ import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.ui.components.ChatItem
 import com.dishcovery.app.presentation.ui.components.ScreenErrorState
+import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
 
 @Composable
 fun ChatScreen(
@@ -39,6 +40,7 @@ fun ChatScreen(
     val chats by chatViewModel.chats.collectAsState()
     val chatsError by chatViewModel.chatsError.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val isLoadingChats by chatViewModel.isLoadingChats.collectAsState()
 
     var search by remember { mutableStateOf("") }
 
@@ -152,6 +154,11 @@ fun ChatScreen(
                         }
                     )
                 }
+            }
+            if (isLoadingChats) {
+                ScreenLoadingState()
+            } else if (chatsError != null) {
+                ScreenErrorState(message = chatsError.orEmpty())
             }
         }
 
