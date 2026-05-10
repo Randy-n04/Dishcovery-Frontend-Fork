@@ -67,4 +67,29 @@
     <string name="copy_message">Copiar mensaje</string>
     <string name="cancel_button">Cancelar</string>
     <string name="update_button_label">Actualizar</string>
+
+
+    <!-- Discover People Screen -->
+    <string name="discover_people_title">Descubrir personas</string>
+    <string name="match_percentage_suffix">match</string>
+    <string name="can_do_label">Puede hacer:</string>
+    <string name="want_to_learn_label">Quiere aprender:</string>
+    <string name="next_button">Siguiente</string>
+    <string name="connect_button">Conectar</string>
+    <string name="manual_match_title">Match Personalizado</string>
+    <string name="manual_match_learn_question">¿Qué te gustaría aprender a cocinar?</string>
+    <string name="manual_match_profile_question">¿Cómo te defines como cocinero?</string>
+    <string name="find_chef_button">¡Encontrar mi Chef Ideal!</string>
+    <string name="searching_match_message">Buscando a alguien que comparta tu gusto por la comida %s…</string>
+
+    <!-- Categories and Profiles -->
+    <string name="cat_italian">Italiana</string>
+    <string name="cat_mexican">Mexicana</string>
+    <string name="cat_vegan">Vegana</string>
+    <string name="cat_desserts">Postres</string>
+    <string name="cat_healthy">Sana</string>
+    <string name="prof_beginner">Principiante</string>
+    <string name="prof_amateur">Aficionado</string>
+    <string name="prof_chef_pro">Chef Pro</string>
+    <string name="prof_student">Estudiante</string>
 </resources>
