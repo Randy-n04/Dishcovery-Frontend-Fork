@@ -1,0 +1,360 @@
+{
+  "uuid": "ed3939bf-5586-4f27-9651-7f8fe1cc9454",
+  "lastMigration": 33,
+  "name": "Dishcovery",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3002,
+  "routes": [
+    {
+      "uuid": "1b23b36c-52f9-4f8c-b424-f462de458f26",
+      "documentation": "Users",
+      "method": "get",
+      "endpoint": "auth/users",
+      "responses": [
+        {
+          "uuid": "f57d18c5-67be-412f-93d8-aca2844c08e2",
+          "statusCode": 200,
+          "body": "[\n{\"id\":1,\"username\":\"admin\",\"password\":\"1234\",\"role\":\"admin\"},\n{\"id\":2,\"username\":\"juan\",\"password\":\"1234\",\"role\":\"user\"},\n{\"id\":3,\"username\":\"maria\",\"password\":\"1234\",\"role\":\"user\"}\n]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d059f5a8-e9f0-4f5b-8ddb-3c7aeae99b2e",
+      "documentation": "Profiles",
+      "method": "get",
+      "endpoint": "profiles",
+      "responses": [
+        {
+          "uuid": "1a4b27fb-2e63-49c8-aac9-b3357cb45033",
+          "statusCode": 200,
+          "body": "[\n  {\"id\":1,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=1\",\"skills\":[{\"id\":1,\"name\":\"Comida Italiana\"}]}\n  ,{\"id\":2,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=2\",\"skills\":[{\"id\":2,\"name\":\"Comida Mexicana\"}]}\n  ,{\"id\":3,\"userId\":1,\"username\":\"admin\",\"avatar\":\"https://i.pravatar.cc/150?img=3\",\"skills\":[{\"id\":3,\"name\":\"Repostería\"}]}\n  ]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "656d66cf-738e-4460-8695-19542cb1ba16",
+      "documentation": "Kitchen categories",
+      "method": "get",
+      "endpoint": "categories",
+      "responses": [
+        {
+          "uuid": "e08cd6d8-85d2-45e8-a192-c2139bd680ce",
+          "statusCode": 200,
+          "body": "[{\"id\":1,\"name\":\"Italiana\"},{\"id\":2,\"name\":\"Mexicana\"},{\"id\":3,\"name\":\"Asiática\"}]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "6756b022-ed00-47cf-9817-36638835ffd6",
+      "documentation": "Recipes",
+      "method": "get",
+      "endpoint": "recipes",
+      "responses": [
+        {
+          "uuid": "85eba875-1d83-4ca8-832e-edc70ad9bba9",
+          "statusCode": 200,
+          "body": "[{\"id\":1,\"name\":\"Pasta Carbonara\",\"description\":\"Clásica pasta italiana con huevo, queso y panceta.\",\"iconUrl\":\"https://i.blogs.es/e0be61/salsa_carbonara/1200_900.jpg\",\"weight\":450,\"categories\":[{\"id\":1,\"name\":\"Italiana\"}]},{\"id\":2,\"name\":\"Tacos al Pastor\",\"description\":\"Tacos de cerdo marinado con piña.\",\"iconUrl\":\"https://lastaquerias.com/wp-content/uploads/2022/11/tacos-pastor-gaacc26fa8_1920.jpg\",\"weight\":300,\"categories\":[{\"id\":2,\"name\":\"Mexicana\"}]},{\"id\":3,\"name\":\"Sushi Roll Salmón\",\"description\":\"Roll de arroz con salmón y aguacate.\",\"iconUrl\":\"https://www.oliveradatenea.com/wp-content/uploads/2023/06/Sushi-rolls-de-salmon-y-Olivada-Olivera-dAtenea.jpg\",\"weight\":250,\"categories\":[{\"id\":3,\"name\":\"Asiática\"}]}]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "212893ba-fcc4-45b8-a751-bc0921e7d4a2",
+      "documentation": "Chats",
+      "method": "get",
+      "endpoint": "chats",
+      "responses": [
+        {
+          "uuid": "39a00c40-2e05-4110-9967-806c53e4c315",
+          "statusCode": 200,
+          "body": "[\n  {\"id\":2,\"userId1\":2,\"userId2\":3,\"name\":\"maria\",\"lastMessage\":\"Looks great!\",\"time\":\"4:23 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=maria\"},\n  {\"id\":3,\"userId1\":2,\"userId2\":4,\"name\":\"carlos\",\"lastMessage\":\"Lunch on Monday?\",\"time\":\"4:12 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=carlos\"},\n  {\"id\":4,\"userId1\":2,\"userId2\":5,\"name\":\"ana\",\"lastMessage\":\"You sent a photo.\",\"time\":\"3:58 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=andres\"},\n  {\"id\":5,\"userId1\":2,\"userId2\":6,\"name\":\"luis\",\"lastMessage\":\"That's an amazing pizza!\",\"time\":\"3:31 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=luis\"},\n  {\"id\":6,\"userId1\":2,\"userId2\":7,\"name\":\"sofia\",\"lastMessage\":\"See you at 8.\",\"time\":\"3:30 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=sofia\"}\n]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "507aef73-1db6-4c1d-8d96-6cd99e7c888d",
+      "documentation": "Messages",
+      "method": "get",
+      "endpoint": "messages",
+      "responses": [
+        {
+          "uuid": "8bcbdb5b-2e73-4f39-b96a-728c99d7e9ec",
+          "statusCode": 200,
+          "body": "[\n  {\"id\":1,\"chatId\":2,\"senderId\":2,\"message\":\"Hola Mario, ¿cómo vas con la receta?\",\"time\":\"09:10 AM\"},\n  {\"id\":2,\"chatId\":2,\"senderId\":3,\"message\":\"Ya tengo casi todo listo.\",\"time\":\"09:12 AM\"},\n  {\"id\":3,\"chatId\":2,\"senderId\":2,\"message\":\"Genial, luego me enseñas cómo te quedó.\",\"time\":\"09:14 AM\"},\n  {\"id\":4,\"chatId\":3,\"senderId\":4,\"message\":\"Juan, ¿almorzamos hoy?\",\"time\":\"10:01 AM\"},\n  {\"id\":5,\"chatId\":3,\"senderId\":2,\"message\":\"Sí, me sirve a la 1:00 PM.\",\"time\":\"10:03 AM\"},\n  {\"id\":6,\"chatId\":3,\"senderId\":4,\"message\":\"Perfecto, nos vemos en el mismo lugar.\",\"time\":\"10:05 AM\"},\n  {\"id\":7,\"chatId\":4,\"senderId\":2,\"message\":\"Ana, te mandé la foto del plato.\",\"time\":\"11:20 AM\"},\n  {\"id\":8,\"chatId\":4,\"senderId\":5,\"message\":\"¡Se ve buenísimo! Me encantó el emplatado.\",\"time\":\"11:23 AM\"},\n  {\"id\":9,\"chatId\":4,\"senderId\":2,\"message\":\"Gracias, después te paso los pasos.\",\"time\":\"11:25 AM\"},\n  {\"id\":10,\"chatId\":5,\"senderId\":6,\"message\":\"Esa pizza quedó increíble.\",\"time\":\"01:08 PM\"},\n  {\"id\":11,\"chatId\":5,\"senderId\":2,\"message\":\"¡Gracias! Quiero probar otra versión.\",\"time\":\"01:10 PM\"},\n  {\"id\":12,\"chatId\":5,\"senderId\":6,\"message\":\"Cuando la hagas me avisas y te doy feedback.\",\"time\":\"01:12 PM\"},\n  {\"id\":13,\"chatId\":6,\"senderId\":7,\"message\":\"Juan, ¿nos vemos a las 8?\",\"time\":\"03:30 PM\"},\n  {\"id\":14,\"chatId\":6,\"senderId\":2,\"message\":\"Sí, perfecto. Llego puntual.\",\"time\":\"03:32 PM\"},\n  {\"id\":15,\"chatId\":6,\"senderId\":7,\"message\":\"Buenísimo, nos vemos luego.\",\"time\":\"03:33 PM\"},\n  {\"id\":16,\"chatId\":2,\"senderId\":3,\"message\":\"ok hasta el domingo\",\"time\":\"time 16\"},\n  {\"id\":17,\"chatId\":2,\"senderId\":3,\"message\":\"amigo\",\"time\":\"time 17\"},\n  {\"id\":18,\"chatId\":2,\"senderId\":3,\"message\":\"Debo mostrarte una nueva receta\",\"time\":\"time 18\"},\n  {\"id\":19,\"chatId\":3,\"senderId\":2,\"message\":\"Hola Carlos\",\"time\":\"time 19\"}\n]",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "latency": 0,
+          "label": "",
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "type": "http",
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "8a4655f4-5cf8-4654-b7cf-9ac2aa7a9df7",
+      "type": "http",
+      "documentation": "Create message",
+      "method": "post",
+      "endpoint": "messages",
+      "responses": [
+        {
+          "uuid": "ec89c6aa-f280-4d3b-98fd-24acf5aa4baa",
+          "body": "{\n  \"id\": 999,\n  \"chatId\": {{body 'chatId'}},\n  \"senderId\": {{body 'senderId'}},\n  \"message\": \"{{body 'message'}}\",\n  \"time\": \"4:45 PM\",\n  \"edited\": false\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d08c62c0-5bbe-4e9e-9db8-b6a62616ceb8",
+      "type": "http",
+      "documentation": "Update message",
+      "method": "put",
+      "endpoint": "messages/:id",
+      "responses": [
+        {
+          "uuid": "99c0757a-1912-4fdf-8bea-ee85fc8f4c35",
+          "body": "{\n  \"id\": {{urlParam 'id'}},\n  \"chatId\": 1,\n  \"senderId\": 1,\n  \"message\": \"{{body 'message'}}\",\n  \"time\": \" (editado)\",\n  \"edited\": true\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "1b23b36c-52f9-4f8c-b424-f462de458f26"
+    },
+    {
+      "type": "route",
+      "uuid": "d059f5a8-e9f0-4f5b-8ddb-3c7aeae99b2e"
+    },
+    {
+      "type": "route",
+      "uuid": "656d66cf-738e-4460-8695-19542cb1ba16"
+    },
+    {
+      "type": "route",
+      "uuid": "6756b022-ed00-47cf-9817-36638835ffd6"
+    },
+    {
+      "type": "route",
+      "uuid": "212893ba-fcc4-45b8-a751-bc0921e7d4a2"
+    },
+    {
+      "type": "route",
+      "uuid": "507aef73-1db6-4c1d-8d96-6cd99e7c888d"
+    },
+    {
+      "type": "route",
+      "uuid": "8a4655f4-5cf8-4654-b7cf-9ac2aa7a9df7"
+    },
+    {
+      "type": "route",
+      "uuid": "d08c62c0-5bbe-4e9e-9db8-b6a62616ceb8"
+    }
+  ],
+  "proxyMode": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "hostname": "",
+  "folders": [],
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "cors": true,
+  "headers": [],
+  "proxyReqHeaders": [],
+  "proxyResHeaders": [],
+  "data": [
+    {
+      "uuid": "289b5564-4ff3-4a10-bffb-2be86738b726",
+      "id": "wb11",
+      "name": "Chats",
+      "documentation": "",
+      "value": "[\n  {\"id\":2,\"userId1\":2,\"userId2\":3,\"name\":\"maria\",\"lastMessage\":\"Looks great!\",\"time\":\"4:23 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=maria\"},\n  {\"id\":3,\"userId1\":2,\"userId2\":4,\"name\":\"carlos\",\"lastMessage\":\"Lunch on Monday?\",\"time\":\"4:12 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=carlos\"},\n  {\"id\":4,\"userId1\":2,\"userId2\":5,\"name\":\"ana\",\"lastMessage\":\"You sent a photo.\",\"time\":\"3:58 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=andres\"},\n  {\"id\":5,\"userId1\":2,\"userId2\":6,\"name\":\"luis\",\"lastMessage\":\"That's an amazing pizza!\",\"time\":\"3:31 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=luis\"},\n  {\"id\":6,\"userId1\":2,\"userId2\":7,\"name\":\"sofia\",\"lastMessage\":\"See you at 8.\",\"time\":\"3:30 PM\",\"unread\":0,\"avatarUrl\":\"https://i.pravatar.cc/150?img=sofia\"}\n]"
+    }
+  ],
+  "callbacks": []
+}

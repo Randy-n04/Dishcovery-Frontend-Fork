@@ -1,16 +1,14 @@
 package com.dishcovery.app.data.datasource
 
 import com.dishcovery.app.data.datasource.model.ChatDto
+import com.dishcovery.app.data.datasource.model.MessageCreateRequest
 import com.dishcovery.app.data.datasource.model.MessageDto
-import kotlinx.coroutines.flow.Flow
+import com.dishcovery.app.data.datasource.model.MessageUpdateRequest
 
 interface ChatDataSource {
-
-    fun getChats(userId: Long): Flow<List<ChatDto>>
-
-
-    fun getMessages(chatId: Long): List<MessageDto>
-
-
-    fun sendMessage(chatId: Long, senderId: Long, text: String)
+    suspend fun getChats(userId: Long): List<ChatDto>
+    suspend fun createChat(chat: ChatDto): ChatDto
+    suspend fun getMessages(chatId: Long): List<MessageDto>
+    suspend fun sendMessage(request: MessageCreateRequest): MessageDto
+    suspend fun updateMessage(id: Long, request: MessageUpdateRequest): MessageDto
 }

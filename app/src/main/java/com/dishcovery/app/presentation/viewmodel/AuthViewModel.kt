@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * ViewModel for authentication
  */
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 

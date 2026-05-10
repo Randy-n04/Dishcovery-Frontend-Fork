@@ -23,7 +23,7 @@ import com.dishcovery.app.presentation.ui.theme.Rojo
 @Composable
 fun AdminHeader(
     onLogout: () -> Unit,
-    username: String
+    username: String = "James S."
 ) {
     val displayName = if (username.equals("admin", ignoreCase = true)) {
         stringResource(R.string.admin_display_name)

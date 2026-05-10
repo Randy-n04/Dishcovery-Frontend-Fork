@@ -4,12 +4,13 @@ import com.dishcovery.app.data.datasource.AuthDataSource
 import com.dishcovery.app.data.mapper.UserMapper
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.AuthRepository
+import javax.inject.Inject
 
 /**
  * Concrete implementation of [AuthRepository].
  * Orchestrates the data source and mapper to return domain entities.
  */
-class AuthRepositoryImpl(
+class AuthRepositoryImpl @Inject constructor(
     private val dataSource: AuthDataSource,
     private val mapper: UserMapper
 ) : AuthRepository {

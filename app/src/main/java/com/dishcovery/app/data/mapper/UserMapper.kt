@@ -3,11 +3,12 @@ package com.dishcovery.app.data.mapper
 import com.dishcovery.app.data.datasource.model.UserDto
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.model.UserRole
+import javax.inject.Inject
 
 /**
  * Mapper between UserDto and User
  */
-class UserMapper {
+class UserMapper @Inject constructor() {
 
     fun mapToDomain(dto: UserDto): User = User(
         id       = dto.id,
@@ -18,6 +19,4 @@ class UserMapper {
             else    -> UserRole.User
         }
     )
-
-
 }

@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.dishcovery.app.R
 import com.dishcovery.app.presentation.navigation.NavRoutes
@@ -23,6 +26,8 @@ import com.dishcovery.app.presentation.ui.theme.TextPrimary
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.ui.components.ChatItem
+import com.dishcovery.app.presentation.ui.components.ScreenErrorState
+import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
 
 @Composable
 fun ChatScreen(
@@ -33,9 +38,11 @@ fun ChatScreen(
 ) {
     val user by authViewModel.user.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
+    val chatsError by chatViewModel.chatsError.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val isLoadingChats by chatViewModel.isLoadingChats.collectAsState()
 
     var search by remember { mutableStateOf("") }
-
 
     LaunchedEffect(user) {
         user?.let {
@@ -43,98 +50,117 @@ fun ChatScreen(
         }
     }
 
+    DisposableEffect(lifecycleOwner, user) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                user?.let { chatViewModel.loadChats(it.id) }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     val filteredChats = chats.filter {
         it.name.contains(search, ignoreCase = true) ||
                 it.lastMessage.contains(search, ignoreCase = true)
     }
-    Column(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        Column(modifier = Modifier.fillMaxSize()) {
 
-        Text(
-            text = stringResource(R.string.chats_title),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
-        )
+            Text(
+                text = stringResource(R.string.chats_title),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+            )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                shape = CircleShape,
-                color = Color.White,
-                shadowElevation = 2.dp,
-                modifier = Modifier.size(36.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = {
-                        navController.navigate(NavRoutes.Home.ROUTE) {
-                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize()
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button_desc),
-                        tint = Rojo
+                    IconButton(
+                        onClick = {
+                            navController.navigate(NavRoutes.Home.ROUTE) {
+                                popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button_desc),
+                            tint = Rojo
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                TextField(
+                    value = search,
+                    onValueChange = { search = it },
+                    placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search_placeholder),
+                            tint = Rojo
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(52.dp),
+                    shape = RoundedCornerShape(26.dp),
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        disabledContainerColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f),
+                        unfocusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f)
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn {
+                items(filteredChats) { chat ->
+                    ChatItem(
+                        chat = chat,
+                        onClick = {
+                            navController.navigate(
+                                NavRoutes.ChatDetail.createRoute(chat.id, chat.name)
+                            )
+                        }
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            TextField(
-                value = search,
-                onValueChange = { search = it },
-                placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search_placeholder),
-                        tint = Rojo
-                    )
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp),
-                shape = RoundedCornerShape(26.dp),
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    disabledContainerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f),
-                    unfocusedPlaceholderColor = TextPrimary.copy(alpha = 0.6f)
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        LazyColumn {
-            items(filteredChats) { chat ->
-                ChatItem(
-                    chat = chat,
-                    onClick = {
-                        navController.navigate(
-                            NavRoutes.ChatDetail.createRoute(chat.id, chat.name)
-                        )
-                    }
-                )
+            if (isLoadingChats) {
+                ScreenLoadingState()
+            } else if (chatsError != null) {
+                ScreenErrorState(message = chatsError.orEmpty())
             }
         }
+
     }
 }

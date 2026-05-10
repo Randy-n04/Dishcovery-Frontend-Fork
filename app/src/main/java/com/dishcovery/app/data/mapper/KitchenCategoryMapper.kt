@@ -2,14 +2,13 @@ package com.dishcovery.app.data.mapper
 
 import com.dishcovery.app.data.datasource.model.KitchenCategoryDto
 import com.dishcovery.app.domain.model.KitchenCategory
+import javax.inject.Inject
 
-/**
- * Mapper between KitchenCategoryDto and KitchenCategory
- */
-class KitchenCategoryMapper {
-
-    fun mapToDomain(dto: KitchenCategoryDto): KitchenCategory = KitchenCategory(
-        id   = dto.id,
-        name = dto.name
-    )
+class KitchenCategoryMapper @Inject constructor() {
+    fun mapToDomain(dto: KitchenCategoryDto): KitchenCategory {
+        return KitchenCategory(
+            id = dto.id,
+            name = dto.name
+        )
+    }
 }
