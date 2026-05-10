@@ -20,6 +20,7 @@ import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
 import com.dishcovery.app.presentation.ui.screens.ChatDetailScreen
+import com.dishcovery.app.presentation.ui.screens.DiscoverPeopleScreen
 
 @Composable
 fun NavGraph(
@@ -60,7 +61,7 @@ fun NavGraph(
         // ── Home ─────────────────────────────────────────────
         composable(NavRoutes.Home.ROUTE) {
             val recipeViewModel: RecipeViewModel = hiltViewModel()
-            HomeScreen(paddingValues, recipeViewModel)
+            HomeScreen(paddingValues, recipeViewModel, navController)
         }
 
         // ── Admin ────────────────────────────────────────────
@@ -161,6 +162,17 @@ fun NavGraph(
                 currentUserId = user?.id ?: 2L,
                 chatViewModel = chatViewModel,
                 navController = navController
+            )
+        }
+
+        composable(NavRoutes.DiscoverPeople.ROUTE) {
+            DiscoverPeopleScreen(
+                paddingValues = paddingValues,
+                onBack = { navController.popBackStack() },
+                onConnect = { user ->
+                    // Logic to connect with the user
+                    navController.popBackStack()
+                }
             )
         }
     }

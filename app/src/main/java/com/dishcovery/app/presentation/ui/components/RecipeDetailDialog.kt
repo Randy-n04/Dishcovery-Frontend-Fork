@@ -32,6 +32,7 @@ fun RecipeDetailDialog(
     recipe: Recipe,
     isSaved: Boolean,
     onSaveToggle: () -> Unit,
+    onSearchMatch: () -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(
@@ -159,7 +160,10 @@ fun RecipeDetailDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* Handle search match */ },
+                    onClick = {
+                        onDismiss()
+                        onSearchMatch()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

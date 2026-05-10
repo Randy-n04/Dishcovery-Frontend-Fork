@@ -8,28 +8,44 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Recipe
+import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.AITipBanner
 import com.dishcovery.app.presentation.ui.components.BackPressToExit
+import com.dishcovery.app.presentation.ui.components.ManualMatchSection
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
 import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
+import com.dishcovery.app.presentation.ui.components.SearchingMatchDialog
 import com.dishcovery.app.presentation.ui.layout.HomeLayout
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     paddingValues: PaddingValues,
-    recipeViewModel: RecipeViewModel
+    recipeViewModel: RecipeViewModel,
+    navController: NavHostController
 ) {
-
     BackPressToExit()
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
     val isLoading by recipeViewModel.isLoading.collectAsState()
     
     var selectedRecipe by remember { mutableStateOf<Recipe?>(null) }
+    var showSearchingDialog by remember { mutableStateOf(false) }
+    var searchingCategory by remember { mutableStateOf("") }
+
+    // Simulación de búsqueda con delay
+    LaunchedEffect(showSearchingDialog) {
+        if (showSearchingDialog) {
+            delay(2000) // 2 segundos de simulación
+            showSearchingDialog = false
+            navController.navigate(NavRoutes.DiscoverPeople.ROUTE)
+        }
+    }
 
     HomeLayout(
         modifier = Modifier.padding(paddingValues)
@@ -77,8 +93,21 @@ fun HomeScreen(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+
+                ManualMatchSection(
+                    onMatchClick = { recipeCategory, _ ->
+                        searchingCategory = recipeCategory
+                        showSearchingDialog = true
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
+    }
+
+    if (showSearchingDialog) {
+        SearchingMatchDialog(category = searchingCategory)
     }
 
     selectedRecipe?.let { recipe ->
@@ -87,6 +116,10 @@ fun HomeScreen(
             recipe = recipe,
             isSaved = isSaved,
             onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
+            onSearchMatch = { 
+                searchingCategory = recipe.categories.firstOrNull()?.name ?: ""
+                showSearchingDialog = true
+            },
             onDismiss = { selectedRecipe = null }
         )
     }
