@@ -53,4 +53,8 @@ sealed class NavRoutes {
     data object DiscoverPeople : NavRoutes() {
         const val ROUTE = "discover_people"
     }
+
+    data object ExchangePlan : NavRoutes() {
+        const val ROUTE = "exchange_plan"
+    }
 }
