@@ -21,7 +21,8 @@ import com.dishcovery.app.presentation.ui.components.*
 @Composable
 fun ExchangePlanScreen(
     navController: NavHostController,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    isReceived: Boolean = true // true if we received it (can edit), false if we sent it (readonly)
 ) {
     // 1. Estado dinámico de las sesiones
     val sessions = remember {
@@ -68,7 +69,7 @@ fun ExchangePlanScreen(
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(
                 top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding() + 80.dp // Mucho espacio al final para el scroll
+                bottom = innerPadding.calculateBottomPadding() + 80.dp
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -80,6 +81,7 @@ fun ExchangePlanScreen(
             itemsIndexed(sessions) { index, session ->
                 SessionCard(
                     session = session,
+                    canEdit = isReceived, // Solo se puede editar si es recibido
                     onEditClick = {
                         selectedSessionIndex = index
                         showDialog = true
@@ -87,38 +89,40 @@ fun ExchangePlanScreen(
                 )
             }
 
-            // Botón para generar más contenido con IA
-            item {
-                GenerateSessionButton(onGenerate = {
-                    val next = aiSuggestions.getOrNull(sessions.size - 2) ?: aiSuggestions.random()
-                    sessions.add(next)
-                })
+            // Solo mostramos el botón de generar si es un plan recibido (editable)
+            if (isReceived) {
+                item {
+                    GenerateSessionButton(onGenerate = {
+                        val next = aiSuggestions.getOrNull(sessions.size - 2) ?: aiSuggestions.random()
+                        sessions.add(next)
+                    })
+                }
             }
 
-            // AGRUPADO: Sugerencias + Botones de Acción (Guardar/Aceptar)
+            // Sección de sugerencias del usuario
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                    SuggestionsSection(
-                        text = suggestionsText, 
-                        onValueChange = { suggestionsText = it }
-                    )
-                    
-                    // Ahora sí, garantizados justo debajo de "Procesar Plan"
-                    ActionButtons(
-                        onAccept = {
-                            navController.navigate(NavRoutes.Chats.ROUTE) {
-                                popUpTo(NavRoutes.Home.ROUTE)
-                            }
-                        },
-                        onSave = { /* Simulación de guardado */ }
-                    )
-                }
+                SuggestionsSection(
+                    text = suggestionsText, 
+                    onValueChange = { suggestionsText = it },
+                    enabled = isReceived // Solo editable si es recibido
+                )
+            }
+            
+            item {
+                ActionButtons(
+                    onAccept = {
+                        navController.navigate(NavRoutes.Chats.ROUTE) {
+                            popUpTo(NavRoutes.Home.ROUTE)
+                        }
+                    },
+                    onSave = { /* Simulación de guardado */ },
+                    isReceived = isReceived
+                )
             }
         }
     }
 
-    // Diálogo modular para editar o crear
-    if (showDialog) {
+    if (showDialog && isReceived) {
         EditSessionDialog(
             session = sessionToEdit,
             onDismiss = { showDialog = false },
