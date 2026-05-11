@@ -68,7 +68,6 @@
     <string name="cancel_button">Cancelar</string>
     <string name="update_button_label">Actualizar</string>
 
-
     <!-- Discover People Screen -->
     <string name="discover_people_title">Descubrir personas</string>
     <string name="match_percentage_suffix">match</string>
@@ -81,6 +80,21 @@
     <string name="manual_match_profile_question">¿Cómo te defines como cocinero?</string>
     <string name="find_chef_button">¡Encontrar mi Chef Ideal!</string>
     <string name="searching_match_message">Buscando a alguien que comparta tu gusto por la comida %s…</string>
+
+    <!-- Exchange Plan Screen -->
+    <string name="exchange_plan_title">Plan de intercambio</string>
+    <string name="exchange_partner_label">Compañero de intercambio</string>
+    <string name="progress_label">Progreso</string>
+    <string name="sessions_count_label">%1$d/%2$d sesiones</string>
+    <string name="ai_plan_suggestion">Sugerencia de IA: Balancea 2 sesiones de intercambio con dificultad progresiva. Cada sesión construida se basa en las habilidades adquiridas en la anterior.</string>
+    <string name="instructed_by_prefix">Instruido por %s</string>
+    <string name="instructed_by_you">Instruido por ti</string>
+    <string name="start_session_button">Iniciar</string>
+    <string name="accept_plan_button">Aceptar Match</string>
+    <string name="save_plan_button">Guardar Plan</string>
+    <string name="process_plan_button">Procesar Plan</string>
+    <string name="suggestions_hint">Escribe tus sugerencias aquí...</string>
+    <string name="suggestions_label">Sugerencias adicionales</string>
 
     <!-- Categories and Profiles -->
     <string name="cat_italian">Italiana</string>

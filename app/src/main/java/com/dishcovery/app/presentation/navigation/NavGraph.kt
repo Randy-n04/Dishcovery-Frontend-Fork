@@ -15,6 +15,7 @@ import com.dishcovery.app.presentation.ui.screens.HomeScreen
 import com.dishcovery.app.presentation.ui.screens.LoginScreen
 import com.dishcovery.app.presentation.ui.screens.ProfileScreen
 import com.dishcovery.app.presentation.ui.screens.ChatScreen
+import com.dishcovery.app.presentation.ui.screens.ExchangePlanScreen
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
@@ -64,6 +65,26 @@ fun NavGraph(
             HomeScreen(paddingValues, recipeViewModel, navController)
         }
 
+        // ── DiscoverPeople ───────────────────────────────────
+        composable(NavRoutes.DiscoverPeople.ROUTE) {
+            DiscoverPeopleScreen(
+                paddingValues = paddingValues,
+                onBack = { navController.popBackStack() },
+                onConnect = { user ->
+                    // Navegamos al Plan de Intercambio al conectar
+                    navController.navigate(NavRoutes.ExchangePlan.ROUTE)
+                }
+            )
+        }
+
+        // ── ExchangePlan ─────────────────────────────────────
+        composable(NavRoutes.ExchangePlan.ROUTE) {
+            ExchangePlanScreen(
+                navController = navController,
+                paddingValues = paddingValues
+            )
+        }
+
         // ── Admin ────────────────────────────────────────────
         composable(NavRoutes.AdminManagement.ROUTE) {
             AdminDashboardScreen(
@@ -107,22 +128,7 @@ fun NavGraph(
             )
         }
 
-        // Legacy route kept for compatibility.
-        composable(NavRoutes.AdminDashboard.ROUTE) {
-            AdminDashboardScreen(
-                paddingValues = paddingValues,
-                username = user?.username.orEmpty(),
-                onLogout = {
-                    authViewModel.logout()
-                    navController.navigate(NavRoutes.Auth.ROUTE) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-
-
+        // ── Chats ────────────────────────────────────────────
         composable(NavRoutes.Chats.ROUTE) {
             val chatViewModel: ChatViewModel = hiltViewModel()
             ChatScreen(
@@ -150,7 +156,7 @@ fun NavGraph(
             )
         }
 
-
+        // ── Chat Detail ──────────────────────────────────────
         composable(NavRoutes.ChatDetail.ROUTE) { backStackEntry ->
             val chatViewModel: ChatViewModel = hiltViewModel()
             val chatId = backStackEntry.arguments?.getString("chatId")?.toLong() ?: 0
@@ -164,17 +170,5 @@ fun NavGraph(
                 navController = navController
             )
         }
-
-        composable(NavRoutes.DiscoverPeople.ROUTE) {
-            DiscoverPeopleScreen(
-                paddingValues = paddingValues,
-                onBack = { navController.popBackStack() },
-                onConnect = { user ->
-                    // Logic to connect with the user
-                    navController.popBackStack()
-                }
-            )
-        }
     }
-
 }
