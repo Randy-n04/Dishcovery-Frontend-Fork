@@ -20,7 +20,8 @@ import com.dishcovery.app.R
 @Composable
 fun SessionCard(
     session: ExchangeSession,
-    onEditClick: () -> Unit
+    canEdit: Boolean = true,
+    onEditClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -40,8 +41,10 @@ fun SessionCard(
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF8B4513)
                 )
-                IconButton(onClick = onEditClick) {
-                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color(0xFFFFA07A))
+                if (canEdit) {
+                    IconButton(onClick = onEditClick) {
+                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color(0xFFFFA07A))
+                    }
                 }
             }
             Text(
@@ -54,22 +57,12 @@ fun SessionCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.CalendarMonth,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color(0xFFFFA07A)
-                )
+                Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFFFA07A))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = session.date, fontSize = 14.sp, color = Color.Gray)
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                Icon(
-                    Icons.Default.AccessTime,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color(0xFFFFA07A)
-                )
+                Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFFFA07A))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = session.time, fontSize = 14.sp, color = Color.Gray)
             }

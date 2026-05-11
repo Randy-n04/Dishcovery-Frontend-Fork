@@ -14,26 +14,41 @@ import androidx.compose.ui.unit.dp
 import com.dishcovery.app.R
 
 @Composable
-fun ActionButtons(onAccept: () -> Unit, onSave: () -> Unit) {
+fun ActionButtons(
+    onAccept: () -> Unit,
+    onSave: () -> Unit,
+    isReceived: Boolean = true
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        OutlinedButton(
-            onClick = onSave,
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color(0xFF8B4513))
-        ) {
-            Text(text = stringResource(R.string.save_plan_button), color = Color(0xFF8B4513))
-        }
-        Button(
-            onClick = onAccept,
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
-        ) {
-            Text(text = stringResource(R.string.accept_plan_button))
+        if (isReceived) {
+            OutlinedButton(
+                onClick = onSave,
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color(0xFF8B4513))
+            ) {
+                Text(text = "Reenviar", color = Color(0xFF8B4513))
+            }
+            Button(
+                onClick = onAccept,
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+            ) {
+                Text(text = stringResource(R.string.accept_plan_button))
+            }
+        } else {
+            Button(
+                onClick = onAccept, // En modo lectura, el botón principal sirve para cerrar/volver
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+            ) {
+                Text(text = "Cerrar", color = Color.White)
+            }
         }
     }
 }

@@ -13,7 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.dishcovery.app.R
 
 @Composable
-fun SuggestionsSection(text: String, onValueChange: (String) -> Unit) {
+fun SuggestionsSection(
+    text: String, 
+    onValueChange: (String) -> Unit,
+    enabled: Boolean = true
+) {
     Column {
         Text(
             text = stringResource(R.string.suggestions_label),
@@ -25,23 +29,27 @@ fun SuggestionsSection(text: String, onValueChange: (String) -> Unit) {
             value = text,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
             placeholder = { Text(stringResource(R.string.suggestions_hint)) },
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color(0xFFF5F5F5),
                 focusedBorderColor = Color(0xFF8B4513),
                 unfocusedBorderColor = Color.LightGray
             )
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { /* Process mock */ },
-            modifier = Modifier.align(Alignment.End),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
-        ) {
-            Text(text = stringResource(R.string.process_plan_button))
+        if (enabled) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { /* Process mock */ },
+                modifier = Modifier.align(Alignment.End),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+            ) {
+                Text(text = stringResource(R.string.process_plan_button))
+            }
         }
     }
 }
