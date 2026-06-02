@@ -14,6 +14,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.ExchangePlan
+import com.dishcovery.app.domain.model.ExchangeSession
+import com.dishcovery.app.domain.model.PlanStatus
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.*
 
@@ -22,26 +25,35 @@ import com.dishcovery.app.presentation.ui.components.*
 fun ExchangePlanScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    isReceived: Boolean = true // true if we received it (can edit), false if we sent it (readonly)
+    isReceived: Boolean = true
 ) {
-    // 1. Estado dinámico de las sesiones
-    val sessions = remember {
-        mutableStateListOf(
-            ExchangeSession("Pasta italiana nivel principiante", "Javier", "Marzo 15, 2026", "6:00 PM - 7:30 PM"),
-            ExchangeSession("Tacos tradicionales y salsas", "ti", "Marzo 16, 2026", "6:00 PM - 7:30 PM")
+    // 1. Estado del plan usando la Clase de Dominio
+    var plan by remember {
+        mutableStateOf(
+            ExchangePlan(
+                id = 1,
+                partnerId = 101,
+                partnerName = "Javier Rodriguez",
+                partnerImageUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Javier",
+                aiSuggestion = "Balancea 2 sesiones de intercambio con dificultad progresiva. Cada sesión construida se basa en las habilidades adquiridas en la anterior.",
+                sessions = listOf(
+                    ExchangeSession(1, "Pasta italiana nivel principiante", "Javier", "Marzo 15, 2026", "6:00 PM - 7:30 PM"),
+                    ExchangeSession(2, "Tacos tradicionales y salsas", "ti", "Marzo 16, 2026", "6:00 PM - 7:30 PM")
+                ),
+                status = PlanStatus.PENDING
+            )
         )
     }
 
-    // Sugerencias de la IA (Simulado)
-    val aiSuggestions = listOf(
-        ExchangeSession("Postres Gourmet Italianos", "Javier", "Marzo 20, 2026", "4:00 PM - 6:00 PM"),
-        ExchangeSession("Maridaje de Vinos", "ti", "Marzo 22, 2026", "7:00 PM - 8:30 PM")
+    // Biblioteca de sugerencias para el simulador de IA
+    val aiLibrary = listOf(
+        ExchangeSession(0, "Postres Gourmet Italianos", "Javier", "Marzo 20, 2026", "4:00 PM - 6:00 PM"),
+        ExchangeSession(0, "Maridaje de Vinos", "ti", "Marzo 22, 2026", "7:00 PM - 8:30 PM")
     )
 
-    var suggestionsText by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
     var selectedSessionIndex by remember { mutableIntStateOf(-1) }
-    val sessionToEdit = if (selectedSessionIndex != -1) sessions.getOrNull(selectedSessionIndex) else null
+    val sessionToEdit = if (selectedSessionIndex != -1) plan.sessions.getOrNull(selectedSessionIndex) else null
 
     Scaffold(
         topBar = {
@@ -68,20 +80,31 @@ fun ExchangePlanScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding() + 80.dp
+                top = innerPadding.calculateTopPadding() + 16.dp,
+                bottom = innerPadding.calculateBottomPadding() + 100.dp
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { PartnerCard() }
-            item { AISuggestionBanner() }
-            item { ProgressSection() }
+            item { 
+                PartnerCard(
+                    partnerName = plan.partnerName, 
+                    partnerImageUrl = plan.partnerImageUrl
+                ) 
+            }
+            
+            item { AISuggestionBanner(suggestion = plan.aiSuggestion) }
 
-            // Lista de sesiones dinámicas
-            itemsIndexed(sessions) { index, session ->
+            item { 
+                ProgressSection(
+                    progress = plan.progress, 
+                    total = plan.sessions.size
+                ) 
+            }
+
+            itemsIndexed(plan.sessions) { index, session ->
                 SessionCard(
                     session = session,
-                    canEdit = isReceived, // Solo se puede editar si es recibido
+                    canEdit = isReceived,
                     onEditClick = {
                         selectedSessionIndex = index
                         showDialog = true
@@ -89,22 +112,20 @@ fun ExchangePlanScreen(
                 )
             }
 
-            // Solo mostramos el botón de generar si es un plan recibido (editable)
             if (isReceived) {
                 item {
                     GenerateSessionButton(onGenerate = {
-                        val next = aiSuggestions.getOrNull(sessions.size - 2) ?: aiSuggestions.random()
-                        sessions.add(next)
+                        val next = aiLibrary.random()
+                        plan = plan.copy(sessions = plan.sessions + next)
                     })
                 }
             }
 
-            // Sección de sugerencias del usuario
             item {
                 SuggestionsSection(
-                    text = suggestionsText, 
-                    onValueChange = { suggestionsText = it },
-                    enabled = isReceived // Solo editable si es recibido
+                    text = plan.userNote, 
+                    onValueChange = { plan = plan.copy(userNote = it) },
+                    enabled = isReceived
                 )
             }
             
@@ -115,9 +136,10 @@ fun ExchangePlanScreen(
                             popUpTo(NavRoutes.Home.ROUTE)
                         }
                     },
-                    onSave = { /* Simulación de guardado */ },
+                    onSave = { /* Update API mock */ },
                     isReceived = isReceived
                 )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -127,8 +149,13 @@ fun ExchangePlanScreen(
             session = sessionToEdit,
             onDismiss = { showDialog = false },
             onSave = { updated ->
-                if (selectedSessionIndex != -1) sessions[selectedSessionIndex] = updated
-                else sessions.add(updated)
+                val newList = plan.sessions.toMutableList()
+                if (selectedSessionIndex != -1) {
+                    newList[selectedSessionIndex] = updated
+                } else {
+                    newList.add(updated)
+                }
+                plan = plan.copy(sessions = newList)
                 showDialog = false
             }
         )

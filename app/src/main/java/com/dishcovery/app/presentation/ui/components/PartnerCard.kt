@@ -21,7 +21,10 @@ import coil.compose.AsyncImage
 import com.dishcovery.app.R
 
 @Composable
-fun PartnerCard() {
+fun PartnerCard(
+    partnerName: String,
+    partnerImageUrl: String
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -35,7 +38,7 @@ fun PartnerCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = "https://api.dicebear.com/7.x/avataaars/svg?seed=Javier",
+                model = partnerImageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .size(64.dp)
@@ -46,7 +49,7 @@ fun PartnerCard() {
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = "Javier Rodriguez",
+                    text = partnerName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF8B4513)

@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.ExchangeSession
 
 @Composable
 fun SessionCard(
@@ -48,21 +49,31 @@ fun SessionCard(
                 }
             }
             Text(
-                text = if (session.instructor == "ti")
+                text = if (session.instructorName.lowercase() == "ti")
                     stringResource(R.string.instructed_by_you)
                 else
-                    stringResource(R.string.instructed_by_prefix, session.instructor),
+                    stringResource(R.string.instructed_by_prefix, session.instructorName),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFFFA07A))
+                Icon(
+                    Icons.Default.CalendarMonth,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Color(0xFFFFA07A)
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = session.date, fontSize = 14.sp, color = Color.Gray)
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color(0xFFFFA07A))
+                Icon(
+                    Icons.Default.AccessTime,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = Color(0xFFFFA07A)
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = session.time, fontSize = 14.sp, color = Color.Gray)
             }
@@ -70,10 +81,13 @@ fun SessionCard(
             Button(
                 onClick = { /* Iniciar sesion mock */ },
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !session.isCompleted,
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373))
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (session.isCompleted) Color.Gray else Color(0xFFE57373)
+                )
             ) {
-                Text(text = stringResource(R.string.start_session_button))
+                Text(text = if (session.isCompleted) "Completada" else stringResource(R.string.start_session_button))
             }
         }
     }
