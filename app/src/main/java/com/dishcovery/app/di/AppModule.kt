@@ -1,7 +1,6 @@
 package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.*
-import com.dishcovery.app.data.mapper.*
 import com.dishcovery.app.data.repository.*
 import com.dishcovery.app.domain.repository.*
 import dagger.Binds
@@ -41,4 +40,8 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
 }

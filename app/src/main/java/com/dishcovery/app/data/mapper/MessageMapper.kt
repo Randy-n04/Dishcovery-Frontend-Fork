@@ -5,8 +5,7 @@ import com.dishcovery.app.domain.model.Message
 import javax.inject.Inject
 
 class MessageMapper @Inject constructor() {
-
-    fun mapToDomain(dto: MessageDto): Message {
+    fun toDomain(dto: MessageDto): Message {
         return Message(
             id = dto.id,
             chatId = dto.chatId,
@@ -15,5 +14,9 @@ class MessageMapper @Inject constructor() {
             time = dto.time,
             edited = dto.edited
         )
+    }
+
+    fun toDomainList(dtos: List<MessageDto>): List<Message> {
+        return dtos.map { toDomain(it) }
     }
 }

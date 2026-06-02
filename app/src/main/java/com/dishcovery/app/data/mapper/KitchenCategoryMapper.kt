@@ -5,7 +5,7 @@ import com.dishcovery.app.domain.model.KitchenCategory
 import javax.inject.Inject
 
 class KitchenCategoryMapper @Inject constructor() {
-    fun mapToDomain(dto: KitchenCategoryDto): KitchenCategory {
+    fun toDomain(dto: KitchenCategoryDto): KitchenCategory {
         return KitchenCategory(
             id = dto.id,
             name = dto.name

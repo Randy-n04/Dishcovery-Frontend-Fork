@@ -16,7 +16,8 @@ class ProfileRepositoryImpl @Inject constructor(
         return try {
             val dto = dataSource.getProfileByUserId(userId)
             if (dto != null) {
-                Result.success(mapper.mapToDomain(dto))
+                // Sincronizado con el estándar toDomain
+                Result.success(mapper.toDomain(dto))
             } else {
                 Result.failure(DomainError.ProfileNotFound())
             }

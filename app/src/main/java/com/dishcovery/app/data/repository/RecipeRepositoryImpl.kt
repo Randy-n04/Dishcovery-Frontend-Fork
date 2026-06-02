@@ -12,13 +12,14 @@ class RecipeRepositoryImpl @Inject constructor(
     private val mapper: RecipeMapper
 ) : RecipeRepository {
 
-    // Simulated local storage for saved recipes
+    // Almacenamiento local simulado para recetas guardadas
     private val savedRecipeIds = mutableSetOf<Long>()
 
     override suspend fun getPopularRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
             val dtos = RecipeProvider.getAll()
-            val recipes = dtos.map { mapper.mapToDomain(it) }
+            // Sincronizado con toDomainList
+            val recipes = mapper.toDomainList(dtos)
             Result.success(recipes)
         } catch (e: Exception) {
             Result.failure(e)
@@ -28,7 +29,8 @@ class RecipeRepositoryImpl @Inject constructor(
     override suspend fun getSavedRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
             val dtos = RecipeProvider.getAll().filter { it.id in savedRecipeIds }
-            val recipes = dtos.map { mapper.mapToDomain(it) }
+            // Sincronizado con toDomainList
+            val recipes = mapper.toDomainList(dtos)
             Result.success(recipes)
         } catch (e: Exception) {
             Result.failure(e)

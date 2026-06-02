@@ -7,25 +7,19 @@ import com.dishcovery.app.data.datasource.model.MessageUpdateRequest
 import com.dishcovery.app.data.datasource.remote.ChatApiService
 import javax.inject.Inject
 
+/**
+ * Implementación real de ChatDataSource conectada al backend.
+ * Se han eliminado las dependencias de datos estáticos (AuthProvider).
+ */
 class ChatDataSourceImpl @Inject constructor(
     private val apiService: ChatApiService
 ) : ChatDataSource {
 
-    private val usernamesById: Map<Long, String> by lazy {
-        AuthProvider.getUsers().associate { it.id to it.username }
-    }
-
     override suspend fun getChats(userId: Long): List<ChatDto> {
-        // Traemos todos y filtramos localmente por ambos participantes.
+        // Obtenemos los chats directamente de la API. 
+        // El filtrado por userId lo hace el backend o se valida aquí.
         return apiService.getChats()
             .filter { it.userId1 == userId || it.userId2 == userId }
-            .map { chat ->
-                val otherUserId = if (chat.userId1 == userId) chat.userId2 else chat.userId1
-                val otherUsername = usernamesById[otherUserId] ?: chat.name
-                val otherAvatarUrl = ProfileProvider.getProfileByUserId(otherUserId)?.photoUrl
-                    ?: chat.avatarUrl
-                chat.copy(name = otherUsername, avatarUrl = otherAvatarUrl)
-            }
     }
 
     override suspend fun createChat(chat: ChatDto): ChatDto {
@@ -33,7 +27,6 @@ class ChatDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getMessages(chatId: Long): List<MessageDto> {
-        // Aplicamos filtro exacto también para los mensajes por seguridad.
         return apiService.getMessagesByChat(chatId).filter { it.chatId == chatId }
     }
 

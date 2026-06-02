@@ -8,12 +8,12 @@ class ProfileMapper @Inject constructor(
     private val userMapper: UserMapper,
     private val categoryMapper: KitchenCategoryMapper
 ) {
-    fun mapToDomain(dto: ProfileDto): Profile = Profile(
-        user         = userMapper.mapToDomain(dto.user),
+    fun toDomain(dto: ProfileDto): Profile = Profile(
+        user         = userMapper.toDomain(dto.user),
         publicName   = dto.publicName,
         bio          = bioConverter(dto.bio),
         photoUrl     = dto.photoUrl,
-        offeredSkills = dto.offeredSkills.map { categoryMapper.mapToDomain(it) },
+        offeredSkills = dto.offeredSkills.map { categoryMapper.toDomain(it) },
         language     = dto.language,
         location     = dto.location
     )

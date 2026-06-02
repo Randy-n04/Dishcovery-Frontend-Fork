@@ -7,14 +7,18 @@ import javax.inject.Inject
 class RecipeMapper @Inject constructor(
     private val categoryMapper: KitchenCategoryMapper
 ) {
-    fun mapToDomain(dto: RecipeDto): Recipe {
+    fun toDomain(dto: RecipeDto): Recipe {
         return Recipe(
             id = dto.id,
             name = dto.name,
             description = dto.description,
             iconUrl = dto.iconUrl,
             weight = dto.weight,
-            categories = dto.categories.map { categoryMapper.mapToDomain(it) }
+            categories = dto.categories.map { categoryMapper.toDomain(it) }
         )
+    }
+
+    fun toDomainList(dtos: List<RecipeDto>): List<Recipe> {
+        return dtos.map { toDomain(it) }
     }
 }
