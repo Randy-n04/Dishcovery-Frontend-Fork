@@ -1,30 +1,34 @@
 package com.dishcovery.app.data.datasource.remote
 
 import com.dishcovery.app.data.datasource.model.ChatDto
+import com.dishcovery.app.data.datasource.model.ChatInputDto
 import com.dishcovery.app.data.datasource.model.MessageCreateRequest
 import com.dishcovery.app.data.datasource.model.MessageDto
 import com.dishcovery.app.data.datasource.model.MessageUpdateRequest
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.Response
+import retrofit2.http.*
 
 interface ChatApiService {
 
-    @GET("chats")
-    suspend fun getChats(): List<ChatDto>
+    @GET("v1/chats")
+    suspend fun findAll(): List<ChatDto>
 
-    @POST("chats")
-    suspend fun createChat(@Body chat: ChatDto): ChatDto
+    @GET("v1/chats/{id}")
+    suspend fun findById(@Path("id") id: Long): ChatDto
 
-    @GET("messages")
+    @POST("v1/chats")
+    suspend fun create(@Body chatInput: ChatInputDto): ChatDto
+
+    @PATCH("v1/chats")
+    suspend fun update(@Body chatInput: ChatInputDto): ChatDto
+
+    @DELETE("v1/chats/{id}")
+    suspend fun deleteById(@Path("id") id: Long): Response<Unit>
+
+    // Nota: Mantengo estos si existen en otro controlador del backend
+    @GET("v1/messages")
     suspend fun getMessagesByChat(@Query("chatId") chatId: Long): List<MessageDto>
 
-    @POST("messages")
+    @POST("v1/messages")
     suspend fun createMessage(@Body request: MessageCreateRequest): MessageDto
-
-    @PUT("messages/{id}")
-    suspend fun updateMessage(@Path("id") id: Long, @Body request: MessageUpdateRequest): MessageDto
 }

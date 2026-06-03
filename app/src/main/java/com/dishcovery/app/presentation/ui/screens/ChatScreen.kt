@@ -52,14 +52,14 @@ fun ChatScreen(
 
     LaunchedEffect(user) {
         user?.let {
-            chatViewModel.loadChats(it.id)
+            chatViewModel.loadChats(it.username)
         }
     }
 
     DisposableEffect(lifecycleOwner, user) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                user?.let { chatViewModel.loadChats(it.id) }
+                user?.let { chatViewModel.loadChats(it.username) }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
