@@ -20,9 +20,12 @@ class ImageDataSourceImpl @Inject constructor(
      * esta petición multipart sin ningún paso extra aquí.
      */
     override suspend fun analyzeImage(imageFile: File): List<String> {
+        //Dejo el log por si acaso lo ocupamos después
+        //android.util.Log.d("ImageDS", "Archivo: ${imageFile.absolutePath}, existe: ${imageFile.exists()}, tamaño: ${imageFile.length()} bytes")
+
         val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val part = MultipartBody.Part.createFormData(
-            name  = "image",       // nombre del campo form-data esperado por el backend
+            name  = "image",
             filename = imageFile.name,
             body  = requestBody
         )
@@ -35,4 +38,6 @@ class ImageDataSourceImpl @Inject constructor(
             throw IOException("Error del servidor: ${response.code()} ${response.message()}")
         }
     }
+
+
 }

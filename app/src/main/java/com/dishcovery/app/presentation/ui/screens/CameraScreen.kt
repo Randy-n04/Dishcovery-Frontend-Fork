@@ -40,12 +40,14 @@ fun CameraScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     // URI del fichero temporal para la foto
-    val photoUri = remember {
-        val file = File(context.cacheDir, "temp_photo_${System.currentTimeMillis()}.jpg")
-        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-    }
-    val photoFile = remember {
-        File(context.cacheDir, "temp_photo_${System.currentTimeMillis()}.jpg")
+    val (photoFile, photoUri) = remember {
+        val file = File(context.cacheDir, "temp_photo.jpg") // nombre fijo, con timestamp daba problemas
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+        file to uri
     }
 
     var capturedUri by remember { mutableStateOf<Uri?>(null) }
