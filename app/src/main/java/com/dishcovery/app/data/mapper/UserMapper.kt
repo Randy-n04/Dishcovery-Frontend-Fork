@@ -25,7 +25,7 @@ class UserMapper @Inject constructor() {
     fun toDomainFromLogin(dto: LoginResponseDto): User {
         val isAdmin = dto.authorities.any { it.authority.uppercase() == "ADMIN" }
         return User(
-            id = 0, // El DTO de login no trae ID, se resolverá con el JWT o un /me posterior
+            id = dto.id,
             username = dto.username,
             role = if (isAdmin) UserRole.Admin(1, "ADMIN") else UserRole.Client(2, "USER")
         )

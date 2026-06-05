@@ -40,10 +40,10 @@ class ChatViewModel @Inject constructor(
     private val _sendError = MutableStateFlow<String?>(null)
     val sendError: StateFlow<String?> = _sendError
 
-    fun loadChats(username: String) {
+    fun loadChats(userId: Long) {
         viewModelScope.launch {
             _isLoadingChats.value = true
-            repository.getChats(username)
+            repository.getChats(userId)
                 .onSuccess {
                     _chats.value = it
                     _chatsError.value = null

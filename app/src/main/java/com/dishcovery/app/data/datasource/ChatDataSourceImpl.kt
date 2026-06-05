@@ -28,6 +28,10 @@ class ChatDataSourceImpl @Inject constructor(
         apiService.deleteById(id)
     }
 
+    override suspend fun getChatsByUserId(userId: Long): List<ChatDto> {
+        return apiService.findByUserId(userId)
+    }
+
     override suspend fun getMessages(chatId: Long): List<MessageDto> {
         return apiService.getMessagesByChat(chatId)
     }

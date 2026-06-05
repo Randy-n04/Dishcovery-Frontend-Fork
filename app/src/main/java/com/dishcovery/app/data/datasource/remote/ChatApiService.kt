@@ -25,7 +25,9 @@ interface ChatApiService {
     @DELETE("v1/chats/{id}")
     suspend fun deleteById(@Path("id") id: Long): Response<Unit>
 
-    // Nota: Mantengo estos si existen en otro controlador del backend
+    @GET("v1/chats/user/{userId}") //
+    suspend fun findByUserId(@Path("userId") userId: Long): List<ChatDto>
+
     @GET("v1/messages")
     suspend fun getMessagesByChat(@Query("chatId") chatId: Long): List<MessageDto>
 

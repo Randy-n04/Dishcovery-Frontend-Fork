@@ -14,6 +14,7 @@ data class UserLoginInputDto(
  * DTO para la respuesta de Login (Spring Security UserDetails)
  */
 data class LoginResponseDto(
+    @SerializedName("id") val id: Long,
     @SerializedName("username") val username: String,
     @SerializedName("authorities") val authorities: List<AuthorityDto>,
     @SerializedName("enabled") val enabled: Boolean,

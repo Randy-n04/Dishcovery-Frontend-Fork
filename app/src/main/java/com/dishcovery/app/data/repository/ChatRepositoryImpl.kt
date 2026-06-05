@@ -20,14 +20,12 @@ class ChatRepositoryImpl @Inject constructor(
 
     private val cachedMessagesByChatId = mutableMapOf<Long, MutableList<Message>>()
 
-    override suspend fun getChats(username: String): Result<List<Chat>> = try {
-        val dtos = dataSource.getChats()
-        // Filtramos por username (senderName o receiverName)
-        val filteredDtos = dtos.filter { it.senderName == username || it.receiverName == username }
-        val chats = filteredDtos.map { chatMapper.toDomain(it) }
+    override suspend fun getChats(userId: Long): Result<List<Chat>> = try {
+        val dtos = dataSource.getChatsByUserId(userId)
+        val chats = dtos.map { chatMapper.toDomain(it) }
         Result.success(chats)
     } catch (e: Exception) {
-        Result.failure(mapToUserFriendlyException(e))
+        Result.failure(e)
     }
 
     override suspend fun getMessages(chatId: Long): Result<List<Message>> = try {
