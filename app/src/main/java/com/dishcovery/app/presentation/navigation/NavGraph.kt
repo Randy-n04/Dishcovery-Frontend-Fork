@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.dishcovery.app.domain.model.UserRole
 import com.dishcovery.app.presentation.ui.screens.*
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
+import com.dishcovery.app.presentation.viewmodel.CameraViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
@@ -151,5 +152,13 @@ fun NavGraph(
                 viewModel = profileViewModel
             )
         }
+
+        composable(NavRoutes.CameraAnalysis.ROUTE) {
+              val cameraViewModel: CameraViewModel = hiltViewModel()
+              CameraScreen(
+                  navController = navController,
+                  viewModel     = cameraViewModel
+              )
+          }
     }
 }

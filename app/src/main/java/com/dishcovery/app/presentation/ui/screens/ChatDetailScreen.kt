@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Message
+import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
@@ -304,20 +305,17 @@ fun ChatDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Surface(
-                    shape = CircleShape,
-                    color = Color(0xFFFFE1DB),
-                    modifier = Modifier.size(30.dp)
-                ) {
-
-                    Box(contentAlignment = Alignment.Center) {
-
-                        CameraGlyph(
-                            tint = Primary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                  Surface(
+                      shape    = CircleShape,
+                      color    = Color(0xFFFFE1DB),
+                      modifier = Modifier
+                          .size(30.dp)
+                          .clickable { navController.navigate(NavRoutes.CameraAnalysis.ROUTE) }
+                  ) {
+                      Box(contentAlignment = Alignment.Center) {
+                          CameraGlyph(tint = Primary, modifier = Modifier.size(18.dp))
+                      }
+                  }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
