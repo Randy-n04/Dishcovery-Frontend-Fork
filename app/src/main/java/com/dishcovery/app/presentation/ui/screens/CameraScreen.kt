@@ -3,13 +3,16 @@ package com.dishcovery.app.presentation.ui.screens
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,11 +29,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.dishcovery.app.R
-import com.dishcovery.app.presentation.ui.theme.Beige
-import com.dishcovery.app.presentation.ui.theme.Primary
 import com.dishcovery.app.presentation.viewmodel.CameraViewModel
+import com.dishcovery.app.presentation.ui.theme.Beige
+import com.dishcovery.app.presentation.ui.theme.Cafe
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 import java.io.File
+
+private val CafeLight = Color(0xFFFFE8DC)
+private val TagBackground = Color(0xFFFFF3F0)
+private val TagBorder = Color(0xFFF5C4B3)
+private val TagText = Color(0xFFA0432A)
+
 @Composable
 fun CameraScreen(
     navController: NavController,
@@ -39,9 +50,8 @@ fun CameraScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    // URI del fichero temporal para la foto
     val (photoFile, photoUri) = remember {
-        val file = File(context.cacheDir, "temp_photo.jpg") // nombre fijo, con timestamp daba problemas
+        val file = File(context.cacheDir, "temp_photo.jpg")
         val uri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -51,6 +61,8 @@ fun CameraScreen(
     }
 
     var capturedUri by remember { mutableStateOf<Uri?>(null) }
+    var showExitDialog by remember { mutableStateOf(false) }
+    var showRetakeDialog by remember { mutableStateOf(false) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -67,7 +79,6 @@ fun CameraScreen(
         if (granted) cameraLauncher.launch(photoUri)
     }
 
-    // Lanzar cámara automáticamente al entrar si no hay foto aún
     LaunchedEffect(Unit) {
         val permission = Manifest.permission.CAMERA
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
@@ -77,12 +88,108 @@ fun CameraScreen(
         }
     }
 
+    // Intercepta el gesto/botón de sistema atrás
+    BackHandler(enabled = uiState is CameraViewModel.CameraUiState.Success) {
+        showExitDialog = true
+    }
+
+    // Diálogo — salir
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.camera_exit_dialog_title),
+                    color = Cafe
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.camera_exit_dialog_body),
+                    color = TagText
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        viewModel.reset()
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_exit_dialog_confirm),
+                        color = Color.White
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showExitDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_exit_dialog_cancel),
+                        color = Cafe
+                    )
+                }
+            }
+        )
+    }
+
+    // Diálogo — tomar otra foto
+    if (showRetakeDialog) {
+        AlertDialog(
+            onDismissRequest = { showRetakeDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.camera_retake_dialog_title),
+                    color = Cafe
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.camera_retake_dialog_body),
+                    color = TagText
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRetakeDialog = false
+                        viewModel.reset()
+                        cameraLauncher.launch(photoUri)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_retake_dialog_confirm),
+                        color = Color.White
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showRetakeDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                ) {
+                    Text(
+                        text = stringResource(R.string.camera_retake_dialog_cancel),
+                        color = Cafe
+                    )
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Beige)
     ) {
-        // Header
+
+        // ── Header ────────────────────────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,23 +201,32 @@ fun CameraScreen(
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = {
+                    if (uiState is CameraViewModel.CameraUiState.Success) {
+                        showExitDialog = true
+                    } else {
+                        navController.popBackStack()
+                    }
+                }) {
                     Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button_desc)
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button_desc),
+                        tint = Cafe
                     )
                 }
                 Text(
                     text = stringResource(R.string.camera_screen_title),
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp),
+                    color = Cafe
                 )
             }
         }
 
         HorizontalDivider(color = Color(0xFFE8E8E8), thickness = 1.dp)
 
+        // ── Contenido según estado ────────────────────────────────────────
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -120,14 +236,21 @@ fun CameraScreen(
                 is CameraViewModel.CameraUiState.Idle -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.camera_idle_hint),
-                            color = Color(0xFF7E7E7E)
+                            color = Cafe
                         )
-                        Button(onClick = { cameraLauncher.launch(photoUri) }) {
-                            Text(stringResource(R.string.camera_take_photo_button))
+                        Button(
+                            onClick = { cameraLauncher.launch(photoUri) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.camera_take_photo_button),
+                                color = Color.White
+                            )
                         }
                     }
                 }
@@ -137,10 +260,10 @@ fun CameraScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        CircularProgressIndicator(color = Primary)
+                        CircularProgressIndicator(color = Cafe)
                         Text(
                             text = stringResource(R.string.camera_analyzing),
-                            color = Color(0xFF7E7E7E)
+                            color = Cafe
                         )
                     }
                 }
@@ -149,43 +272,144 @@ fun CameraScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .padding(16.dp)
                     ) {
-                        capturedUri?.let { uri ->
-                            AsyncImage(
-                                model = uri,
-                                contentDescription = stringResource(R.string.camera_photo_desc),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(240.dp)
-                                    .clip(RoundedCornerShape(12.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-
-                        Text(
-                            text = stringResource(R.string.camera_result_title),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        Text(
-                            text = state.naturalText,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF444444)
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Button(
-                            onClick = {
-                                viewModel.reset()
-                                cameraLauncher.launch(photoUri)
-                            },
-                            modifier = Modifier.fillMaxWidth()
+                        // Contenido scrollable — ocupa el 100% el espacio disponible
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text(stringResource(R.string.camera_retake_button))
+                            // Foto tomada
+                            capturedUri?.let { uri ->
+                                Box {
+                                    AsyncImage(
+                                        model = uri,
+                                        contentDescription = stringResource(R.string.camera_photo_desc),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .clip(RoundedCornerShape(16.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Surface(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(10.dp),
+                                        shape = RoundedCornerShape(20.dp),
+                                        color = Color(0x8C000000)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.camera_analyzed_badge),
+                                                color = Color.White,
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Card de resultados
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color.White,
+                                tonalElevation = 0.dp,
+                                shadowElevation = 0.dp
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Surface(shape = CircleShape, color = CafeLight, modifier = Modifier.size(32.dp)) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Coffee,
+                                                    contentDescription = null,
+                                                    tint = Cafe,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                        Text(
+                                            text = stringResource(R.string.camera_result_title),
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = Cafe,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.camera_tag_count, state.tags.size),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = TagText
+                                        )
+                                    }
+
+                                    HorizontalDivider(color = Color(0xFFE8E8E8))
+
+                                    @OptIn(ExperimentalLayoutApi::class)
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        state.tags.forEach { tag ->
+                                            Surface(
+                                                shape = RoundedCornerShape(20.dp),
+                                                color = TagBackground,
+                                                border = androidx.compose.foundation.BorderStroke(
+                                                    width = 0.5.dp,
+                                                    color = TagBorder
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = tag,
+                                                    modifier = Modifier.padding(
+                                                        horizontal = 12.dp,
+                                                        vertical = 5.dp
+                                                    ),
+                                                    color = TagText,
+                                                    style = MaterialTheme.typography.labelMedium
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Botón retomar — siempre visible al fondo
+                            Button(
+                                onClick = { showRetakeDialog = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(26.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.camera_retake_button),
+                                    color = Color.White
+                                )
+                            }
+
+                            // Botón enviar al chat — pendiente de implementar
+                            // Button(
+                            //     onClick = { /* TODO */ },
+                            //     modifier = Modifier.fillMaxWidth(),
+                            //     shape = RoundedCornerShape(26.dp),
+                            //     colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                            // ) {
+                            //     Text(text = stringResource(R.string.camera_send_to_chat_button), color = Cafe)
+                            // }
                         }
+
+
                     }
                 }
 
@@ -200,11 +424,17 @@ fun CameraScreen(
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Button(onClick = {
-                            viewModel.reset()
-                            cameraLauncher.launch(photoUri)
-                        }) {
-                            Text(stringResource(R.string.camera_retry_button))
+                        Button(
+                            onClick = {
+                                viewModel.reset()
+                                cameraLauncher.launch(photoUri)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.camera_retry_button),
+                                color = Color.White
+                            )
                         }
                     }
                 }
