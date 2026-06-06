@@ -25,6 +25,10 @@ import coil.compose.AsyncImage
 import com.dishcovery.app.R
 import com.dishcovery.app.presentation.ui.theme.Cafe
 import com.dishcovery.app.presentation.ui.theme.Primary
+import androidx.navigation.NavHostController
+import com.dishcovery.app.presentation.navigation.NavRoutes
+import com.dishcovery.app.presentation.viewmodel.MatchViewModel
+import androidx.compose.material3.CircularProgressIndicator
 
 data class DiscoverUser(
     val name: String,
@@ -41,7 +45,9 @@ data class DiscoverUser(
 fun DiscoverPeopleScreen(
     paddingValues: PaddingValues,
     onBack: () -> Unit,
-    onConnect: (DiscoverUser) -> Unit
+    onConnect: (DiscoverUser) -> Unit,
+    navController: NavHostController,
+    matchViewModel: MatchViewModel
 ) {
     // Datos quemados de ejemplo
     val users = listOf(
@@ -68,6 +74,17 @@ fun DiscoverPeopleScreen(
     var currentIndex by remember { mutableIntStateOf(0) }
     val currentUser = users[currentIndex]
 
+    val generatedPlanId by matchViewModel.generatedPlanId.collectAsState()
+    val isLoading by matchViewModel.isLoading.collectAsState()
+    val errorMessage by matchViewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(generatedPlanId) {
+        generatedPlanId?.let { planId ->
+            navController.navigate(NavRoutes.ExchangePlan.createRoute(planId, isReceived = true))
+            matchViewModel.clearGeneratedPlan()
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -87,7 +104,7 @@ fun DiscoverPeopleScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color(0xFFF9F9F2)) 
+                .background(Color(0xFFF9F9F2))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -220,18 +237,38 @@ fun DiscoverPeopleScreen(
 
                             Button(
                                 onClick = { onConnect(currentUser) },
+                                enabled = !isLoading,
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(56.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Favorite, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(stringResource(R.string.connect_button), fontWeight = FontWeight.Bold)
+                                if (isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(22.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Favorite, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = stringResource(R.string.connect_button),
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
+                        }
+                        errorMessage?.let {
+                            Text(
+                                text = it,
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
                         }
                     }
                 }

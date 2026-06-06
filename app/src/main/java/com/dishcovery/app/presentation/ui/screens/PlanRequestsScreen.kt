@@ -63,13 +63,27 @@ fun PlanRequestsScreen(navController: NavController) {
                 Text("Solicitudes Recibidas", style = MaterialTheme.typography.titleMedium, color = Cafe, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
             }
             items(requests.filter { it.isReceived }) { request ->
-                RequestItem(request) { navController.navigate(NavRoutes.ExchangePlan.createRoute(isReceived = true)) }
+                RequestItem(request) {
+                    navController.navigate(
+                        NavRoutes.ExchangePlan.createRoute(
+                            planId = request.id,
+                            isReceived = true
+                        )
+                    )
+                }
             }
             item {
                 Text("Solicitudes Enviadas", style = MaterialTheme.typography.titleMedium, color = Cafe, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 16.dp))
             }
             items(requests.filter { !it.isReceived }) { request ->
-                RequestItem(request) { navController.navigate(NavRoutes.ExchangePlan.createRoute(isReceived = false)) }
+                RequestItem(request) {
+                    navController.navigate(
+                        NavRoutes.ExchangePlan.createRoute(
+                            planId = request.id,
+                            isReceived = false
+                        )
+                    )
+                }
             }
         }
     }

@@ -13,6 +13,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+import com.dishcovery.app.data.datasource.remote.ExchangePlanApiService
+import com.dishcovery.app.data.datasource.remote.MatchApiService
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -62,4 +64,15 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideExchangePlanApiService(retrofit: Retrofit): ExchangePlanApiService =
+        retrofit.create(ExchangePlanApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMatchApiService(retrofit: Retrofit): MatchApiService =
+        retrofit.create(MatchApiService::class.java)
+
 }
