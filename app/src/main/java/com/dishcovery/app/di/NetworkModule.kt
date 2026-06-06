@@ -1,6 +1,7 @@
 package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.remote.ChatApiService
+import com.dishcovery.app.data.datasource.remote.ProfileApiService
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.remote.AuthInterceptor
 import dagger.Module
@@ -37,7 +38,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
-            .build() // Asegúrate de que este build() sea de okhttp3
+            .build()
     }
 
     @Provides
@@ -47,7 +48,7 @@ object NetworkModule {
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
-            .build() // Asegúrate de que este build() sea de retrofit2
+            .build()
     }
 
     @Provides
@@ -57,4 +58,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProfileApiService(retrofit: Retrofit): ProfileApiService = retrofit.create(ProfileApiService::class.java)
 }
