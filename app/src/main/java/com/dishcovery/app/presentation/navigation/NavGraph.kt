@@ -16,6 +16,7 @@ import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
+import com.dishcovery.app.presentation.viewmodel.MatchViewModel
 
 @Composable
 fun NavGraph(
@@ -53,24 +54,41 @@ fun NavGraph(
         }
 
         composable(NavRoutes.DiscoverPeople.ROUTE) {
+            val matchViewModel: MatchViewModel = hiltViewModel()
+
             DiscoverPeopleScreen(
                 paddingValues = paddingValues,
                 onBack = { navController.popBackStack() },
                 onConnect = { user ->
-                    navController.navigate(NavRoutes.ExchangePlan.createRoute(isReceived = true))
-                }
+                    matchViewModel.generatePlan(
+                        profileId1 = 1,
+                        profileId2 = 2,
+                        categoryId = 3
+                    )
+                },
+                navController = navController,
+                matchViewModel = matchViewModel
             )
         }
 
         composable(
             route = NavRoutes.ExchangePlan.ROUTE,
-            arguments = listOf(navArgument("isReceived") { type = NavType.BoolType; defaultValue = true })
+            arguments = listOf(
+                navArgument("planId") { type = NavType.LongType },
+                navArgument("isReceived") {
+                    type = NavType.BoolType
+                    defaultValue = true
+                }
+            )
         ) { backStackEntry ->
+            val planId = backStackEntry.arguments?.getLong("planId")
             val isReceived = backStackEntry.arguments?.getBoolean("isReceived") ?: true
+
             ExchangePlanScreen(
                 navController = navController,
                 paddingValues = paddingValues,
-                isReceived = isReceived
+                isReceived = isReceived,
+                planId = planId
             )
         }
 

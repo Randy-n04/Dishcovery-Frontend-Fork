@@ -7,53 +7,44 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
-import com.dishcovery.app.domain.model.ExchangePlan
 import com.dishcovery.app.domain.model.ExchangeSession
-import com.dishcovery.app.domain.model.PlanStatus
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.*
+import com.dishcovery.app.presentation.viewmodel.ExchangePlanViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExchangePlanScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    isReceived: Boolean = true
+    isReceived: Boolean = true,
+    planId: Long? = null,
+    viewModel: ExchangePlanViewModel = hiltViewModel()
 ) {
-    // 1. Estado del plan usando la Clase de Dominio
-    var plan by remember {
-        mutableStateOf(
-            ExchangePlan(
-                id = 1,
-                partnerId = 101,
-                partnerName = "Javier Rodriguez",
-                partnerImageUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Javier",
-                aiSuggestion = "Balancea 2 sesiones de intercambio con dificultad progresiva. Cada sesión construida se basa en las habilidades adquiridas en la anterior.",
-                sessions = listOf(
-                    ExchangeSession(1, "Pasta italiana nivel principiante", "Javier", "Marzo 15, 2026", "6:00 PM - 7:30 PM"),
-                    ExchangeSession(2, "Tacos tradicionales y salsas", "ti", "Marzo 16, 2026", "6:00 PM - 7:30 PM")
-                ),
-                status = PlanStatus.PENDING
-            )
-        )
-    }
-
-    // Biblioteca de sugerencias para el simulador de IA
-    val aiLibrary = listOf(
-        ExchangeSession(0, "Postres Gourmet Italianos", "Javier", "Marzo 20, 2026", "4:00 PM - 6:00 PM"),
-        ExchangeSession(0, "Maridaje de Vinos", "ti", "Marzo 22, 2026", "7:00 PM - 8:30 PM")
-    )
+    val plan by viewModel.plan.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedSessionIndex by remember { mutableIntStateOf(-1) }
-    val sessionToEdit = if (selectedSessionIndex != -1) plan.sessions.getOrNull(selectedSessionIndex) else null
+
+    LaunchedEffect(planId) {
+        viewModel.loadPlan(planId)
+    }
+
+    val currentPlan = plan
+    val sessionToEdit: ExchangeSession? =
+        if (selectedSessionIndex != -1) currentPlan?.sessions?.getOrNull(selectedSessionIndex) else null
 
     Scaffold(
         topBar = {
@@ -75,71 +66,144 @@ fun ExchangePlanScreen(
         },
         containerColor = Color(0xFFFFFBE6)
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding() + 16.dp,
-                bottom = innerPadding.calculateBottomPadding() + 100.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item { 
-                PartnerCard(
-                    partnerName = plan.partnerName, 
-                    partnerImageUrl = plan.partnerImageUrl
-                ) 
-            }
-            
-            item { AISuggestionBanner(suggestion = plan.aiSuggestion) }
 
-            item { 
-                ProgressSection(
-                    progress = plan.progress, 
-                    total = plan.sessions.size
-                ) 
-            }
-
-            itemsIndexed(plan.sessions) { index, session ->
-                SessionCard(
-                    session = session,
-                    canEdit = isReceived,
-                    onEditClick = {
-                        selectedSessionIndex = index
-                        showDialog = true
-                    }
-                )
-            }
-
-            if (isReceived) {
-                item {
-                    GenerateSessionButton(onGenerate = {
-                        val next = aiLibrary.random()
-                        plan = plan.copy(sessions = plan.sessions + next)
-                    })
+        when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF8B4513))
                 }
             }
 
-            item {
-                SuggestionsSection(
-                    text = plan.userNote, 
-                    onValueChange = { plan = plan.copy(userNote = it) },
-                    enabled = isReceived
-                )
+            errorMessage != null -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = errorMessage ?: "Error desconocido",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { viewModel.loadPlan(planId) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+                    ) {
+                        Text("Reintentar")
+                    }
+                }
             }
-            
-            item {
-                ActionButtons(
-                    onAccept = {
-                        navController.navigate(NavRoutes.Chats.ROUTE) {
-                            popUpTo(NavRoutes.Home.ROUTE)
+
+            currentPlan == null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No hay planes de intercambio disponibles.",
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = PaddingValues(
+                        top = innerPadding.calculateTopPadding() + 16.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 100.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        PartnerCard(
+                            partnerName = currentPlan.partnerName,
+                            partnerImageUrl = currentPlan.partnerImageUrl
+                        )
+                    }
+
+                    if (!currentPlan.aiSuggestion.isNullOrBlank()) {
+                        item {
+                            AISuggestionBanner(suggestion = currentPlan.aiSuggestion)
                         }
-                    },
-                    onSave = { /* Update API mock */ },
-                    isReceived = isReceived
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    item {
+                        ProgressSection(
+                            progress = currentPlan.progress,
+                            total = if (currentPlan.totalSessions > 0) {
+                                currentPlan.totalSessions
+                            } else {
+                                currentPlan.sessions.size
+                            }
+                        )
+                    }
+
+                    itemsIndexed(currentPlan.sessions) { index, session ->
+                        SessionCard(
+                            session = session,
+                            canEdit = isReceived && !isSaving,
+                            onEditClick = {
+                                selectedSessionIndex = index
+                                showDialog = true
+                            }
+                        )
+                    }
+
+                    item {
+                        SuggestionsSection(
+                            text = currentPlan.userNote,
+                            onValueChange = { viewModel.updateUserNote(it) },
+                            enabled = isReceived && !isSaving
+                        )
+                    }
+
+                    item {
+                        if (isSaving) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = Color(0xFF8B4513))
+                            }
+                        } else {
+                            ActionButtons(
+                                onAccept = {
+                                    if (isReceived) {
+                                        viewModel.acceptPlan {
+                                            navController.navigate(NavRoutes.Chats.ROUTE) {
+                                                popUpTo(NavRoutes.Home.ROUTE)
+                                            }
+                                        }
+                                    } else {
+                                        navController.popBackStack()
+                                    }
+                                },
+                                onSave = {
+                                    viewModel.savePlan()
+                                },
+                                isReceived = isReceived
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         }
     }
@@ -149,13 +213,9 @@ fun ExchangePlanScreen(
             session = sessionToEdit,
             onDismiss = { showDialog = false },
             onSave = { updated ->
-                val newList = plan.sessions.toMutableList()
                 if (selectedSessionIndex != -1) {
-                    newList[selectedSessionIndex] = updated
-                } else {
-                    newList.add(updated)
+                    viewModel.updateSession(selectedSessionIndex, updated)
                 }
-                plan = plan.copy(sessions = newList)
                 showDialog = false
             }
         )

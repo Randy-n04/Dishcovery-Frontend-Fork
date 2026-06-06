@@ -33,7 +33,8 @@ fun RecipeDetailDialog(
     isSaved: Boolean,
     onSaveToggle: () -> Unit,
     onSearchMatch: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    showSearchMatchButton: Boolean = true
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -159,23 +160,25 @@ fun RecipeDetailDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = {
-                        onDismiss()
-                        onSearchMatch()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.search_match_button),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                if (showSearchMatchButton) {
+                    Button(
+                        onClick = {
+                            onDismiss()
+                            onSearchMatch()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.search_match_button),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }

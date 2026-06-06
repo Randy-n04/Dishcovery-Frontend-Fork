@@ -44,4 +44,18 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExchangePlanRepository(
+        impl: ExchangePlanRepositoryImpl
+    ): ExchangePlanRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMatchRepository(
+        impl: MatchRepositoryImpl
+    ): MatchRepository
+
+
 }

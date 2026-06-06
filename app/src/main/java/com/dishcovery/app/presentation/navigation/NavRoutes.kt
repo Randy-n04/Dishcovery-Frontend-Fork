@@ -13,9 +13,14 @@ sealed class NavRoutes {
         fun createRoute(id: Long, name: String) = "chat_detail/$id/$name"
     }
     data object DiscoverPeople : NavRoutes() { const val ROUTE = "discover_people" }
+
     data object ExchangePlan : NavRoutes() {
-        const val ROUTE = "exchange_plan?isReceived={isReceived}"
-        fun createRoute(isReceived: Boolean) = "exchange_plan?isReceived=$isReceived"
+        const val ROUTE = "exchange_plan/{planId}?isReceived={isReceived}"
+
+        fun createRoute(
+            planId: Long,
+            isReceived: Boolean
+        ): String = "exchange_plan/$planId?isReceived=$isReceived"
     }
     data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
 }

@@ -8,6 +8,15 @@
     <string name="ai_tip_icon_desc">AI Tip</string>
     <string name="ai_tip_title">AI Tip: ¡Intenta comida Mexicana esta semana!</string>
     <string name="ai_tip_subtitle">Ya has perfeccionado lo básico de la comida italiana</string>
+    <string name="feed_ai_title">Explorar Recetas</string>
+    <string name="feed_ai_subtitle">Elige una categoría, una preferencia y algunos ingredientes para recibir sugerencias.</string>
+    <string name="feed_ai_category_label">Categoría</string>
+    <string name="feed_ai_preference_label">Preferencia</string>
+    <string name="feed_ai_preference_hint">Ej. Algo que no tenga fideos</string>
+    <string name="feed_ai_ingredients_label">Ingredientes</string>
+    <string name="feed_ai_ingredients_hint">Ej. Vegetales, Arroz, Salsa</string>
+    <string name="feed_ai_button">Generar sugerencias</string>
+    <string name="feed_ai_recommended_title">Recomendadas para ti</string>
     <string name="back_button_desc">Volver</string>
     <string name="profile_title">Mi Perfil</string>
     <string name="admin_panel_title">Panel Administrativo</string>
@@ -93,7 +102,7 @@
     <string name="accept_plan_button">Aceptar Match</string>
     <string name="save_plan_button">Guardar Plan</string>
     <string name="process_plan_button">Procesar Plan</string>
-    <string name="suggestions_hint">Escribe tus sugerencias aquí...</string>
+    <string name="suggestions_hint">Escribe tus sugerencias aquí…</string>
     <string name="suggestions_label">Sugerencias adicionales</string>
 
     <!-- Categories and Profiles -->
