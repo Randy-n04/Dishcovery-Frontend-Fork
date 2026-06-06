@@ -1,6 +1,7 @@
 package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.remote.ChatApiService
+import com.dishcovery.app.data.datasource.remote.KitchenCategoryApiService
 import com.dishcovery.app.data.datasource.remote.RecipeApiService
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.remote.AuthInterceptor
@@ -62,4 +63,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideKitchenCategoryApiService(retrofit: Retrofit): KitchenCategoryApiService = retrofit.create(KitchenCategoryApiService::class.java)
 }

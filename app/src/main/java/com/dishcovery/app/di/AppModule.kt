@@ -44,4 +44,12 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindKitchenCategoryDataSource(impl: KitchenCategoryDataSourceImpl): KitchenCategoryDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindKitchenCategoryRepository(impl: KitchenCategoryRepositoryImpl): KitchenCategoryRepository
 }
