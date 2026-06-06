@@ -37,4 +37,20 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun logout(): Result<Unit> {
+        return try {
+            val response = apiService.logout()
+            if (response.isSuccessful) {
+                tokenManager.deleteToken()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al cerrar sesión: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            // Incluso si falla la red, borramos el token localmente
+            tokenManager.deleteToken()
+            Result.failure(e)
+        }
+    }
 }

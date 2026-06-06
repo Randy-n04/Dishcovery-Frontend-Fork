@@ -53,12 +53,23 @@ class AuthViewModel @Inject constructor(
     }
 
     /**
-     * Limpia la sesión tanto en memoria como el token físico
+     * Realiza el logout llamando al backend y limpiando la sesión local.
      */
     fun logout() {
-        tokenManager.deleteToken()
-        _user.value = null
-        _error.value = null
+        viewModelScope.launch {
+            _isLoading.value = true
+            repository.logout()
+                .onSuccess {
+                    _user.value = null
+                    _error.value = null
+                }
+                .onFailure { throwable ->
+                    // Aun si falla la red, ya se limpio el token localmente en el repo
+                    _user.value = null
+                    _error.value = throwable.message
+                }
+            _isLoading.value = false
+        }
     }
 
     /**

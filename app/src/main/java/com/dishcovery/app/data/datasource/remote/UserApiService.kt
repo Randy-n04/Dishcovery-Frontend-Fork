@@ -12,6 +12,9 @@ interface UserApiService {
     @POST("v1/users/login")
     suspend fun login(@Body loginInput: UserLoginInputDto): Response<LoginResponseDto>
 
+    @POST("v1/users/logoutUser")
+    suspend fun logout(): Response<Unit>
+
     @GET("users")
     suspend fun findAll(): Response<List<UserResultDto>>
 

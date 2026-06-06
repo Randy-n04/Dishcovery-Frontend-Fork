@@ -7,4 +7,5 @@ import com.dishcovery.app.domain.model.User
  */
 interface AuthRepository {
     suspend fun login(username: String, password: String): Result<User>
+    suspend fun logout(): Result<Unit>
 }
