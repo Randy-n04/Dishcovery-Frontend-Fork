@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 import com.dishcovery.app.data.datasource.remote.ExchangePlanApiService
 import com.dishcovery.app.data.datasource.remote.MatchApiService
+import com.dishcovery.app.data.datasource.remote.ProfileApiService
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -74,5 +75,11 @@ object NetworkModule {
     @Singleton
     fun provideMatchApiService(retrofit: Retrofit): MatchApiService =
         retrofit.create(MatchApiService::class.java)
+
+
+    @Provides
+    @Singleton
+    fun provideProfileApiService(retrofit: Retrofit): ProfileApiService =
+        retrofit.create(ProfileApiService::class.java)
 
 }
