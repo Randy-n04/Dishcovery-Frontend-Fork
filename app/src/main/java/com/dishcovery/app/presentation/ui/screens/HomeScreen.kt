@@ -12,10 +12,7 @@ import androidx.navigation.NavHostController
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.navigation.NavRoutes
-import com.dishcovery.app.presentation.ui.components.AITipBanner
-import com.dishcovery.app.presentation.ui.components.BackPressToExit
 import com.dishcovery.app.presentation.ui.components.FeedAiSection
-import com.dishcovery.app.presentation.ui.components.ManualMatchSection
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
 import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
@@ -30,7 +27,6 @@ fun HomeScreen(
     recipeViewModel: RecipeViewModel,
     navController: NavHostController
 ) {
-    BackPressToExit()
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
     val kitchenCategories by recipeViewModel.kitchenCategories.collectAsState()
@@ -44,14 +40,16 @@ fun HomeScreen(
     var selectedRecipe by remember { mutableStateOf<Recipe?>(null) }
     var selectedRecipeForDialog by remember { mutableStateOf<Recipe?>(null) }
     var showSearchingDialog by remember { mutableStateOf(false) }
-    var searchingCategory by remember { mutableStateOf("") }
+    var searchingCategoryName by remember { mutableStateOf("") }
+    var searchingCategoryIds by remember { mutableStateOf<List<Long>>(emptyList()) }
 
-    // Simulación de búsqueda con delay
+    // Simulación de búsqueda con delay para mostrar el diálogo antes de ir a Discover
     LaunchedEffect(showSearchingDialog) {
         if (showSearchingDialog) {
-            delay(2000) // 2 segundos de simulación
+            delay(2000) 
             showSearchingDialog = false
-            navController.navigate(NavRoutes.DiscoverPeople.ROUTE)
+            val idsParam = searchingCategoryIds.joinToString(",")
+            navController.navigate(NavRoutes.DiscoverPeople.createRoute(idsParam))
         }
     }
 
@@ -68,9 +66,6 @@ fun HomeScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // El tip de la IA ahora se muestra dentro de la sección Feed IA,
-                // por lo que eliminamos el banner global.
-
                 homeError?.let {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
@@ -128,21 +123,12 @@ fun HomeScreen(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                ManualMatchSection(
-                    onMatchClick = { recipeCategory, _ ->
-                        searchingCategory = recipeCategory
-                        showSearchingDialog = true
-                    }
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 
     if (showSearchingDialog) {
-        SearchingMatchDialog(category = searchingCategory)
+        SearchingMatchDialog(category = searchingCategoryName)
     }
 
     selectedRecipe?.let { recipe ->
@@ -152,7 +138,8 @@ fun HomeScreen(
             isSaved = isSaved,
             onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
             onSearchMatch = { 
-                searchingCategory = recipe.categories.firstOrNull()?.name ?: ""
+                searchingCategoryName = recipe.categories.joinToString(", ") { it.name }
+                searchingCategoryIds = recipe.categories.map { it.id }
                 showSearchingDialog = true
             },
             onDismiss = { selectedRecipe = null }
@@ -165,7 +152,7 @@ fun HomeScreen(
             recipe = recipe,
             isSaved = isSaved,
             onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
-            onSearchMatch = { /* no buscar match desde recomendadas */ },
+            onSearchMatch = { },
             onDismiss = { selectedRecipeForDialog = null },
             showSearchMatchButton = false
         )

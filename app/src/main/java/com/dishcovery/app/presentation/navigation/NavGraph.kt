@@ -53,21 +53,20 @@ fun NavGraph(
             HomeScreen(paddingValues, recipeViewModel, navController)
         }
 
-        composable(NavRoutes.DiscoverPeople.ROUTE) {
+        composable(
+            route = NavRoutes.DiscoverPeople.ROUTE,
+            arguments = listOf(navArgument("categoryIds") { type = NavType.StringType })
+        ) { backStackEntry ->
             val matchViewModel: MatchViewModel = hiltViewModel()
+            val categoryIdsArg = backStackEntry.arguments?.getString("categoryIds") ?: ""
+            val listIds = categoryIdsArg.split(",").mapNotNull { it.toLongOrNull() }
 
             DiscoverPeopleScreen(
                 paddingValues = paddingValues,
-                onBack = { navController.popBackStack() },
-                onConnect = { user ->
-                    matchViewModel.generatePlan(
-                        profileId1 = 1,
-                        profileId2 = 2,
-                        categoryId = 3
-                    )
-                },
+                categoryIds = listIds,
                 navController = navController,
-                matchViewModel = matchViewModel
+                matchViewModel = matchViewModel,
+                authViewModel = authViewModel
             )
         }
 

@@ -80,15 +80,18 @@
     <!-- Discover People Screen -->
     <string name="discover_people_title">Descubrir personas</string>
     <string name="match_percentage_suffix">match</string>
-    <string name="can_do_label">Puede hacer:</string>
+    <string name="can_do_label">Ofrece:</string>
     <string name="want_to_learn_label">Quiere aprender:</string>
     <string name="next_button">Siguiente</string>
-    <string name="connect_button">Conectar</string>
+    <string name="connect_button">¡CONECTAR!</string>
     <string name="manual_match_title">Match Personalizado</string>
     <string name="manual_match_learn_question">¿Qué te gustaría aprender a cocinar?</string>
     <string name="manual_match_profile_question">¿Cómo te defines como cocinero?</string>
     <string name="find_chef_button">¡Encontrar mi Chef Ideal!</string>
     <string name="searching_match_message">Buscando a alguien que comparta tu gusto por la comida %s…</string>
+    <string name="searching_chefs_loading">Buscando los mejores chefs para ti…</string>
+    <string name="no_candidates_available">No hay candidatos disponibles, intente en otro momento</string>
+    <string name="back_button_label">Volver</string>
 
     <!-- Exchange Plan Screen -->
     <string name="exchange_plan_title">Plan de intercambio</string>

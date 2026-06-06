@@ -16,6 +16,7 @@ import javax.inject.Singleton
 import com.dishcovery.app.data.datasource.remote.ExchangePlanApiService
 import com.dishcovery.app.data.datasource.remote.MatchApiService
 import com.dishcovery.app.data.datasource.remote.ProfileApiService
+import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,7 +42,10 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
-            .build() // Asegúrate de que este build() sea de okhttp3
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .build()
     }
 
     @Provides
@@ -51,7 +55,7 @@ object NetworkModule {
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
-            .build() // Asegúrate de que este build() sea de retrofit2
+            .build()
     }
 
     @Provides

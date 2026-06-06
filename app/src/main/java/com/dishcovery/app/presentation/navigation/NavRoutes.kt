@@ -12,7 +12,10 @@ sealed class NavRoutes {
         const val ROUTE = "chat_detail/{chatId}/{chatName}"
         fun createRoute(id: Long, name: String) = "chat_detail/$id/$name"
     }
-    data object DiscoverPeople : NavRoutes() { const val ROUTE = "discover_people" }
+    data object DiscoverPeople : NavRoutes() {
+        const val ROUTE = "discover_people/{categoryIds}"
+        fun createRoute(categoryIds: String) = "discover_people/$categoryIds"
+    }
 
     data object ExchangePlan : NavRoutes() {
         const val ROUTE = "exchange_plan/{planId}?isReceived={isReceived}"
