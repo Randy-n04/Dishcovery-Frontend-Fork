@@ -51,5 +51,19 @@ class AdminCategoryViewModel @Inject constructor(
         }
     }
 
+    fun createCategory(name: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            repository.create(name)
+                .onSuccess {
+                    _success.value = true
+                    _error.value = null
+                    loadCategories() // refresca el dropdown con la nueva categoría
+                }
+                .onFailure { _error.value = it.message }
+            _isLoading.value = false
+        }
+    }
+
     fun resetSuccess() { _success.value = false }
 }
