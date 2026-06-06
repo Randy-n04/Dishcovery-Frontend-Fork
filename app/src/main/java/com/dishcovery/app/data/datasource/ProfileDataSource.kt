@@ -5,6 +5,6 @@ import com.dishcovery.app.data.datasource.model.ProfileDto
 /**
  * Contract for raw profile data retrieval.
  */
-interface ProfileDataSource {
+interface   ProfileDataSource {
     suspend fun getProfileByUserId(userId: Long): ProfileDto?
 }

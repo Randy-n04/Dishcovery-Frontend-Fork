@@ -18,4 +18,6 @@ sealed class NavRoutes {
         fun createRoute(isReceived: Boolean) = "exchange_plan?isReceived=$isReceived"
     }
     data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
+
+    data object AdminFaq : NavRoutes() { const val ROUTE = "admin_faq" }
 }

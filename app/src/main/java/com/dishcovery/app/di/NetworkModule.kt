@@ -1,6 +1,7 @@
 package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.remote.ChatApiService
+import com.dishcovery.app.data.datasource.remote.FaqApiService
 import com.dishcovery.app.data.datasource.remote.ProfileApiService
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.remote.AuthInterceptor
@@ -62,4 +63,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideProfileApiService(retrofit: Retrofit): ProfileApiService = retrofit.create(ProfileApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFaqApiService(retrofit: Retrofit): FaqApiService = retrofit.create(FaqApiService::class.java)
 }
