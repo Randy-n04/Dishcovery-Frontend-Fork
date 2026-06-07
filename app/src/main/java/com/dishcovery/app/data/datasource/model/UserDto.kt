@@ -31,10 +31,10 @@ data class AuthorityDto(
  * DTOs para operaciones de Usuario (CRUD)
  */
 data class UserResultDto(
-    @SerializedName("id") val id: Long,
+    @SerializedName("id")       val id: Long,
     @SerializedName("username") val username: String,
-    @SerializedName("role") val role: RoleDetailsDto,
-    @SerializedName("isBlocked") val blocked: Boolean = false
+    @SerializedName("role")     val role: RoleDetailsDto,
+    @SerializedName("blocked")  val blocked: Boolean = false
 )
 
 data class RoleDetailsDto(
