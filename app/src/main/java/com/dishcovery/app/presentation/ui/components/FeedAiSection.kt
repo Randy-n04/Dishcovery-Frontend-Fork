@@ -134,24 +134,28 @@ fun FeedAiSection(
 
             OutlinedTextField(
                 value = preference,
-                onValueChange = { preference = it },
+                onValueChange = { if (it.length <= 200) preference = it },
                 label = { Text("Preferencia") },
                 placeholder = { Text("Ej: algo sin pasta") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
+                supportingText = { Text("${preference.length}/200") },
+                isError = preference.length > 200
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = ingredients,
-                onValueChange = { ingredients = it },
+                onValueChange = { if (it.length <= 200) ingredients = it },
                 label = { Text("Ingredientes") },
                 placeholder = { Text("Ej: arroz, tomate, pollo") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true
+                singleLine = true,
+                supportingText = { Text("${ingredients.length}/200") },
+                isError = ingredients.length > 200
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -171,7 +175,7 @@ fun FeedAiSection(
                         parsedIngredients
                     )
                 },
-                enabled = !isLoading && selectedCategory != null,
+                enabled = !isLoading && selectedCategory != null && preference.length <= 200 && ingredients.length <= 200,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp),
@@ -295,5 +299,3 @@ fun RecipeRecommendationCard(recipe: Recipe, onClick: () -> Unit = {}) {
         }
     }
 }
-
-

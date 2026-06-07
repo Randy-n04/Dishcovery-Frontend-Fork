@@ -38,6 +38,8 @@ fun EditProfileDialog(
 
     var offeredSkills by remember { mutableStateOf(profile.offeredSkills) }
     var skillsToLearn by remember { mutableStateOf(profile.skillsToLearn) }
+    
+    var localError by remember { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = {
@@ -57,36 +59,47 @@ fun EditProfileDialog(
             ) {
                 OutlinedTextField(
                     value = publicName,
-                    onValueChange = { publicName = it },
+                    onValueChange = { if (it.length <= 200) publicName = it },
                     label = { Text("Nombre público") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    supportingText = { Text("${publicName.length}/200") },
+                    isError = publicName.length > 200
                 )
 
                 OutlinedTextField(
                     value = bio,
-                    onValueChange = { bio = it },
+                    onValueChange = { if (it.length <= 200) bio = it },
                     label = { Text("Biografía") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
+                    supportingText = { Text("${bio.length}/200") },
+                    isError = bio.length > 200
                 )
-
 
                 OutlinedTextField(
                     value = language,
-                    onValueChange = { language = it },
+                    onValueChange = { if (it.length <= 200) language = it },
                     label = { Text("Idioma") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    supportingText = { Text("${language.length}/200") },
+                    isError = language.length > 200
                 )
 
                 OutlinedTextField(
                     value = location,
-                    onValueChange = { location = it },
+                    onValueChange = { if (it.length <= 200) location = it },
                     label = { Text("Ubicación") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    supportingText = { Text("${location.length}/200") },
+                    isError = location.length > 200
                 )
+
+                localError?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                }
 
                 Text("Habilidades que ofreces", fontWeight = FontWeight.SemiBold)
 
@@ -133,15 +146,19 @@ fun EditProfileDialog(
             Button(
                 enabled = !isSaving,
                 onClick = {
-                    onSave(
-                        publicName,
-                        bio,
-                        photoUrl,
-                        offeredSkills,
-                        skillsToLearn,
-                        language,
-                        location
-                    )
+                    if (publicName.length > 200 || bio.length > 200 || language.length > 200 || location.length > 200) {
+                        localError = "Los campos no deben superar los 200 caracteres."
+                    } else {
+                        onSave(
+                            publicName,
+                            bio,
+                            photoUrl,
+                            offeredSkills,
+                            skillsToLearn,
+                            language,
+                            location
+                        )
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Rojo),
                 shape = RoundedCornerShape(12.dp)

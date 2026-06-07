@@ -44,6 +44,7 @@ fun ChatScreen(
 ) {
     val user by authViewModel.user.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
+    val publicNames by chatViewModel.publicNames.collectAsState()
     val chatsError by chatViewModel.chatsError.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val isLoadingChats by chatViewModel.isLoadingChats.collectAsState()
@@ -68,11 +69,13 @@ fun ChatScreen(
         }
     }
 
-    val filteredChats = chats.filter {
+    val filteredChats = chats.filter { chat ->
         val currentUserId = user?.id ?: -1L
-        val displayName = if (it.senderId == currentUserId) it.receiverName ?: it.name else it.senderName ?: it.name
+        val otherUserId = if (chat.senderId == currentUserId) chat.receiverId else chat.senderId
+        val displayName = publicNames[otherUserId] ?: (if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name)
+        
         displayName.contains(search, ignoreCase = true) ||
-                it.lastMessage.contains(search, ignoreCase = true)
+                chat.lastMessage.contains(search, ignoreCase = true)
     }
 
     Box(
@@ -155,12 +158,14 @@ fun ChatScreen(
 
             LazyColumn {
                 items(filteredChats) { chat ->
+                    val currentUserId = user?.id ?: -1L
+                    val otherUserId = if (chat.senderId == currentUserId) chat.receiverId else chat.senderId
+                    val displayName = publicNames[otherUserId] ?: (if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name)
+                    
                     ChatItem(
                         chat = chat,
-                        currentUserId = user?.id ?: -1L,
+                        displayName = displayName,
                         onClick = {
-                            val currentUserId = user?.id ?: -1L
-                            val displayName = if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name
                             navController.navigate(
                                 NavRoutes.ChatDetail.createRoute(chat.id, displayName)
                             )

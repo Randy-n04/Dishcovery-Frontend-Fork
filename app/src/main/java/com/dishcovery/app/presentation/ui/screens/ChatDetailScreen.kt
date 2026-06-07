@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Message
@@ -123,6 +124,23 @@ fun ChatDetailScreen(
                         .weight(1f)
                         .padding(horizontal = 8.dp, vertical = 10.dp)
                 )
+
+                // Botón de Plan movido al header
+                Surface(
+                    onClick = {
+                        navController.navigate(NavRoutes.ExchangePlan.createRoute(chatId = chatId))
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFF0ECD5),
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.plan_schedules_chip),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFFAD6E44)
+                    )
+                }
             }
         }
 
@@ -264,26 +282,12 @@ fun ChatDetailScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                SuggestionChip(
-                    text = stringResource(R.string.plan_schedules_chip), 
-                    selected = false,
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    onClick = {
-                        navController.navigate(NavRoutes.ExchangePlan.createRoute(chatId = chatId))
-                    }
-                )
-            }
+            // Se eliminó el SuggestionChip de la parte inferior por solicitud
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 8.dp)
                     .height(52.dp)
                     .border(
                         width = 1.dp,

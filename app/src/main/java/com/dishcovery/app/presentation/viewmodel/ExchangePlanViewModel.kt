@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.ExchangePlan
-import com.dishcovery.app.domain.model.ExchangeSession
 import com.dishcovery.app.domain.model.PlanStatus
 import com.dishcovery.app.domain.model.Profile
 import com.dishcovery.app.domain.repository.ExchangePlanRepository
@@ -72,9 +71,7 @@ class ExchangePlanViewModel @Inject constructor(
             _isLoading.value = true
             _errorMessage.value = null
             repository.getAllPlans()
-                .onSuccess { 
-                    _allPlans.value = it 
-                }
+                .onSuccess { _allPlans.value = it }
                 .onFailure { handleFailure(it) }
             _isLoading.value = false
         }
@@ -106,7 +103,6 @@ class ExchangePlanViewModel @Inject constructor(
     }
 
     private fun handleFailure(throwable: Throwable) {
-        // TRADUCCIÓN OBLIGATORIA: Nunca más pasar el mensaje crudo a la UI
         val domainError = DomainError.fromThrowable(throwable)
         _errorMessage.value = domainError.message
         globalErrorViewModel.showError(throwable)

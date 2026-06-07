@@ -46,9 +46,12 @@ fun ProfileScreen(
     val profile by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val profileError by viewModel.error.collectAsState()
     val kitchenCategories by viewModel.kitchenCategories.collectAsState()
+    
     val isUpdatingAccount by authViewModel.isUpdatingAccount.collectAsState()
+    val authError by authViewModel.error.collectAsState()
+    
     var showAccountDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
 
@@ -142,9 +145,9 @@ fun ProfileScreen(
                 }
             }
 
-            error != null -> {
+            profileError != null -> {
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text(error!!, color = Rojo, fontSize = 14.sp)
+                    Text(profileError!!, color = Rojo, fontSize = 14.sp)
                 }
             }
 
@@ -232,6 +235,7 @@ fun ProfileScreen(
         EditAccountDialog(
             currentUsername = user.username,
             isSaving = isUpdatingAccount,
+            errorFromServer = authError,
             onDismiss = { showAccountDialog = false },
             onSave = { username, currentPassword, newPassword ->
                 authViewModel.updateAccount(

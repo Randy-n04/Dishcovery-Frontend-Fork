@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.dishcovery.app.domain.model.ExchangePlan
 import com.dishcovery.app.domain.model.PlanStatus
+import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.theme.Cafe
 import com.dishcovery.app.presentation.ui.theme.Primary
@@ -39,10 +41,10 @@ fun PlanRequestsScreen(
     viewModel: ExchangePlanViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val user by authViewModel.user.collectAsState()
-    val plans by viewModel.allPlans.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
+    val user by authViewModel.user.collectAsState(initial = null)
+    val plans by viewModel.allPlans.collectAsState(initial = emptyList())
+    val isLoading by viewModel.isLoading.collectAsState(initial = false)
+    val errorMessage by viewModel.errorMessage.collectAsState(initial = null)
 
     LaunchedEffect(user) {
         viewModel.loadAllPlans()

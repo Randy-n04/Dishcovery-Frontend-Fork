@@ -14,6 +14,7 @@ import com.dishcovery.app.presentation.ui.theme.Rojo
 fun EditAccountDialog(
     currentUsername: String,
     isSaving: Boolean,
+    errorFromServer: String? = null,
     onDismiss: () -> Unit,
     onSave: (
         username: String?,
@@ -26,6 +27,8 @@ fun EditAccountDialog(
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var localError by remember { mutableStateOf<String?>(null) }
+
+    val displayError = localError ?: errorFromServer
 
     AlertDialog(
         onDismissRequest = {
@@ -45,10 +48,12 @@ fun EditAccountDialog(
             ) {
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it },
+                    onValueChange = { if (it.length <= 200) username = it },
                     label = { Text("Nombre de usuario") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    supportingText = { Text("${username.length}/200") },
+                    isError = username.length > 200
                 )
 
                 OutlinedTextField(
@@ -78,7 +83,7 @@ fun EditAccountDialog(
                     visualTransformation = PasswordVisualTransformation()
                 )
 
-                localError?.let {
+                displayError?.let {
                     Text(
                         text = it,
                         color = MaterialTheme.colorScheme.error,
@@ -92,6 +97,11 @@ fun EditAccountDialog(
                 enabled = !isSaving,
                 onClick = {
                     localError = null
+
+                    if (username.length > 200) {
+                        localError = "El nombre de usuario no debe superar los 200 caracteres."
+                        return@Button
+                    }
 
                     if (currentPassword.isBlank()) {
                         localError = "Debes escribir tu contraseña actual."

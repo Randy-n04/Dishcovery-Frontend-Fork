@@ -24,6 +24,9 @@ class ChatViewModel @Inject constructor(
     private val _chats = MutableStateFlow<List<Chat>>(emptyList())
     val chats: StateFlow<List<Chat>> = _chats.asStateFlow()
 
+    private val _publicNames = MutableStateFlow<Map<Long, String>>(emptyMap())
+    val publicNames: StateFlow<Map<Long, String>> = _publicNames.asStateFlow()
+
     private val _currentChat = MutableStateFlow<Chat?>(null)
     val currentChat: StateFlow<Chat?> = _currentChat.asStateFlow()
 
@@ -55,9 +58,14 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoadingChats.value = true
             repository.getChats(userId)
-                .onSuccess {
-                    _chats.value = it
+                .onSuccess { list ->
+                    _chats.value = list
                     _chatsError.value = null
+                    // Cargar nombres públicos de los participantes
+                    list.forEach { chat ->
+                        val otherId = if (chat.senderId == userId) chat.receiverId else chat.senderId
+                        fetchPublicName(otherId)
+                    }
                 }
                 .onFailure { throwable ->
                     _chats.value = emptyList()
@@ -68,11 +76,25 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun fetchPublicName(userId: Long) {
+        if (_publicNames.value.containsKey(userId)) return
+        viewModelScope.launch {
+            profileRepository.getProfileByUserId(userId).onSuccess { profile ->
+                _publicNames.value = _publicNames.value + (userId to profile.publicName)
+            }
+        }
+    }
+
     fun loadChatAndMessages(chatId: Long, currentUserId: Long) {
         viewModelScope.launch {
             _isLoadingMessages.value = true
             _otherParticipantProfile.value = null
             _currentChat.value = null
+
+            // Eliminar verificación de mensajes nuevos localmente al abrir el chat
+            _chats.value = _chats.value.map {
+                if (it.id == chatId) it.copy(unreadCount = 0) else it
+            }
             
             // Cargar mensajes
             loadMessages(chatId)
@@ -99,7 +121,10 @@ class ChatViewModel @Inject constructor(
     private fun fetchOtherParticipantProfile(userId: Long) {
         viewModelScope.launch {
             profileRepository.getProfileByUserId(userId)
-                .onSuccess { _otherParticipantProfile.value = it }
+                .onSuccess { profile ->
+                    _otherParticipantProfile.value = profile
+                    _publicNames.value = _publicNames.value + (userId to profile.publicName)
+                }
                 .onFailure { globalErrorViewModel.showError(it) }
         }
     }
