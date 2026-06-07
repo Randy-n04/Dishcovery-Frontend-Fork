@@ -20,6 +20,7 @@ class ProfileMapper @Inject constructor(
         bio = bioConverter(dto.bio),
         photoUrl = dto.photoUrl,
         offeredSkills = dto.offeredSkills.map { categoryMapper.toDomain(it) },
+        skillsToLearn = dto.skillsToLearn.map { categoryMapper.toDomain(it) },
         language = dto.language,
         location = dto.location
     )

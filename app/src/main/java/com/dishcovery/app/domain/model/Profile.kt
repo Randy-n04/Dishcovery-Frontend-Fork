@@ -1,8 +1,6 @@
 package com.dishcovery.app.domain.model
 
-/**
- * Represents a user's public profile in the system.
- */
+
 data class Profile(
     val id: Long,
     val user: User,
@@ -10,6 +8,7 @@ data class Profile(
     val bio: String,
     val photoUrl: String,
     val offeredSkills: List<KitchenCategory>,
+    val skillsToLearn: List<KitchenCategory>,
     val language: String,
     val location: String
 )

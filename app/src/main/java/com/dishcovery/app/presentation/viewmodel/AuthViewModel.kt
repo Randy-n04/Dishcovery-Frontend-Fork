@@ -21,6 +21,11 @@ class AuthViewModel @Inject constructor(
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
+    private val _isUpdatingAccount = MutableStateFlow(false)
+    val isUpdatingAccount: StateFlow<Boolean> = _isUpdatingAccount.asStateFlow()
+
+    private val _accountUpdateMessage = MutableStateFlow<String?>(null)
+    val accountUpdateMessage: StateFlow<String?> = _accountUpdateMessage.asStateFlow()
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
 
@@ -80,6 +85,36 @@ class AuthViewModel @Inject constructor(
         if (token != null) {
             // Aquí podrías llamar a un endpoint /me o /profile para recuperar el usuario
             // Por ahora lo dejamos para implementar cuando tengas ese endpoint
+        }
+    }
+
+    fun updateAccount(
+        username: String?,
+        currentPassword: String,
+        newPassword: String?,
+        onSuccess: () -> Unit = {}
+    ) {
+        val currentUser = _user.value ?: return
+
+        viewModelScope.launch {
+            _isUpdatingAccount.value = true
+            _error.value = null
+            _accountUpdateMessage.value = null
+
+            repository.updateAccount(
+                userId = currentUser.id,
+                username = username,
+                currentPassword = currentPassword,
+                newPassword = newPassword
+            ).onSuccess { updatedUser ->
+                _user.value = updatedUser
+                _accountUpdateMessage.value = "Cuenta actualizada correctamente"
+                onSuccess()
+            }.onFailure { e ->
+                _error.value = e.message ?: "No se pudo actualizar la cuenta"
+            }
+
+            _isUpdatingAccount.value = false
         }
     }
 }

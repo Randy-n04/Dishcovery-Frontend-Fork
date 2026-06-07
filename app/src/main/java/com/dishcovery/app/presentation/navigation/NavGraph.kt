@@ -120,7 +120,8 @@ fun NavGraph(
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) { popUpTo(0) { inclusive = true } }
                 },
-                viewModel = profileViewModel
+                viewModel = profileViewModel,
+                authViewModel = authViewModel
             )
         }
 
@@ -170,7 +171,8 @@ fun NavGraph(
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) { popUpTo(0) { inclusive = true } }
                 },
-                viewModel = profileViewModel
+                viewModel = profileViewModel,
+                authViewModel = authViewModel
             )
         }
     }
