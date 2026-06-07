@@ -27,7 +27,9 @@ import kotlin.jvm.java
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     // 10.0.2.2 para emulador, localhost para pruebas locales de Java
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    //https://dishcovery-backend-echo-c6203821a227.herokuapp.com
+    //http://10.0.2.2:8080/
+    private const val BASE_URL = "https://dishcovery-backend-echo-c6203821a227.herokuapp.com"
 
     @Provides
     @Singleton
