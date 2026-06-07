@@ -1,7 +1,13 @@
 package com.dishcovery.app.domain.error
 
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+
 /**
- * Domain errors for authentication
+ * Domain errors for the application
  */
 sealed class DomainError(
     override val message: String,
@@ -9,15 +15,43 @@ sealed class DomainError(
 ) : Exception(message, cause) {
 
     class InvalidCredentials(
-        message: String = "Invalid username or password"
+        message: String = "Usuario o contraseña incorrectos"
+    ) : DomainError(message)
+
+    class NetworkError(
+        message: String = "Error de conexión. Revisa tu internet."
+    ) : DomainError(message)
+
+    class ServerError(
+        message: String = "El servidor no responde. Inténtalo más tarde."
+    ) : DomainError(message)
+
+    class ProfileNotFound(
+        message: String = "Perfil no encontrado"
     ) : DomainError(message)
 
     class UnknownError(
-        message: String = "Unknown error occurred",
+        message: String = "Ha ocurrido un error inesperado",
         cause: Throwable? = null
     ) : DomainError(message, cause)
 
-    class ProfileNotFound(
-        message: String = "Profile not found"
-    ) : DomainError(message)
+    companion object {
+        fun fromThrowable(t: Throwable): DomainError {
+            return when (t) {
+                is DomainError -> t
+                is ConnectException, is UnknownHostException -> NetworkError()
+                is SocketTimeoutException -> NetworkError("La conexión ha expirado. Inténtalo de nuevo.")
+                is IOException -> NetworkError()
+                is HttpException -> {
+                    when (t.code()) {
+                        401 -> InvalidCredentials()
+                        404 -> ProfileNotFound()
+                        in 500..599 -> ServerError()
+                        else -> UnknownError(cause = t)
+                    }
+                }
+                else -> UnknownError(cause = t)
+            }
+        }
+    }
 }

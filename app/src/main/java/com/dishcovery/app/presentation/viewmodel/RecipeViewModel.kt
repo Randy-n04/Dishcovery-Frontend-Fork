@@ -16,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
     private val repository: RecipeRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
+    private val globalErrorHandler: GlobalErrorHandler
 ) : ViewModel() {
 
     private val _popularRecipes = MutableStateFlow<List<Recipe>>(emptyList())
@@ -37,9 +38,6 @@ class RecipeViewModel @Inject constructor(
     private val _feedMessage = MutableStateFlow<String?>(null)
     val feedMessage: StateFlow<String?> = _feedMessage.asStateFlow()
 
-    private val _homeError = MutableStateFlow<String?>(null)
-    val homeError: StateFlow<String?> = _homeError.asStateFlow()
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -51,7 +49,7 @@ class RecipeViewModel @Inject constructor(
 
     fun loadHomeData(userId: Long?) {
         if (userId == null) {
-            _homeError.value = "No se encontró el usuario actual."
+            // This is a business logic error, can still be reported
             return
         }
 
@@ -59,7 +57,6 @@ class RecipeViewModel @Inject constructor(
 
         viewModelScope.launch {
             _isLoading.value = true
-            _homeError.value = null
             loadedUserId = userId
 
             val profileResult = profileRepository.getProfileByUserId(userId)
@@ -67,23 +64,22 @@ class RecipeViewModel @Inject constructor(
             if (profileResult.isSuccess) {
                 currentProfileId = profileResult.getOrNull()?.id
             } else {
-                _homeError.value = profileResult.exceptionOrNull()?.message
-                    ?: "No se pudo obtener el perfil del usuario."
+                profileResult.exceptionOrNull()?.let { globalErrorHandler.showError(it) }
             }
 
             repository.getPopularRecipes()
                 .onSuccess { _popularRecipes.value = it }
-                .onFailure { _homeError.value = it.message }
+                .onFailure { globalErrorHandler.showError(it) }
 
             currentProfileId?.let { profileId ->
                 repository.getSavedRecipes(profileId)
                     .onSuccess { _savedRecipes.value = it }
-                    .onFailure { _homeError.value = it.message }
+                    .onFailure { globalErrorHandler.showError(it) }
             }
 
             repository.getKitchenCategories()
                 .onSuccess { _kitchenCategories.value = it }
-                .onFailure { _homeError.value = it.message }
+                .onFailure { globalErrorHandler.showError(it) }
 
             _isLoading.value = false
         }
@@ -102,16 +98,13 @@ class RecipeViewModel @Inject constructor(
                 .onSuccess { feedResult ->
                     _aiTip.value = feedResult.aiTip
                     _recommendedRecipes.value = feedResult.recommendedRecipes
-                    _feedMessage.value = if (feedResult.recommendedRecipes.isEmpty()) {
-                        "No encontramos recetas sugeridas para esa combinación. Prueba con otra categoría o ingredientes."
-                    } else {
-                        null
+                    if (feedResult.recommendedRecipes.isEmpty()) {
+                        _feedMessage.value = "No encontramos recetas sugeridas para esa combinación."
                     }
                 }
                 .onFailure { throwable ->
                     _recommendedRecipes.value = emptyList()
-                    _feedMessage.value = null
-                    _homeError.value = throwable.message ?: "No se pudo generar el feed IA"
+                    globalErrorHandler.showError(throwable)
                 }
 
             _isFeedLoading.value = false
@@ -120,12 +113,7 @@ class RecipeViewModel @Inject constructor(
 
     fun toggleSaveRecipe(recipe: Recipe) {
         viewModelScope.launch {
-            val profileId = currentProfileId
-
-            if (profileId == null) {
-                _homeError.value = "No se pudo guardar: perfil no cargado."
-                return@launch
-            }
+            val profileId = currentProfileId ?: return@launch
 
             val isSaved = _savedRecipes.value.any { it.id == recipe.id }
 
@@ -138,12 +126,12 @@ class RecipeViewModel @Inject constructor(
             if (result.isSuccess) {
                 repository.getSavedRecipes(profileId)
                     .onSuccess { _savedRecipes.value = it }
-                    .onFailure { _homeError.value = it.message }
+                    .onFailure { globalErrorHandler.showError(it) }
 
                 repository.getPopularRecipes()
                     .onSuccess { _popularRecipes.value = it }
             } else {
-                _homeError.value = result.exceptionOrNull()?.message
+                result.exceptionOrNull()?.let { globalErrorHandler.showError(it) }
             }
         }
     }
