@@ -31,6 +31,15 @@ class ExchangePlanRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getPlanByChatId(chatId: Long): Result<ExchangePlan> = withContext(Dispatchers.IO) {
+        try {
+            val plan = mapper.toDomain(apiService.findByChatId(chatId))
+            Result.success(plan)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun createPlan(plan: ExchangePlan): Result<ExchangePlan> = withContext(Dispatchers.IO) {
         try {
             val created = apiService.create(mapper.toInputDto(plan))

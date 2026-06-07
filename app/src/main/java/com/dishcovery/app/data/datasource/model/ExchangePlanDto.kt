@@ -2,6 +2,7 @@ package com.dishcovery.app.data.datasource.model
 
 data class ExchangePlanResultDto(
     val id: Long,
+    val creatorId: Long, // Añadido
     val partnerId: Long,
     val partnerName: String,
     val partnerImageUrl: String,
@@ -10,10 +11,12 @@ data class ExchangePlanResultDto(
     val progress: Int,
     val totalSessions: Int,
     val status: String,
-    val userNote: String
+    val userNote: String,
+    val isReceived: Boolean
 )
 
 data class ExchangePlanInputDto(
+    val creatorId: Long?, // Añadido
     val partnerId: Long?,
     val partnerName: String?,
     val partnerImageUrl: String?,

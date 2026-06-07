@@ -12,7 +12,8 @@ data class ChatDto(
     val lastMessage: String,
     val time: String,
     val unreadCount: Int,
-    val avatarUrl: String
+    val avatarUrl: String,
+    val planId: Long? = null
 )
 
 data class ChatInputDto(
@@ -23,5 +24,6 @@ data class ChatInputDto(
     val lastMessage: String? = null,
     val time: String? = null,
     val unreadCount: Int? = null,
-    val avatarUrl: String? = null
+    val avatarUrl: String? = null,
+    val planId: Long? = null
 )

@@ -18,12 +18,12 @@ sealed class NavRoutes {
     }
 
     data object ExchangePlan : NavRoutes() {
-        const val ROUTE = "exchange_plan/{planId}?isReceived={isReceived}"
-
-        fun createRoute(
-            planId: Long,
-            isReceived: Boolean
-        ): String = "exchange_plan/$planId?isReceived=$isReceived"
+        const val ROUTE = "exchange_plan?planId={planId}&chatId={chatId}"
+        fun createRoute(planId: Long? = null, chatId: Long? = null): String {
+            val planPart = if (planId != null) "planId=$planId" else ""
+            val chatPart = if (chatId != null) "chatId=$chatId" else ""
+            val separator = if (planId != null && chatId != null) "&" else ""
+            return "exchange_plan?$planPart$separator$chatPart"
+        }
     }
-    data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
 }

@@ -1,6 +1,7 @@
 package com.dishcovery.app.data.repository
 
 import com.dishcovery.app.data.datasource.ChatDataSource
+import com.dishcovery.app.data.datasource.model.ChatInputDto
 import com.dishcovery.app.data.datasource.model.MessageCreateRequest
 import com.dishcovery.app.data.mapper.ChatMapper
 import com.dishcovery.app.data.mapper.MessageMapper
@@ -8,6 +9,9 @@ import com.dishcovery.app.domain.model.Chat
 import com.dishcovery.app.domain.model.Message
 import com.dishcovery.app.domain.repository.ChatRepository
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,6 +53,29 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMessage(id: Long, text: String): Result<Message> = Result.failure(Exception("Not implemented"))
+
+    override suspend fun createChat(
+        senderId: Long,
+        receiverId: Long,
+        name: String,
+        avatarUrl: String,
+        planId: Long?
+    ): Result<Chat> = try {
+        val input = ChatInputDto(
+            senderId = senderId,
+            receiverId = receiverId,
+            name = name,
+            avatarUrl = avatarUrl,
+            planId = planId,
+            lastMessage = "¡Nuevo plan de intercambio creado!",
+            time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
+            unreadCount = 0
+        )
+        val dto = dataSource.createChat(input)
+        Result.success(chatMapper.toDomain(dto))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
     private fun mapToUserFriendlyException(exception: Exception): Exception {
         return when (exception) {

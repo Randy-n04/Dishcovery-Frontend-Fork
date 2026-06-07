@@ -73,26 +73,26 @@ fun NavGraph(
         composable(
             route = NavRoutes.ExchangePlan.ROUTE,
             arguments = listOf(
-                navArgument("planId") { type = NavType.LongType },
-                navArgument("isReceived") {
-                    type = NavType.BoolType
-                    defaultValue = true
+                navArgument("planId") { 
+                    type = NavType.LongType
+                    defaultValue = -1L
+                },
+                navArgument("chatId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
                 }
             )
         ) { backStackEntry ->
-            val planId = backStackEntry.arguments?.getLong("planId")
-            val isReceived = backStackEntry.arguments?.getBoolean("isReceived") ?: true
+            val planId = backStackEntry.arguments?.getLong("planId")?.takeIf { it != -1L }
+            val chatId = backStackEntry.arguments?.getLong("chatId")?.takeIf { it != -1L }
 
             ExchangePlanScreen(
                 navController = navController,
                 paddingValues = paddingValues,
-                isReceived = isReceived,
-                planId = planId
+                planId = planId,
+                chatId = chatId,
+                authViewModel = authViewModel
             )
-        }
-
-        composable(NavRoutes.PlanRequests.ROUTE) {
-            PlanRequestsScreen(navController = navController)
         }
 
         composable(NavRoutes.Chats.ROUTE) {

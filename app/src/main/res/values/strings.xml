@@ -60,7 +60,7 @@
     <string name="ai_suggestion_chat_detail">Ambos tienen disponibilidad este fin de semana. Recomiendo empezar con una receta sencilla para generar confianza.</string>
     <string name="translate_chip">Traducir</string>
     <string name="recipe_tips_chip">Tips recetas</string>
-    <string name="plan_schedules_chip">Planear horarios</string>
+    <string name="plan_schedules_chip">Plan</string>
     <string name="message_placeholder">Mensaje</string>
     <string name="send_button_label">Enviar</string>
     <string name="popular_recipes_title">Recetas Populares</string>

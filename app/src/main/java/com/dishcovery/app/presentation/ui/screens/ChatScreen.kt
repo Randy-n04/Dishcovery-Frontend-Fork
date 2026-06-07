@@ -88,11 +88,6 @@ fun ChatScreen(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             )
 
-            // Sección de Solicitudes de Planes
-            PlanRequestsEntry(onClick = {
-                navController.navigate(NavRoutes.PlanRequests.ROUTE)
-            })
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,52 +170,5 @@ fun ChatScreen(
             }
         }
 
-    }
-}
-
-@Composable
-fun PlanRequestsEntry(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBE6)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xFF8B4513).copy(alpha = 0.1f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = null,
-                    tint = Color(0xFF8B4513)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Buzón de Planes",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF8B4513)
-                )
-                Text(
-                    text = "Tienes solicitudes pendientes",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-            Badge(containerColor = Rojo) {
-                Text("2", color = Color.White)
-            }
-        }
     }
 }

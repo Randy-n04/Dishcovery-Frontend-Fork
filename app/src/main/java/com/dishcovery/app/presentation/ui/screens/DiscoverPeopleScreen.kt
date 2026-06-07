@@ -56,10 +56,10 @@ fun DiscoverPeopleScreen(
         }
     }
 
-    // Navegar cuando se genera un plan con éxito
+    // Navegar al Plan de Intercambio cuando se genera con éxito (Conectar -> Ver Plan)
     LaunchedEffect(generatedPlanId) {
         generatedPlanId?.let { planId ->
-            navController.navigate(NavRoutes.ExchangePlan.createRoute(planId, isReceived = true))
+            navController.navigate(NavRoutes.ExchangePlan.createRoute(planId = planId))
             matchViewModel.clearGeneratedPlan()
         }
     }
@@ -175,7 +175,7 @@ fun DiscoverPeopleScreen(
                             user?.let { me ->
                                 // Usamos la primera categoría para el plan por defecto
                                 val planCategoryId = categoryIds.firstOrNull() ?: 0L
-                                matchViewModel.generatePlan(me.id, candidate.profileId, planCategoryId)
+                                matchViewModel.generatePlan(me.id, candidate.profileId, planCategoryId, me.username)
                             }
                         },
                         isLoadingAction = isLoading

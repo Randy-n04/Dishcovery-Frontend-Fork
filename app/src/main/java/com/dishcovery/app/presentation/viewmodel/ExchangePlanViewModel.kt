@@ -21,6 +21,9 @@ class ExchangePlanViewModel @Inject constructor(
     private val _plan = MutableStateFlow<ExchangePlan?>(null)
     val plan: StateFlow<ExchangePlan?> = _plan.asStateFlow()
 
+    private val _allPlans = MutableStateFlow<List<ExchangePlan>>(emptyList())
+    val allPlans: StateFlow<List<ExchangePlan>> = _allPlans.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -29,6 +32,20 @@ class ExchangePlanViewModel @Inject constructor(
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    fun loadAllPlans() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            val result = repository.getAllPlans()
+            if (result.isSuccess) {
+                _allPlans.value = result.getOrNull() ?: emptyList()
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar los planes."
+            }
+            _isLoading.value = false
+        }
+    }
 
     fun loadPlan(planId: Long? = null) {
         viewModelScope.launch {
@@ -50,6 +67,20 @@ class ExchangePlanViewModel @Inject constructor(
                 _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar el plan."
             }
 
+            _isLoading.value = false
+        }
+    }
+
+    fun loadPlanByChatId(chatId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            val result = repository.getPlanByChatId(chatId)
+            if (result.isSuccess) {
+                _plan.value = result.getOrNull()
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar el plan por chat."
+            }
             _isLoading.value = false
         }
     }
@@ -107,6 +138,27 @@ class ExchangePlanViewModel @Inject constructor(
                 onSuccess()
             } else {
                 _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al aceptar el plan."
+            }
+
+            _isSaving.value = false
+        }
+    }
+
+    fun rejectPlan(onSuccess: () -> Unit) {
+        val currentPlan = _plan.value ?: return
+
+        viewModelScope.launch {
+            _isSaving.value = true
+            _errorMessage.value = null
+
+            val rejectedPlan = currentPlan.copy(status = PlanStatus.REJECTED)
+            val result = repository.updatePlan(rejectedPlan)
+
+            if (result.isSuccess) {
+                _plan.value = result.getOrNull()
+                onSuccess()
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al rechazar el plan."
             }
 
             _isSaving.value = false

@@ -12,6 +12,9 @@ interface ExchangePlanApiService {
     @GET("v1/exchange-plans/{id}")
     suspend fun findById(@Path("id") id: Long): ExchangePlanResultDto
 
+    @GET("v1/exchange-plans/chat/{chatId}")
+    suspend fun findByChatId(@Path("chatId") chatId: Long): ExchangePlanResultDto
+
     @POST("v1/exchange-plans")
     suspend fun create(@Body input: ExchangePlanInputDto): ExchangePlanResultDto
 

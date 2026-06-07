@@ -14,6 +14,7 @@ class ExchangePlanMapper @Inject constructor() {
     fun toDomain(dto: ExchangePlanResultDto): ExchangePlan {
         return ExchangePlan(
             id = dto.id,
+            creatorId = dto.creatorId,
             partnerId = dto.partnerId,
             partnerName = dto.partnerName,
             partnerImageUrl = dto.partnerImageUrl,
@@ -22,7 +23,8 @@ class ExchangePlanMapper @Inject constructor() {
             progress = dto.progress,
             totalSessions = dto.totalSessions,
             status = dto.status.toPlanStatus(),
-            userNote = dto.userNote
+            userNote = dto.userNote,
+            isReceived = dto.isReceived
         )
     }
 
@@ -39,6 +41,7 @@ class ExchangePlanMapper @Inject constructor() {
 
     fun toInputDto(plan: ExchangePlan): ExchangePlanInputDto {
         return ExchangePlanInputDto(
+            creatorId = plan.creatorId,
             partnerId = plan.partnerId,
             partnerName = plan.partnerName,
             partnerImageUrl = plan.partnerImageUrl,
