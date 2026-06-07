@@ -164,4 +164,7 @@
     <string name="stats_matches_title">Matches por día</string>
     <string name="stats_no_data">Sin datos para el período</string>
 
+    <string name="user_active">Activo</string>
+    <string name="user_blocked">Bloqueado</string>
+
 </resources>

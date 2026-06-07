@@ -13,9 +13,10 @@ class UserMapper @Inject constructor() {
      */
     fun toDomain(dto: UserResultDto): User {
         return User(
-            id = dto.id,
-            username = dto.username,
-            role = mapRole(dto.role.id, dto.role.name)
+            id        = dto.id,
+            username  = dto.username,
+            role      = mapRole(dto.role.id, dto.role.name),
+            isBlocked = dto.blocked
         )
     }
 

@@ -1,5 +1,7 @@
 package com.dishcovery.app.data.repository
 
+import android.util.Log
+import com.dishcovery.app.data.datasource.model.PageResultDto
 import com.dishcovery.app.data.datasource.model.UserInputDto
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.mapper.UserMapper
@@ -71,6 +73,43 @@ class UserRepositoryImpl @Inject constructor(
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Error al eliminar usuario"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun findAllPaginated(page: Int, size: Int): Result<PageResultDto<User>> {
+        return try {
+            val response = apiService.findAllPaginated(page, size)
+            if (response.isSuccessful && response.body() != null) {
+                val page = response.body()!!
+                Result.success(
+                    PageResultDto(
+                        content       = page.content.map { mapper.toDomain(it) },
+                        totalElements = page.totalElements,
+                        totalPages    = page.totalPages,
+                        number        = page.number
+                    )
+                )
+            } else {
+                Result.failure(Exception("Error al obtener usuarios: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun blockUser(id: Long): Result<User> {
+        return try {
+            val response = apiService.blockUser(id)
+            Log.d("BlockUser", "Code: ${response.code()}")
+            Log.d("BlockUser", "Body: ${response.body()}")
+            Log.d("BlockUser", "isBlocked en body: ${response.body()?.blocked}")
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(mapper.toDomain(response.body()!!))
+            } else {
+                Result.failure(Exception("Error al bloquear usuario: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

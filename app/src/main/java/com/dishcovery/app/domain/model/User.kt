@@ -6,7 +6,8 @@ package com.dishcovery.app.domain.model
 data class User(
     val id: Long,
     val username: String,
-    val role: UserRole
+    val role: UserRole,
+    val isBlocked: Boolean = false
 )
 
 /**

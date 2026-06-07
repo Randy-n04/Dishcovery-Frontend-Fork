@@ -33,7 +33,8 @@ data class AuthorityDto(
 data class UserResultDto(
     @SerializedName("id") val id: Long,
     @SerializedName("username") val username: String,
-    @SerializedName("role") val role: RoleDetailsDto
+    @SerializedName("role") val role: RoleDetailsDto,
+    @SerializedName("isBlocked") val blocked: Boolean = false
 )
 
 data class RoleDetailsDto(
@@ -46,4 +47,11 @@ data class UserInputDto(
     @SerializedName("username") val username: String? = null,
     @SerializedName("password") val password: String? = null,
     @SerializedName("roleId") val roleId: Long? = null
+)
+
+data class PageResultDto<T>(
+    @SerializedName("content") val content: List<T>,
+    @SerializedName("totalElements") val totalElements: Long,
+    @SerializedName("totalPages") val totalPages: Int,
+    @SerializedName("number") val number: Int
 )

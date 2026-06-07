@@ -42,4 +42,13 @@ interface UserApiService {
 
     @DELETE("users/{id}")
     suspend fun deleteById(@Path("id") id: Long): Response<Unit>
+
+    @GET("v1/users/list")
+    suspend fun findAllPaginated(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): Response<PageResultDto<UserResultDto>>
+
+    @PATCH("v1/users/{id}/block")
+    suspend fun blockUser(@Path("id") id: Long): Response<UserResultDto>
 }
