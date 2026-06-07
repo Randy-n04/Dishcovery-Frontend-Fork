@@ -45,8 +45,19 @@ fun HomeScreen(
     var searchingCategoryName by remember { mutableStateOf("") }
     var searchingCategoryIds by remember { mutableStateOf<List<Long>>(emptyList()) }
 
+
     LaunchedEffect(userId) {
         recipeViewModel.loadHomeData(userId)
+    }
+
+    LaunchedEffect(showSearchingDialog) {
+        if (showSearchingDialog) {
+            delay(1200)
+            showSearchingDialog = false
+
+            val idsParam = searchingCategoryIds.joinToString(",")
+            navController.navigate(NavRoutes.DiscoverPeople.createRoute(idsParam))
+        }
     }
 
     HomeLayout(
