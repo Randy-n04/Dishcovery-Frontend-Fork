@@ -91,9 +91,33 @@ class ExchangePlanViewModel @Inject constructor(
 
         if (index in newSessions.indices) {
             newSessions[index] = updatedSession
+            
+            val completedCount = newSessions.count { it.isCompleted }
+            
             _plan.value = currentPlan.copy(
                 sessions = newSessions,
+                progress = completedCount,
                 totalSessions = newSessions.size
+            )
+        }
+    }
+
+    fun toggleSessionCompletion(index: Int) {
+        val currentPlan = _plan.value ?: return
+        val newSessions = currentPlan.sessions.toMutableList()
+
+        if (index in newSessions.indices) {
+            val session = newSessions[index]
+            newSessions[index] = session.copy(isCompleted = !session.isCompleted)
+            
+            // Recalcular progreso como cantidad de sesiones completadas
+            val completedCount = newSessions.count { it.isCompleted }
+            val total = newSessions.size
+            
+            _plan.value = currentPlan.copy(
+                sessions = newSessions,
+                progress = completedCount,
+                totalSessions = total
             )
         }
     }

@@ -33,8 +33,17 @@ class ExchangePlanRepositoryImpl @Inject constructor(
 
     override suspend fun getPlanByChatId(chatId: Long): Result<ExchangePlan> = withContext(Dispatchers.IO) {
         try {
-            val plan = mapper.toDomain(apiService.findByChatId(chatId))
-            Result.success(plan)
+            val response = apiService.findByChatId(chatId)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(mapper.toDomain(body))
+                } else {
+                    Result.failure(NoSuchElementException("No se encontró un plan para este chat."))
+                }
+            } else {
+                Result.failure(Exception("Error al obtener el plan: ${response.code()}"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -51,8 +60,17 @@ class ExchangePlanRepositoryImpl @Inject constructor(
 
     override suspend fun updatePlan(plan: ExchangePlan): Result<ExchangePlan> = withContext(Dispatchers.IO) {
         try {
-            val updated = apiService.update(plan.id, mapper.toInputDto(plan))
-            Result.success(mapper.toDomain(updated))
+            val response = apiService.update(plan.id, mapper.toInputDto(plan))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(mapper.toDomain(body))
+                } else {
+                    Result.success(plan) // Si el servidor no devuelve cuerpo pero fue exitoso, devolvemos el mismo plan
+                }
+            } else {
+                Result.failure(Exception("Error al actualizar el plan: ${response.code()}"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

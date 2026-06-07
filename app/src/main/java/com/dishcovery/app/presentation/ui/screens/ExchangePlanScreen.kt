@@ -167,12 +167,6 @@ fun ExchangePlanScreen(
                         )
                     }
 
-                    if (!currentPlan.aiSuggestion.isNullOrBlank()) {
-                        item {
-                            AISuggestionBanner(suggestion = currentPlan.aiSuggestion)
-                        }
-                    }
-
                     item {
                         ProgressSection(
                             progress = currentPlan.progress,
@@ -185,9 +179,8 @@ fun ExchangePlanScreen(
                     }
 
                     itemsIndexed(currentPlan.sessions) { index, session ->
-                        // Ahora permitimos editar sesiones si el plan está aceptado para marcar progreso
-                        // El receptor edita sus sesiones y el creador las suyas
-                        val canEditSession = currentPlan.status == PlanStatus.ACCEPTED && 
+                        // Permitimos editar si el plan está ACEPTADO o PENDIENTE
+                        val canEditSession = (currentPlan.status == PlanStatus.ACCEPTED || currentPlan.status == PlanStatus.PENDING) && 
                                 ((effectivelyIsReceived && session.instructorName == currentPlan.partnerName) || 
                                 (!effectivelyIsReceived && session.instructorName != currentPlan.partnerName))
 
@@ -197,15 +190,10 @@ fun ExchangePlanScreen(
                             onEditClick = {
                                 selectedSessionIndex = index
                                 showDialog = true
+                            },
+                            onToggleCompletion = {
+                                viewModel.toggleSessionCompletion(index)
                             }
-                        )
-                    }
-
-                    item {
-                        SuggestionsSection(
-                            text = currentPlan.userNote,
-                            onValueChange = { viewModel.updateUserNote(it) },
-                            enabled = !isSaving
                         )
                     }
 
@@ -229,7 +217,7 @@ fun ExchangePlanScreen(
                                 },
                                 onSave = {
                                     viewModel.savePlan {
-                                        // Opcional: volver al chat
+                                        // Opcional: feedback de guardado
                                     }
                                 },
                                 onClose = {

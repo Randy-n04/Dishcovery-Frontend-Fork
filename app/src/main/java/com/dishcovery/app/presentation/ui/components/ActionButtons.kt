@@ -54,23 +54,18 @@ fun ActionButtons(
                         Text(text = "Aceptar", color = Color.White)
                     }
                 }
-                
-                Button(
-                    onClick = onSave,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
-                ) {
-                    Text(text = "Guardar Propuesta", color = Color.White)
-                }
-            } else {
-                Text(
-                    text = "Esperando respuesta del otro chef...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
             }
+            
+            // Botón de guardar visible para ambos (Creador y Receptor) en estado PENDING
+            Button(
+                onClick = onSave,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+            ) {
+                Text(text = "Guardar Propuesta", color = Color.White)
+            }
+
         } else if (status == PlanStatus.ACCEPTED) {
             Button(
                 onClick = onSave,
