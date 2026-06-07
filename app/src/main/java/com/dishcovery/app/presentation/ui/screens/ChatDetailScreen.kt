@@ -43,7 +43,6 @@ import com.dishcovery.app.presentation.ui.components.MessageBubble
 import com.dishcovery.app.presentation.ui.components.MessageContextMenu
 import com.dishcovery.app.presentation.ui.components.ScreenErrorState
 import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
-import com.dishcovery.app.presentation.navigation.NavRoutes
 
 @Composable
 fun ChatDetailScreen(
