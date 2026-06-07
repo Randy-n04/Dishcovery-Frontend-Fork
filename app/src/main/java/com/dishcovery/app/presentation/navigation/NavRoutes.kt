@@ -26,4 +26,7 @@ sealed class NavRoutes {
             return "exchange_plan?$planPart$separator$chatPart"
         }
     }
+    data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
+
+    data object CameraAnalysis : NavRoutes() { const val ROUTE = "camera_analysis" }
 }

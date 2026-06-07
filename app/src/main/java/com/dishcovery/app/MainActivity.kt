@@ -57,8 +57,9 @@ class MainActivity : ComponentActivity() {
                 val isAdmin = user?.role is UserRole.Admin
                 val isChatDetailRoute = currentRoute == NavRoutes.ChatDetail.ROUTE ||
                     currentRoute?.startsWith("chat_detail/") == true
-                
-                val showBottomBar = user != null && !(isChatDetailRoute && !isAdmin)
+                val isCameraRoute = currentRoute == NavRoutes.CameraAnalysis.ROUTE
+
+                val showBottomBar = user != null && !(isChatDetailRoute && !isAdmin) && !isCameraRoute
                 val bottomNavItems = if (isAdmin) {
                     BottomNavItem.adminItems()
                 } else {
