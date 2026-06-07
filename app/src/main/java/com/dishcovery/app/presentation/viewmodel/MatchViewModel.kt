@@ -70,22 +70,6 @@ class MatchViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 val plan = result.getOrNull()
-                if (plan != null) {
-                    // Generamos un nombre más significativo para el chat: [Creador] & [Partner] chat
-                    val chatName = "$creatorName & ${plan.partnerName} chat"
-                    
-                    // Creamos el chat automáticamente al generar el plan
-                    val chatResult = chatRepository.createChat(
-                        senderId = plan.creatorId,
-                        receiverId = plan.partnerId,
-                        name = chatName,
-                        avatarUrl = plan.partnerImageUrl,
-                        planId = plan.id
-                    )
-                    if (chatResult.isSuccess) {
-                        _generatedChat.value = chatResult.getOrNull()
-                    }
-                }
                 _generatedPlanId.value = plan?.id
             } else {
                 _errorMessage.value =
