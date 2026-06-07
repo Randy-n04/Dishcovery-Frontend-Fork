@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.FeedAiSection
@@ -76,7 +77,7 @@ fun HomeScreen(
                 homeError?.let {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = it,
+                        text = it.message,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = 16.dp)

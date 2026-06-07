@@ -2,6 +2,7 @@ package com.dishcovery.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.domain.repository.ProfileRepository
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class RecipeViewModel @Inject constructor(
     private val repository: RecipeRepository,
     private val profileRepository: ProfileRepository,
-    private val globalErrorHandler: GlobalErrorHandler
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _popularRecipes = MutableStateFlow<List<Recipe>>(emptyList())
@@ -44,12 +45,13 @@ class RecipeViewModel @Inject constructor(
     private val _isFeedLoading = MutableStateFlow(false)
     val isFeedLoading: StateFlow<Boolean> = _isFeedLoading.asStateFlow()
 
+    val homeError: StateFlow<DomainError?> = globalErrorViewModel.error
+
     private var currentProfileId: Long? = null
     private var loadedUserId: Long? = null
 
     fun loadHomeData(userId: Long?) {
         if (userId == null) {
-            // This is a business logic error, can still be reported
             return
         }
 
@@ -64,22 +66,22 @@ class RecipeViewModel @Inject constructor(
             if (profileResult.isSuccess) {
                 currentProfileId = profileResult.getOrNull()?.id
             } else {
-                profileResult.exceptionOrNull()?.let { globalErrorHandler.showError(it) }
+                profileResult.exceptionOrNull()?.let { globalErrorViewModel.showError(it) }
             }
 
             repository.getPopularRecipes()
                 .onSuccess { _popularRecipes.value = it }
-                .onFailure { globalErrorHandler.showError(it) }
+                .onFailure { globalErrorViewModel.showError(it) }
 
             currentProfileId?.let { profileId ->
                 repository.getSavedRecipes(profileId)
                     .onSuccess { _savedRecipes.value = it }
-                    .onFailure { globalErrorHandler.showError(it) }
+                    .onFailure { globalErrorViewModel.showError(it) }
             }
 
             repository.getKitchenCategories()
                 .onSuccess { _kitchenCategories.value = it }
-                .onFailure { globalErrorHandler.showError(it) }
+                .onFailure { globalErrorViewModel.showError(it) }
 
             _isLoading.value = false
         }
@@ -104,7 +106,7 @@ class RecipeViewModel @Inject constructor(
                 }
                 .onFailure { throwable ->
                     _recommendedRecipes.value = emptyList()
-                    globalErrorHandler.showError(throwable)
+                    globalErrorViewModel.showError(throwable)
                 }
 
             _isFeedLoading.value = false
@@ -126,12 +128,12 @@ class RecipeViewModel @Inject constructor(
             if (result.isSuccess) {
                 repository.getSavedRecipes(profileId)
                     .onSuccess { _savedRecipes.value = it }
-                    .onFailure { globalErrorHandler.showError(it) }
+                    .onFailure { globalErrorViewModel.showError(it) }
 
                 repository.getPopularRecipes()
                     .onSuccess { _popularRecipes.value = it }
             } else {
-                result.exceptionOrNull()?.let { globalErrorHandler.showError(it) }
+                result.exceptionOrNull()?.let { globalErrorViewModel.showError(it) }
             }
         }
     }
