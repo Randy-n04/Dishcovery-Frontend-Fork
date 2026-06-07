@@ -53,6 +53,7 @@
     <string name="personal_data_item">Datos Personales</string>
     <string name="account_settings_item">Ajustes de Cuenta</string>
     <string name="faq_item">Preguntas Frecuentes</string>
+    <string name="faq_item_admin">Editar Preguntas Frecuentes</string>
     <string name="logout_item">Salir de la Cuenta</string>
     <string name="chats_title">Chats</string>
     <string name="search_placeholder">Buscar</string>
@@ -60,7 +61,7 @@
     <string name="ai_suggestion_chat_detail">Ambos tienen disponibilidad este fin de semana. Recomiendo empezar con una receta sencilla para generar confianza.</string>
     <string name="translate_chip">Traducir</string>
     <string name="recipe_tips_chip">Tips recetas</string>
-    <string name="plan_schedules_chip">Planear horarios</string>
+    <string name="plan_schedules_chip">Plan</string>
     <string name="message_placeholder">Mensaje</string>
     <string name="send_button_label">Enviar</string>
     <string name="popular_recipes_title">Recetas Populares</string>
@@ -80,15 +81,18 @@
     <!-- Discover People Screen -->
     <string name="discover_people_title">Descubrir personas</string>
     <string name="match_percentage_suffix">match</string>
-    <string name="can_do_label">Puede hacer:</string>
+    <string name="can_do_label">Ofrece:</string>
     <string name="want_to_learn_label">Quiere aprender:</string>
     <string name="next_button">Siguiente</string>
-    <string name="connect_button">Conectar</string>
+    <string name="connect_button">¡CONECTAR!</string>
     <string name="manual_match_title">Match Personalizado</string>
     <string name="manual_match_learn_question">¿Qué te gustaría aprender a cocinar?</string>
     <string name="manual_match_profile_question">¿Cómo te defines como cocinero?</string>
     <string name="find_chef_button">¡Encontrar mi Chef Ideal!</string>
     <string name="searching_match_message">Buscando a alguien que comparta tu gusto por la comida %s…</string>
+    <string name="searching_chefs_loading">Buscando los mejores chefs para ti…</string>
+    <string name="no_candidates_available">No hay candidatos disponibles, intente en otro momento</string>
+    <string name="back_button_label">Volver</string>
 
     <!-- Exchange Plan Screen -->
     <string name="exchange_plan_title">Plan de intercambio</string>
@@ -115,9 +119,45 @@
     <string name="prof_amateur">Aficionado</string>
     <string name="prof_chef_pro">Chef Pro</string>
     <string name="prof_student">Estudiante</string>
-
+  
+    <!-- FAQ Admin -->
     <string name="trend_success">¡Categoría marcada como tendencia!</string>
     <string name="new_category_placeholder">Nombre de la nueva categoría</string>
     <string name="create_button">Crear</string>
+
+    <string name="faq_placeholder">Escribe el contenido de las preguntas frecuentes…</string>
+    <string name="faq_save_button">Guardar</string>
+    <string name="faq_save_success">¡Cambios guardados correctamente!</string>
+    <!-- CameraScreen -->
+    <string name="camera_screen_title">Analizar imagen</string>
+    <string name="camera_idle_hint">Toma una foto para analizar los ingredientes</string>
+    <string name="camera_take_photo_button">Tomar foto</string>
+    <string name="camera_analyzing">Analizando imagen…</string>
+    <string name="camera_result_title">Ingredientes detectados</string>
+    <string name="camera_photo_desc">Foto tomada</string>
+    <string name="camera_retake_button">Tomar otra foto</string>
+    <string name="camera_retry_button">Reintentar</string>
+    <string name="camera_natural_text_title">Descripción</string>
+    <string name="camera_no_ingredients">No se detectaron ingredientes en la imagen.</string>
+    <string name="camera_one_ingredient">Se detectó: %1$s.</string>
+    <string name="camera_exit_dialog_title">¿Salir del análisis?</string>
+    <string name="camera_exit_dialog_body">La foto y los ingredientes detectados se perderán.</string>
+    <string name="camera_exit_dialog_confirm">Salir</string>
+    <string name="camera_exit_dialog_cancel">Cancelar</string>
+
+    <string name="camera_retake_dialog_title">¿Tomar otra foto?</string>
+    <string name="camera_retake_dialog_body">Los ingredientes detectados actualmente se perderán.</string>
+    <string name="camera_retake_dialog_confirm">Tomar otra foto</string>
+    <string name="camera_retake_dialog_cancel">Cancelar</string>
+
+    <!-- Badge y contador -->
+    <string name="camera_analyzed_badge">Analizada</string>
+    <string name="camera_tag_count">%1$d ingredientes</string>
+
+    <!-- Botón comentado para cuando se implemente -->
+    <!-- <string name="camera_send_to_chat_button">Enviar al chat</string> -->
+
+    <!-- Para 2 o más: "Se detectaron: x, y, z y w." -->
+    <string name="camera_multiple_ingredients">Se detectaron: %1$s y %2$s.</string>
 
 </resources>

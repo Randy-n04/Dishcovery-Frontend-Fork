@@ -22,7 +22,8 @@ import com.dishcovery.app.domain.model.ExchangeSession
 fun SessionCard(
     session: ExchangeSession,
     canEdit: Boolean = true,
-    onEditClick: () -> Unit = {}
+    onEditClick: () -> Unit = {},
+    onToggleCompletion: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -79,9 +80,8 @@ fun SessionCard(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* Iniciar sesion mock */ },
+                onClick = onToggleCompletion,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !session.isCompleted,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (session.isCompleted) Color.Gray else Color(0xFFE57373)

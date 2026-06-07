@@ -1,15 +1,19 @@
 package com.dishcovery.app.data.datasource.model
 
 /**
- * DTO para el Perfil en la capa de datos, vinculado al usuario real del backend.
+ * DTO para el Perfil en la capa de datos.
+ * Ajustado al nuevo contrato del backend.
  */
 data class ProfileDto(
     val id: Long,
-    val user: UserResultDto,
+    val userId: Long,
+    val username: String,
     val publicName: String,
     val bio: String,
     val photoUrl: String,
     val offeredSkills: List<KitchenCategoryDto>,
+    val skillsToLearn: List<KitchenCategoryDto> = emptyList(),
     val language: String,
-    val location: String
+    val location: String,
+
 )

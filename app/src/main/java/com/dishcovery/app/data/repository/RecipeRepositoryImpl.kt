@@ -20,13 +20,23 @@ class RecipeRepositoryImpl @Inject constructor(
     private val mapper: RecipeMapper
 ) : RecipeRepository {
 
-    private val savedRecipeIds = mutableSetOf<Long>()
+
     private var cachedRecipes: List<Recipe> = emptyList()
     private var cachedCategories: List<KitchenCategory> = emptyList()
 
+
     override suspend fun getPopularRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
-            val recipes = fetchRecipesFromBackend()
+            val response = apiService.getPopularRecipes()
+
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+
+            val recipes = mapper.toDomainList(response.body().orEmpty())
+
+            cachedRecipes = recipes
+
             Result.success(recipes)
         } catch (e: Exception) {
             Result.failure(e.toUserFriendlyException())
@@ -48,11 +58,7 @@ class RecipeRepositoryImpl @Inject constructor(
         ingredients: List<String>?
     ): Result<FeedAiResult> = withContext(Dispatchers.IO) {
         try {
-            val availableRecipes = if (cachedRecipes.isNotEmpty()) {
-                cachedRecipes
-            } else {
-                fetchRecipesFromBackend()
-            }
+            val availableRecipes = fetchRecipesFromBackend()
 
             val response = apiService.getAiFeed(
                 FeedAiRequestDto(
@@ -73,29 +79,47 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSavedRecipes(): Result<List<Recipe>> = withContext(Dispatchers.IO) {
+    override suspend fun getSavedRecipes(profileId: Long): Result<List<Recipe>> = withContext(Dispatchers.IO) {
         try {
-            val recipesSource = if (cachedRecipes.isNotEmpty()) {
-                cachedRecipes
-            } else {
-                fetchRecipesFromBackend()
+            val response = apiService.getSavedRecipes(profileId)
+
+            if (!response.isSuccessful) {
+                throw HttpException(response)
             }
 
-            val recipes = recipesSource.filter { it.id in savedRecipeIds }
+            val recipes = mapper.toDomainList(response.body().orEmpty())
             Result.success(recipes)
         } catch (e: Exception) {
             Result.failure(e.toUserFriendlyException())
         }
     }
 
-    override suspend fun saveRecipe(recipe: Recipe): Result<Unit> = withContext(Dispatchers.IO) {
-        savedRecipeIds.add(recipe.id)
-        Result.success(Unit)
+    override suspend fun saveRecipe(profileId: Long, recipeId: Long): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.saveRecipe(profileId, recipeId)
+
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toUserFriendlyException())
+        }
     }
 
-    override suspend fun removeSavedRecipe(recipeId: Long): Result<Unit> = withContext(Dispatchers.IO) {
-        savedRecipeIds.remove(recipeId)
-        Result.success(Unit)
+    override suspend fun removeSavedRecipe(profileId: Long, recipeId: Long): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.removeSavedRecipe(profileId, recipeId)
+
+            if (!response.isSuccessful) {
+                throw HttpException(response)
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toUserFriendlyException())
+        }
     }
 
     private suspend fun fetchRecipesFromBackend(): List<Recipe> {

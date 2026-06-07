@@ -1,10 +1,13 @@
 package com.dishcovery.app.data.datasource
 
 import com.dishcovery.app.data.datasource.model.ProfileDto
+import com.dishcovery.app.data.datasource.model.ProfileUpdateDto
 
-/**
- * Contract for raw profile data retrieval.
- */
 interface ProfileDataSource {
     suspend fun getProfileByUserId(userId: Long): ProfileDto?
+
+    suspend fun updateProfile(
+        profileId: Long,
+        profileUpdateDto: ProfileUpdateDto
+    ): ProfileDto?
 }

@@ -10,12 +10,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.navigation.NavRoutes
-import com.dishcovery.app.presentation.ui.components.AITipBanner
-import com.dishcovery.app.presentation.ui.components.BackPressToExit
 import com.dishcovery.app.presentation.ui.components.FeedAiSection
-import com.dishcovery.app.presentation.ui.components.ManualMatchSection
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
 import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
@@ -28,9 +26,10 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     paddingValues: PaddingValues,
     recipeViewModel: RecipeViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    userId: Long?
+
 ) {
-    BackPressToExit()
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
     val kitchenCategories by recipeViewModel.kitchenCategories.collectAsState()
@@ -44,14 +43,21 @@ fun HomeScreen(
     var selectedRecipe by remember { mutableStateOf<Recipe?>(null) }
     var selectedRecipeForDialog by remember { mutableStateOf<Recipe?>(null) }
     var showSearchingDialog by remember { mutableStateOf(false) }
-    var searchingCategory by remember { mutableStateOf("") }
+    var searchingCategoryName by remember { mutableStateOf("") }
+    var searchingCategoryIds by remember { mutableStateOf<List<Long>>(emptyList()) }
 
-    // Simulación de búsqueda con delay
+
+    LaunchedEffect(userId) {
+        recipeViewModel.loadHomeData(userId)
+    }
+
     LaunchedEffect(showSearchingDialog) {
         if (showSearchingDialog) {
-            delay(2000) // 2 segundos de simulación
+            delay(1200)
             showSearchingDialog = false
-            navController.navigate(NavRoutes.DiscoverPeople.ROUTE)
+
+            val idsParam = searchingCategoryIds.joinToString(",")
+            navController.navigate(NavRoutes.DiscoverPeople.createRoute(idsParam))
         }
     }
 
@@ -68,13 +74,10 @@ fun HomeScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // El tip de la IA ahora se muestra dentro de la sección Feed IA,
-                // por lo que eliminamos el banner global.
-
                 homeError?.let {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = it,
+                        text = it.message,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = 16.dp)
@@ -128,31 +131,32 @@ fun HomeScreen(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                ManualMatchSection(
-                    onMatchClick = { recipeCategory, _ ->
-                        searchingCategory = recipeCategory
-                        showSearchingDialog = true
-                    }
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 
     if (showSearchingDialog) {
-        SearchingMatchDialog(category = searchingCategory)
+        SearchingMatchDialog(category = searchingCategoryName)
     }
 
     selectedRecipe?.let { recipe ->
-        val isSaved = savedRecipes.any { it.id == recipe.id }
+        val updatedRecipe =
+            popularRecipes.find { it.id == recipe.id }
+                ?: savedRecipes.find { it.id == recipe.id }
+                ?: recommendedRecipes.find { it.id == recipe.id }
+                ?: recipe
+
+        val isSaved = savedRecipes.any { it.id == updatedRecipe.id }
+
         RecipeDetailDialog(
-            recipe = recipe,
+            recipe = updatedRecipe,
             isSaved = isSaved,
-            onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
-            onSearchMatch = { 
-                searchingCategory = recipe.categories.firstOrNull()?.name ?: ""
+            onSaveToggle = {
+                recipeViewModel.toggleSaveRecipe(updatedRecipe)
+            },
+            onSearchMatch = {
+                searchingCategoryName = updatedRecipe.categories.joinToString(", ") { it.name }
+                searchingCategoryIds = updatedRecipe.categories.map { it.id }
                 showSearchingDialog = true
             },
             onDismiss = { selectedRecipe = null }
@@ -160,14 +164,27 @@ fun HomeScreen(
     }
 
     selectedRecipeForDialog?.let { recipe ->
-        val isSaved = savedRecipes.any { it.id == recipe.id }
+        val updatedRecipe =
+            popularRecipes.find { it.id == recipe.id }
+                ?: savedRecipes.find { it.id == recipe.id }
+                ?: recommendedRecipes.find { it.id == recipe.id }
+                ?: recipe
+
+        val isSaved = savedRecipes.any { it.id == updatedRecipe.id }
+
         RecipeDetailDialog(
-            recipe = recipe,
+            recipe = updatedRecipe,
             isSaved = isSaved,
-            onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
-            onSearchMatch = { /* no buscar match desde recomendadas */ },
+            onSaveToggle = {
+                recipeViewModel.toggleSaveRecipe(updatedRecipe)
+            },
+            onSearchMatch = {
+                searchingCategoryName = updatedRecipe.categories.joinToString(", ") { it.name }
+                searchingCategoryIds = updatedRecipe.categories.map { it.id }
+                showSearchingDialog = true
+            },
             onDismiss = { selectedRecipeForDialog = null },
-            showSearchMatchButton = false
+            showSearchMatchButton = true
         )
     }
 }

@@ -2,8 +2,10 @@ package com.dishcovery.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Recipe
+import com.dishcovery.app.domain.repository.ProfileRepository
 import com.dishcovery.app.domain.repository.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
-    private val repository: RecipeRepository
+    private val repository: RecipeRepository,
+    private val profileRepository: ProfileRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _popularRecipes = MutableStateFlow<List<Recipe>>(emptyList())
@@ -35,59 +39,49 @@ class RecipeViewModel @Inject constructor(
     private val _feedMessage = MutableStateFlow<String?>(null)
     val feedMessage: StateFlow<String?> = _feedMessage.asStateFlow()
 
-    private val _homeError = MutableStateFlow<String?>(null)
-    val homeError: StateFlow<String?> = _homeError.asStateFlow()
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _isFeedLoading = MutableStateFlow(false)
     val isFeedLoading: StateFlow<Boolean> = _isFeedLoading.asStateFlow()
 
-    init {
-        loadHomeData()
-    }
+    val homeError: StateFlow<DomainError?> = globalErrorViewModel.error
 
-    fun loadHomeData() {
+    private var currentProfileId: Long? = null
+    private var loadedUserId: Long? = null
+
+    fun loadHomeData(userId: Long?) {
+        if (userId == null) {
+            return
+        }
+
+        if (loadedUserId == userId && currentProfileId != null) return
+
         viewModelScope.launch {
             _isLoading.value = true
-            _homeError.value = null
-            
-            val popularResult = repository.getPopularRecipes()
-            if (popularResult.isSuccess) {
-                _popularRecipes.value = popularResult.getOrDefault(emptyList())
+            loadedUserId = userId
+
+            val profileResult = profileRepository.getProfileByUserId(userId)
+
+            if (profileResult.isSuccess) {
+                currentProfileId = profileResult.getOrNull()?.id
             } else {
-                _homeError.value = popularResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las recetas populares"
+                profileResult.exceptionOrNull()?.let { globalErrorViewModel.showError(it) }
             }
 
-            val savedResult = repository.getSavedRecipes()
-            if (savedResult.isSuccess) {
-                _savedRecipes.value = savedResult.getOrDefault(emptyList())
-            } else if (_homeError.value == null) {
-                _homeError.value = savedResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las recetas guardadas"
-            } else {
-                _homeError.value = buildString {
-                    append(_homeError.value)
-                    append(" • ")
-                    append(savedResult.exceptionOrNull()?.message ?: "No se pudieron cargar las recetas guardadas")
-                }
+            repository.getPopularRecipes()
+                .onSuccess { _popularRecipes.value = it }
+                .onFailure { globalErrorViewModel.showError(it) }
+
+            currentProfileId?.let { profileId ->
+                repository.getSavedRecipes(profileId)
+                    .onSuccess { _savedRecipes.value = it }
+                    .onFailure { globalErrorViewModel.showError(it) }
             }
 
-            val categoriesResult = repository.getKitchenCategories()
-            if (categoriesResult.isSuccess) {
-                _kitchenCategories.value = categoriesResult.getOrDefault(emptyList())
-            } else if (_homeError.value == null) {
-                _homeError.value = categoriesResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las categorías"
-            } else {
-                _homeError.value = buildString {
-                    append(_homeError.value)
-                    append(" • ")
-                    append(categoriesResult.exceptionOrNull()?.message ?: "No se pudieron cargar las categorías")
-                }
-            }
+            repository.getKitchenCategories()
+                .onSuccess { _kitchenCategories.value = it }
+                .onFailure { globalErrorViewModel.showError(it) }
 
             _isLoading.value = false
         }
@@ -106,16 +100,13 @@ class RecipeViewModel @Inject constructor(
                 .onSuccess { feedResult ->
                     _aiTip.value = feedResult.aiTip
                     _recommendedRecipes.value = feedResult.recommendedRecipes
-                    _feedMessage.value = if (feedResult.recommendedRecipes.isEmpty()) {
-                        "No encontramos recetas sugeridas para esa combinación. Prueba con otra categoría o ingredientes."
-                    } else {
-                        null
+                    if (feedResult.recommendedRecipes.isEmpty()) {
+                        _feedMessage.value = "No encontramos recetas sugeridas para esa combinación."
                     }
                 }
                 .onFailure { throwable ->
                     _recommendedRecipes.value = emptyList()
-                    _feedMessage.value = null
-                    _homeError.value = throwable.message ?: "No se pudo generar el feed IA"
+                    globalErrorViewModel.showError(throwable)
                 }
 
             _isFeedLoading.value = false
@@ -124,18 +115,25 @@ class RecipeViewModel @Inject constructor(
 
     fun toggleSaveRecipe(recipe: Recipe) {
         viewModelScope.launch {
+            val profileId = currentProfileId ?: return@launch
+
             val isSaved = _savedRecipes.value.any { it.id == recipe.id }
-            if (isSaved) {
-                repository.removeSavedRecipe(recipe.id)
+
+            val result = if (isSaved) {
+                repository.removeSavedRecipe(profileId, recipe.id)
             } else {
-                repository.saveRecipe(recipe)
+                repository.saveRecipe(profileId, recipe.id)
             }
-            // Refresh saved recipes
-            val savedResult = repository.getSavedRecipes()
-            if (savedResult.isSuccess) {
-                _savedRecipes.value = savedResult.getOrDefault(emptyList())
+
+            if (result.isSuccess) {
+                repository.getSavedRecipes(profileId)
+                    .onSuccess { _savedRecipes.value = it }
+                    .onFailure { globalErrorViewModel.showError(it) }
+
+                repository.getPopularRecipes()
+                    .onSuccess { _popularRecipes.value = it }
             } else {
-                _homeError.value = savedResult.exceptionOrNull()?.message
+                result.exceptionOrNull()?.let { globalErrorViewModel.showError(it) }
             }
         }
     }

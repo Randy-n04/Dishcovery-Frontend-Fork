@@ -10,7 +10,11 @@ import retrofit2.Response
 interface AuthDataSource {
     /**
      * Realiza la petición de login al servidor.
-     * Se devuelve un objeto [Response] para poder extraer el JWT de los headers.
      */
     suspend fun login(loginInput: UserLoginInputDto): Response<LoginResponseDto>
+
+    /**
+     * Realiza la petición de logout al servidor.
+     */
+    suspend fun logout(): Response<Unit>
 }

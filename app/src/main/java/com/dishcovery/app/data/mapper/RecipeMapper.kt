@@ -11,6 +11,7 @@ import com.dishcovery.app.domain.model.Recipe
 import javax.inject.Inject
 
 class RecipeMapper @Inject constructor() {
+
     fun toDomain(dto: RecipeResultDto): Recipe {
         return Recipe(
             id = dto.id,
@@ -18,6 +19,7 @@ class RecipeMapper @Inject constructor() {
             description = dto.description,
             iconUrl = dto.iconUrl,
             weight = dto.weight,
+            savedCount = dto.savedCount,
             categories = dto.categories.mapNotNull { toDomain(it) }
         )
     }
