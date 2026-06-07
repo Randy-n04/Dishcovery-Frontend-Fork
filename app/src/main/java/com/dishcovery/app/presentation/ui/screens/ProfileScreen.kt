@@ -8,12 +8,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.model.UserRole
+import com.dishcovery.app.presentation.ui.components.FaqAdminDropdown
 import com.dishcovery.app.presentation.ui.components.EditProfileDialog
 import com.dishcovery.app.presentation.ui.components.ProfileAvatar
 import com.dishcovery.app.presentation.ui.components.ProfileHeader
@@ -22,6 +28,8 @@ import com.dishcovery.app.presentation.ui.components.ProfilePublicData
 import com.dishcovery.app.presentation.ui.theme.Beige
 import com.dishcovery.app.presentation.ui.theme.Rojo
 import com.dishcovery.app.presentation.ui.theme.TextPrimary
+import com.dishcovery.app.presentation.viewmodel.AdminViewModel
+
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
 import com.dishcovery.app.presentation.ui.components.EditAccountDialog
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
@@ -62,6 +70,16 @@ fun ProfileScreen(
 
         when {
             isAdmin -> {
+                val faqViewModel: AdminViewModel = hiltViewModel()
+                val faq         by faqViewModel.faq.collectAsState()
+                val editContent by faqViewModel.editContent.collectAsState()
+                val faqLoading  by faqViewModel.isLoading.collectAsState()
+                val faqError    by faqViewModel.error.collectAsState()
+                val saveSuccess by faqViewModel.saveSuccess.collectAsState()
+
+                // Controla si el dropdown está abierto
+                var faqExpanded by remember { mutableStateOf(false) }
+
                 val adminDisplayName = if (user?.username.equals("admin", ignoreCase = true)) {
                     stringResource(R.string.admin_display_name)
                 } else {
@@ -75,10 +93,10 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     ProfileAvatar(
-                        photoUrl = "",
+                        photoUrl   = "",
                         publicName = adminDisplayName,
-                        bio = "",
-                        showBio = false
+                        bio        = "",
+                        showBio    = false
                     )
 
                     ProfileMenuSection(
@@ -91,10 +109,28 @@ fun ProfileScreen(
                     ProfileMenuSection(
                         title = stringResource(R.string.other_section_title),
                         items = listOf(
-                            Triple(stringResource(R.string.faq_item), { }, TextPrimary),
+                            Triple(
+                                stringResource(R.string.faq_item_admin),
+                                { faqExpanded = !faqExpanded },   // toggle dropdown
+                                TextPrimary
+                            ),
                             Triple(stringResource(R.string.logout_item), onLogout, Rojo)
                         )
                     )
+
+                    // Dropdown FAQ — solo visible cuando faqExpanded = true
+                    if (faqExpanded) {
+                        FaqAdminDropdown(
+                            faq             = faq,
+                            editContent     = editContent,
+                            isLoading       = faqLoading,
+                            error           = faqError,
+                            saveSuccess     = saveSuccess,
+                            onContentChange = faqViewModel::onContentChange,
+                            onSave          = faqViewModel::saveChanges,
+                            onDismissSaveSuccess = faqViewModel::resetSaveSuccess
+                        )
+                    }
 
                     Spacer(Modifier.height(16.dp))
                 }

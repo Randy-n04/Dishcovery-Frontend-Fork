@@ -27,6 +27,10 @@ abstract class AppModule {
 
     @Binds
     @Singleton
+    abstract fun bindFaqDataSource(impl: FaqDataSourceImpl): FaqDataSource
+
+    @Binds
+    @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
     @Binds
@@ -45,11 +49,15 @@ abstract class AppModule {
     @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
 
-    @Binds 
+    @Binds
+    @Singleton
+    abstract fun bindFaqRepository(impl: FaqRepositoryImpl): FaqRepository
+
+    @Binds
     @Singleton
     abstract fun bindImageDataSource(impl: ImageDataSourceImpl): ImageDataSource
 
-    @Binds 
+    @Binds
     @Singleton
     abstract fun bindImageRepository(impl: ImageRepositoryImpl): ImageRepository
 
@@ -60,6 +68,4 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindMatchRepository(impl: MatchRepositoryImpl): MatchRepository
-
-
 }

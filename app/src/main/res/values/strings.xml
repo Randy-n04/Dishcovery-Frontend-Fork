@@ -53,6 +53,7 @@
     <string name="personal_data_item">Datos Personales</string>
     <string name="account_settings_item">Ajustes de Cuenta</string>
     <string name="faq_item">Preguntas Frecuentes</string>
+    <string name="faq_item_admin">Editar Preguntas Frecuentes</string>
     <string name="logout_item">Salir de la Cuenta</string>
     <string name="chats_title">Chats</string>
     <string name="search_placeholder">Buscar</string>
@@ -119,6 +120,10 @@
     <string name="prof_chef_pro">Chef Pro</string>
     <string name="prof_student">Estudiante</string>
 
+    <!-- FAQ Admin -->
+    <string name="faq_placeholder">Escribe el contenido de las preguntas frecuentes…</string>
+    <string name="faq_save_button">Guardar</string>
+    <string name="faq_save_success">¡Cambios guardados correctamente!</string>
     <!-- CameraScreen -->
     <string name="camera_screen_title">Analizar imagen</string>
     <string name="camera_idle_hint">Toma una foto para analizar los ingredientes</string>

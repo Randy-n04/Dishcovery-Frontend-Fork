@@ -28,5 +28,7 @@ sealed class NavRoutes {
     }
     data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
 
+    data object AdminFaq : NavRoutes() { const val ROUTE = "admin_faq" }
+    
     data object CameraAnalysis : NavRoutes() { const val ROUTE = "camera_analysis" }
 }
