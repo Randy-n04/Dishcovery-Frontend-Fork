@@ -83,7 +83,7 @@ fun ActionButtons(
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, Color(0xFF8B4513))
         ) {
-            Text(text = if (status == PlanStatus.PENDING && !isReceived) "Cerrar" else "Volver", color = Color(0xFF8B4513))
+            Text(text = "Volver al inicio", color = Color(0xFF8B4513))
         }
     }
 }

@@ -84,7 +84,11 @@ fun ExchangePlanScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { 
+                        navController.navigate(NavRoutes.Home.ROUTE) {
+                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                        }
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 },
@@ -212,7 +216,9 @@ fun ExchangePlanScreen(
                                 onAccept = { /* Auto-aceptado */ },
                                 onReject = {
                                     viewModel.rejectPlan {
-                                        navController.popBackStack()
+                                        navController.navigate(NavRoutes.Home.ROUTE) {
+                                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                                        }
                                     }
                                 },
                                 onSave = {
@@ -221,7 +227,9 @@ fun ExchangePlanScreen(
                                     }
                                 },
                                 onClose = {
-                                    navController.popBackStack()
+                                    navController.navigate(NavRoutes.Home.ROUTE) {
+                                        popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                                    }
                                 },
                                 onChat = {
                                     val associatedChat = chats.find { it.planId == currentPlan.id || it.id == chatId }
