@@ -12,12 +12,23 @@ sealed class NavRoutes {
         const val ROUTE = "chat_detail/{chatId}/{chatName}"
         fun createRoute(id: Long, name: String) = "chat_detail/$id/$name"
     }
-    data object DiscoverPeople : NavRoutes() { const val ROUTE = "discover_people" }
+    data object DiscoverPeople : NavRoutes() {
+        const val ROUTE = "discover_people/{categoryIds}"
+        fun createRoute(categoryIds: String) = "discover_people/$categoryIds"
+    }
+
     data object ExchangePlan : NavRoutes() {
-        const val ROUTE = "exchange_plan?isReceived={isReceived}"
-        fun createRoute(isReceived: Boolean) = "exchange_plan?isReceived=$isReceived"
+        const val ROUTE = "exchange_plan?planId={planId}&chatId={chatId}"
+        fun createRoute(planId: Long? = null, chatId: Long? = null): String {
+            val planPart = if (planId != null) "planId=$planId" else ""
+            val chatPart = if (chatId != null) "chatId=$chatId" else ""
+            val separator = if (planId != null && chatId != null) "&" else ""
+            return "exchange_plan?$planPart$separator$chatPart"
+        }
     }
     data object PlanRequests : NavRoutes() { const val ROUTE = "plan_requests" }
 
     data object AdminFaq : NavRoutes() { const val ROUTE = "admin_faq" }
+    
+    data object CameraAnalysis : NavRoutes() { const val ROUTE = "camera_analysis" }
 }

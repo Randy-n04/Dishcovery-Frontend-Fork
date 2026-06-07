@@ -16,4 +16,8 @@ class AuthDataSourceImpl @Inject constructor(
     override suspend fun login(loginInput: UserLoginInputDto): Response<LoginResponseDto> {
         return apiService.login(loginInput)
     }
+
+    override suspend fun logout(): Response<Unit> {
+        return apiService.logout()
+    }
 }

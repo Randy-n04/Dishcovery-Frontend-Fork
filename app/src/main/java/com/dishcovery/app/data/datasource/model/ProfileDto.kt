@@ -12,6 +12,8 @@ data class ProfileDto(
     val bio: String,
     val photoUrl: String,
     val offeredSkills: List<KitchenCategoryDto>,
+    val skillsToLearn: List<KitchenCategoryDto> = emptyList(),
     val language: String,
-    val location: String
+    val location: String,
+
 )

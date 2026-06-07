@@ -2,9 +2,10 @@ package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.remote.ChatApiService
 import com.dishcovery.app.data.datasource.remote.FaqApiService
-import com.dishcovery.app.data.datasource.remote.ProfileApiService
+import com.dishcovery.app.data.datasource.remote.RecipeApiService
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.remote.AuthInterceptor
+import com.dishcovery.app.data.datasource.remote.ImageApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,6 +15,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+import com.dishcovery.app.data.datasource.remote.ExchangePlanApiService
+import com.dishcovery.app.data.datasource.remote.MatchApiService
+import com.dishcovery.app.data.datasource.remote.ProfileApiService
+import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -39,6 +44,9 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
             .build()
     }
 
@@ -58,7 +66,24 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideRecipeApiService(retrofit: Retrofit): RecipeApiService = retrofit.create(RecipeApiService::class.java)
+
+    @Provides
+    @Singleton
     fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFoodAnalysisApiService(retrofit: Retrofit): ImageApiService = retrofit.create(ImageApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideExchangePlanApiService(retrofit: Retrofit): ExchangePlanApiService = retrofit.create(ExchangePlanApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMatchApiService(retrofit: Retrofit): MatchApiService = retrofit.create(MatchApiService::class.java)
+
 
     @Provides
     @Singleton

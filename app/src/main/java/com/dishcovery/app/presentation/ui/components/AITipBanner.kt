@@ -18,51 +18,53 @@ import androidx.compose.ui.unit.sp
 import com.dishcovery.app.R
 
 @Composable
-fun AITipBanner(modifier: Modifier = Modifier) {
+fun AITipBanner(
+    tipText: String? = null,
+    modifier: Modifier = Modifier
+) {
+    // Mostrar banner solo si el backend proporcionó un tip explícito.
+    if (tipText.isNullOrBlank()) return
     Box(
         modifier = modifier
-            .background(Color(0xFFF1F4E6)) // Light background for the banner section
+            .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                Color(0xFFF2994A), // Orange
-                                Color(0xFFEB5757)  // Red
-                            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFFFA052),
+                            Color(0xFFF2994A),
+                            Color(0xFFF07B3F),
+                            Color(0xFFD84315)
                         )
-                    )
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = stringResource(R.string.ai_tip_icon_desc),
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = stringResource(R.string.ai_tip_title),
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
-                    Text(
-                        text = stringResource(R.string.ai_tip_subtitle),
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontSize = 11.sp
-                    )
-                }
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = stringResource(R.string.ai_tip_icon_desc),
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = stringResource(R.string.ai_tip_title),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                )
+                Text(
+                    text = tipText,
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 11.sp
+                )
             }
         }
     }

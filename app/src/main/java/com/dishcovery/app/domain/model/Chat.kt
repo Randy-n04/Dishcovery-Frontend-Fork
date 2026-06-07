@@ -10,5 +10,6 @@ data class Chat(
     val lastMessage: String,
     val time: String,
     val unreadCount: Int,
-    val avatarUrl: String
+    val avatarUrl: String,
+    val planId: Long? = null // Vinculación con el plan de intercambio
 )

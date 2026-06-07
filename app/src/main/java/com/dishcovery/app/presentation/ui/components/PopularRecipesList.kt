@@ -24,7 +24,7 @@ fun PopularRecipesList(
             PopularRecipeCard(
                 title = recipe.name,
                 description = recipe.description,
-                likes = recipe.weight,
+                likes = recipe.savedCount,
                 imageUrl = recipe.iconUrl,
                 onClick = { onRecipeClick(recipe) }
             )

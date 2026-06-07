@@ -8,4 +8,5 @@ interface ChatRepository {
     suspend fun getMessages(chatId: Long): Result<List<Message>>
     suspend fun sendMessage(chatId: Long, senderId: Long, text: String): Result<Message>
     suspend fun updateMessage(id: Long, text: String): Result<Message>
+    suspend fun createChat(senderId: Long, receiverId: Long, name: String, avatarUrl: String, planId: Long?): Result<Chat>
 }

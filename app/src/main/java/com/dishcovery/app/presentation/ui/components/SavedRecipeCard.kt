@@ -24,7 +24,7 @@ fun SavedRecipeCard(
     title: String,
     imageUrl: String,
     onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         onClick = onClick,
