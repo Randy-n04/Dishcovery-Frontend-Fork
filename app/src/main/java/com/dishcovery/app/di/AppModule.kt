@@ -45,9 +45,21 @@ abstract class AppModule {
     @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
 
-      @Binds @Singleton
-      abstract fun bindImageDataSource(impl: ImageDataSourceImpl): ImageDataSource
+    @Binds 
+    @Singleton
+    abstract fun bindImageDataSource(impl: ImageDataSourceImpl): ImageDataSource
 
-      @Binds @Singleton
-      abstract fun bindImageRepository(impl: ImageRepositoryImpl): ImageRepository
+    @Binds 
+    @Singleton
+    abstract fun bindImageRepository(impl: ImageRepositoryImpl): ImageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExchangePlanRepository(impl: ExchangePlanRepositoryImpl): ExchangePlanRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMatchRepository(impl: MatchRepositoryImpl): MatchRepository
+
+
 }

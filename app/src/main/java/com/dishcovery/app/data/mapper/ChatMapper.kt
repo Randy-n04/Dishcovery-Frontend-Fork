@@ -17,7 +17,8 @@ class ChatMapper @Inject constructor() {
             lastMessage = chat.lastMessage,
             time = chat.time,
             unreadCount = chat.unreadCount,
-            avatarUrl = chat.avatarUrl
+            avatarUrl = chat.avatarUrl,
+            planId = chat.planId
         )
     }
 
@@ -32,7 +33,8 @@ class ChatMapper @Inject constructor() {
             lastMessage = dto.lastMessage,
             time = dto.time,
             unreadCount = dto.unreadCount,
-            avatarUrl = dto.avatarUrl
+            avatarUrl = dto.avatarUrl,
+            planId = dto.planId
         )
     }
 }

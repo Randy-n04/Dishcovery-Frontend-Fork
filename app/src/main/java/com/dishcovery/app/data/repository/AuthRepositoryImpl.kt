@@ -7,6 +7,7 @@ import com.dishcovery.app.data.mapper.UserMapper
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.AuthRepository
 import javax.inject.Inject
+import com.dishcovery.app.data.datasource.model.AccountUpdateDto
 
 class AuthRepositoryImpl @Inject constructor(
     private val apiService: UserApiService,
@@ -32,6 +33,48 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.success(mapper.toDomainFromLogin(response.body()!!))
             } else {
                 Result.failure(Exception("Credenciales inválidas o error de servidor: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun logout(): Result<Unit> {
+        return try {
+            val response = apiService.logout()
+            if (response.isSuccessful) {
+                tokenManager.deleteToken()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al cerrar sesión: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            // Incluso si falla la red, borramos el token localmente
+            tokenManager.deleteToken()
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateAccount(
+        userId: Long,
+        username: String?,
+        currentPassword: String,
+        newPassword: String?
+    ): Result<User> {
+        return try {
+            val response = apiService.updateAccount(
+                id = userId,
+                request = AccountUpdateDto(
+                    username = username,
+                    currentPassword = currentPassword,
+                    newPassword = newPassword
+                )
+            )
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(mapper.toDomain(response.body()!!))
+            } else {
+                Result.failure(Exception("No se pudo actualizar la cuenta: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

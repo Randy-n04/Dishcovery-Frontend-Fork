@@ -43,6 +43,7 @@ import com.dishcovery.app.presentation.ui.components.MessageBubble
 import com.dishcovery.app.presentation.ui.components.MessageContextMenu
 import com.dishcovery.app.presentation.ui.components.ScreenErrorState
 import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
+import com.dishcovery.app.presentation.navigation.NavRoutes
 
 @Composable
 fun ChatDetailScreen(
@@ -207,10 +208,6 @@ fun ChatDetailScreen(
                 ScreenErrorState(message = messagesError.orEmpty())
             }
 
-            if (messagesError != null) {
-                ScreenErrorState(message = messagesError.orEmpty())
-            }
-
             DropdownMenu(
                 expanded = showOptions,
                 onDismissRequest = { showOptions = false }
@@ -285,9 +282,16 @@ fun ChatDetailScreen(
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SuggestionChip(text = stringResource(R.string.translate_chip), selected = false, modifier = Modifier.weight(1f))
                 SuggestionChip(text = stringResource(R.string.recipe_tips_chip), selected = false, modifier = Modifier.weight(1f))
-                SuggestionChip(text = stringResource(R.string.plan_schedules_chip), selected = true, modifier = Modifier.weight(1.2f))
+                
+                SuggestionChip(
+                    text = stringResource(R.string.plan_schedules_chip), 
+                    selected = false,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        navController.navigate(NavRoutes.ExchangePlan.createRoute(chatId = chatId))
+                    }
+                )
             }
 
             Row(
@@ -302,8 +306,7 @@ fun ChatDetailScreen(
                     )
                     .background(Color.White, RoundedCornerShape(26.dp))
                     .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
 
                   Surface(
                       shape    = CircleShape,
@@ -433,10 +436,11 @@ private fun CameraGlyph(
 private fun SuggestionChip(
     text: String,
     selected: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
         shadowElevation = 2.dp,
         color = if (selected) Color(0xFFEFA053) else Color(0xFFF0ECD5)

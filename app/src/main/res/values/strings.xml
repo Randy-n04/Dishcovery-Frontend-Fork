@@ -8,6 +8,15 @@
     <string name="ai_tip_icon_desc">AI Tip</string>
     <string name="ai_tip_title">AI Tip: ¡Intenta comida Mexicana esta semana!</string>
     <string name="ai_tip_subtitle">Ya has perfeccionado lo básico de la comida italiana</string>
+    <string name="feed_ai_title">Explorar Recetas</string>
+    <string name="feed_ai_subtitle">Elige una categoría, una preferencia y algunos ingredientes para recibir sugerencias.</string>
+    <string name="feed_ai_category_label">Categoría</string>
+    <string name="feed_ai_preference_label">Preferencia</string>
+    <string name="feed_ai_preference_hint">Ej. Algo que no tenga fideos</string>
+    <string name="feed_ai_ingredients_label">Ingredientes</string>
+    <string name="feed_ai_ingredients_hint">Ej. Vegetales, Arroz, Salsa</string>
+    <string name="feed_ai_button">Generar sugerencias</string>
+    <string name="feed_ai_recommended_title">Recomendadas para ti</string>
     <string name="back_button_desc">Volver</string>
     <string name="profile_title">Mi Perfil</string>
     <string name="admin_panel_title">Panel Administrativo</string>
@@ -51,7 +60,7 @@
     <string name="ai_suggestion_chat_detail">Ambos tienen disponibilidad este fin de semana. Recomiendo empezar con una receta sencilla para generar confianza.</string>
     <string name="translate_chip">Traducir</string>
     <string name="recipe_tips_chip">Tips recetas</string>
-    <string name="plan_schedules_chip">Planear horarios</string>
+    <string name="plan_schedules_chip">Plan</string>
     <string name="message_placeholder">Mensaje</string>
     <string name="send_button_label">Enviar</string>
     <string name="popular_recipes_title">Recetas Populares</string>
@@ -71,15 +80,18 @@
     <!-- Discover People Screen -->
     <string name="discover_people_title">Descubrir personas</string>
     <string name="match_percentage_suffix">match</string>
-    <string name="can_do_label">Puede hacer:</string>
+    <string name="can_do_label">Ofrece:</string>
     <string name="want_to_learn_label">Quiere aprender:</string>
     <string name="next_button">Siguiente</string>
-    <string name="connect_button">Conectar</string>
+    <string name="connect_button">¡CONECTAR!</string>
     <string name="manual_match_title">Match Personalizado</string>
     <string name="manual_match_learn_question">¿Qué te gustaría aprender a cocinar?</string>
     <string name="manual_match_profile_question">¿Cómo te defines como cocinero?</string>
     <string name="find_chef_button">¡Encontrar mi Chef Ideal!</string>
     <string name="searching_match_message">Buscando a alguien que comparta tu gusto por la comida %s…</string>
+    <string name="searching_chefs_loading">Buscando los mejores chefs para ti…</string>
+    <string name="no_candidates_available">No hay candidatos disponibles, intente en otro momento</string>
+    <string name="back_button_label">Volver</string>
 
     <!-- Exchange Plan Screen -->
     <string name="exchange_plan_title">Plan de intercambio</string>
@@ -93,7 +105,7 @@
     <string name="accept_plan_button">Aceptar Match</string>
     <string name="save_plan_button">Guardar Plan</string>
     <string name="process_plan_button">Procesar Plan</string>
-    <string name="suggestions_hint">Escribe tus sugerencias aquí...</string>
+    <string name="suggestions_hint">Escribe tus sugerencias aquí…</string>
     <string name="suggestions_label">Sugerencias adicionales</string>
 
     <!-- Categories and Profiles -->

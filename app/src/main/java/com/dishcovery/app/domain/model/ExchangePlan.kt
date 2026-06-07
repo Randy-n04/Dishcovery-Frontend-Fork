@@ -5,6 +5,7 @@ package com.dishcovery.app.domain.model
  */
 data class ExchangePlan(
     val id: Long = 0,
+    val creatorId: Long,
     val partnerId: Long,
     val partnerName: String,
     val partnerImageUrl: String,
@@ -13,7 +14,8 @@ data class ExchangePlan(
     val progress: Int = 0,
     val totalSessions: Int = 0,
     val status: PlanStatus = PlanStatus.PENDING,
-    val userNote: String = ""
+    val userNote: String = "",
+    val isReceived: Boolean = false // Indica si la solicitud fue recibida por el usuario actual
 )
 
 enum class PlanStatus {
