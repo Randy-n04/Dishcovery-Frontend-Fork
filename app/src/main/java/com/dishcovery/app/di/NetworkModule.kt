@@ -8,6 +8,7 @@ import com.dishcovery.app.data.datasource.remote.KitchenCategoryApiService
 import com.dishcovery.app.data.datasource.remote.MatchApiService
 import com.dishcovery.app.data.datasource.remote.ProfileApiService
 import com.dishcovery.app.data.datasource.remote.RecipeApiService
+import com.dishcovery.app.data.datasource.remote.StatsApiService
 import com.dishcovery.app.data.datasource.remote.UserApiService
 import com.dishcovery.app.data.remote.AuthInterceptor
 import dagger.Module
@@ -20,6 +21,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import kotlin.jvm.java
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -104,4 +106,9 @@ object NetworkModule {
     @Singleton
     fun provideFaqApiService(retrofit: Retrofit): FaqApiService =
         retrofit.create(FaqApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStatsApiService(retrofit: Retrofit): StatsApiService =
+        retrofit.create(StatsApiService::class.java)
 }

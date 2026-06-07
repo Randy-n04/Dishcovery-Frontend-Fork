@@ -59,6 +59,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.runtime)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -76,4 +77,5 @@ dependencies {
     // En dependencias
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-beta.2")
 }

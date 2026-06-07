@@ -29,6 +29,9 @@ abstract class AppModule {
     @Singleton
     abstract fun bindFaqDataSource(impl: FaqDataSourceImpl): FaqDataSource
 
+    @Binds @Singleton
+    abstract fun bindStatsDataSource(impl: StatsDataSourceImpl): StatsDataSource
+
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
@@ -76,4 +79,7 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindMatchRepository(impl: MatchRepositoryImpl): MatchRepository
+
+    @Binds @Singleton
+    abstract fun bindStatsRepository(impl: StatsRepositoryImpl): StatsRepository
 }

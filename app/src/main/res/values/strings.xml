@@ -160,4 +160,8 @@
     <!-- Para 2 o más: "Se detectaron: x, y, z y w." -->
     <string name="camera_multiple_ingredients">Se detectaron: %1$s y %2$s.</string>
 
+    <string name="stats_active_users_title">Usuarios activos por día</string>
+    <string name="stats_matches_title">Matches por día</string>
+    <string name="stats_no_data">Sin datos para el período</string>
+
 </resources>
