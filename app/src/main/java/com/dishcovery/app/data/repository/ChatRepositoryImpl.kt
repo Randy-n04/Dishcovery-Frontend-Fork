@@ -32,6 +32,13 @@ class ChatRepositoryImpl @Inject constructor(
         Result.failure(e)
     }
 
+    override suspend fun getChatById(chatId: Long): Result<Chat> = try {
+        val dto = dataSource.getChatById(chatId)
+        Result.success(chatMapper.toDomain(dto))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
     override suspend fun getMessages(chatId: Long): Result<List<Message>> = try {
         val dtos = dataSource.getMessages(chatId)
         val messages = dtos.map { messageMapper.toDomain(it) }

@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminStatisticsViewModel @Inject constructor(
-    private val repository: StatsRepository
+    private val repository: StatsRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _activeUsers = MutableStateFlow<List<StatPoint>>(emptyList())
@@ -35,10 +36,16 @@ class AdminStatisticsViewModel @Inject constructor(
             _isLoading.value = true
             repository.getActiveUsers(days)
                 .onSuccess { _activeUsers.value = it }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message
+                    globalErrorViewModel.showError(it)
+                }
             repository.getMatches(days)
                 .onSuccess { _matches.value = it }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }

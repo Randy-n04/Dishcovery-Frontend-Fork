@@ -8,6 +8,7 @@ import com.dishcovery.app.data.datasource.model.MessageUpdateRequest
 
 interface ChatDataSource {
     suspend fun getChats(): List<ChatDto>
+    suspend fun getChatById(id: Long): ChatDto
     suspend fun createChat(chatInput: ChatInputDto): ChatDto
     suspend fun updateChat(chatInput: ChatInputDto): ChatDto
     suspend fun deleteChat(id: Long)

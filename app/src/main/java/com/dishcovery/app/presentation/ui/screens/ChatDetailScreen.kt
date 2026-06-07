@@ -11,14 +11,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.geometry.CornerRadius
@@ -31,7 +28,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dishcovery.app.R
@@ -54,6 +50,7 @@ fun ChatDetailScreen(
 ) {
 
     val messages by chatViewModel.messages.collectAsState()
+    val otherProfile by chatViewModel.otherParticipantProfile.collectAsState()
     val messagesError by chatViewModel.messagesError.collectAsState()
     val sendError by chatViewModel.sendError.collectAsState()
 
@@ -75,7 +72,7 @@ fun ChatDetailScreen(
     val isLoadingMessages by chatViewModel.isLoadingMessages.collectAsState()
 
     LaunchedEffect(chatId) {
-        chatViewModel.loadMessages(chatId)
+        chatViewModel.loadChatAndMessages(chatId, currentUserId)
     }
 
     LaunchedEffect(sendError) {
@@ -121,19 +118,11 @@ fun ChatDetailScreen(
                 }
 
                 Text(
-                    text = chatName,
+                    text = otherProfile?.publicName ?: chatName,
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 8.dp, vertical = 10.dp)
                 )
-
-                Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search_placeholder), tint = Primary)
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Icon(Icons.Default.Call, contentDescription = null, tint = Primary)
-
-                Spacer(modifier = Modifier.width(10.dp))
             }
         }
 
@@ -279,14 +268,12 @@ fun ChatDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.Center
             ) {
-                SuggestionChip(text = stringResource(R.string.recipe_tips_chip), selected = false, modifier = Modifier.weight(1f))
-                
                 SuggestionChip(
                     text = stringResource(R.string.plan_schedules_chip), 
                     selected = false,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(0.5f),
                     onClick = {
                         navController.navigate(NavRoutes.ExchangePlan.createRoute(chatId = chatId))
                     }

@@ -102,12 +102,20 @@
     <string name="ai_plan_suggestion">Sugerencia de IA: Balancea 2 sesiones de intercambio con dificultad progresiva. Cada sesión construida se basa en las habilidades adquiridas en la anterior.</string>
     <string name="instructed_by_prefix">Instruido por %s</string>
     <string name="instructed_by_you">Instruido por ti</string>
-    <string name="start_session_button">Iniciar</string>
+    <string name="start_session_button">Completar</string>
     <string name="accept_plan_button">Aceptar Match</string>
-    <string name="save_plan_button">Guardar Plan</string>
+    <string name="save_plan_button">Actualizar Plan</string>
     <string name="process_plan_button">Procesar Plan</string>
     <string name="suggestions_hint">Escribe tus sugerencias aquí…</string>
     <string name="suggestions_label">Sugerencias adicionales</string>
+    <string name="retry_button">Reintentar</string>
+    <string name="no_plans_available">No hay planes de intercambio disponibles.</string>
+
+    <!-- Global Errors -->
+    <string name="error_unknown">Ha ocurrido un error inesperado</string>
+    <string name="error_network">Error de conexión. Revisa tu internet.</string>
+    <string name="error_server">El servidor no responde. Inténtalo más tarde.</string>
+    <string name="error_data_incomplete">El servidor envió información incompleta o inválida.</string>
 
     <!-- Categories and Profiles -->
     <string name="cat_italian">Italiana</string>

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -37,40 +38,36 @@ fun ExchangePlanScreen(
 ) {
     val user by authViewModel.user.collectAsState()
     val plan by viewModel.plan.collectAsState()
+    val partnerProfile by viewModel.partnerProfile.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedSessionIndex by remember { mutableIntStateOf(-1) }
-
     LaunchedEffect(planId, chatId, user) {
-        if (planId != null) {
-            viewModel.loadPlan(planId)
-        } else if (chatId != null) {
-            viewModel.loadPlanByChatId(chatId)
+        user?.let { u ->
+            if (planId != null) {
+                viewModel.loadPlan(planId, u.id)
+            } else if (chatId != null) {
+                viewModel.loadPlanByChatId(chatId, u.id)
+            }
+            chatViewModel.loadChats(u.id)
         }
-        user?.let { chatViewModel.loadChats(it.id) }
     }
 
     val currentPlan = plan
-    val sessionToEdit: ExchangeSession? =
-        if (selectedSessionIndex != -1) currentPlan?.sessions?.getOrNull(selectedSessionIndex) else null
 
     // Lógica de auto-aceptación si el usuario es el receptor y el plan está PENDING
     LaunchedEffect(currentPlan, user) {
         if (currentPlan != null && user != null) {
             val isCreator = currentPlan.creatorId == user!!.id
             if (!isCreator && currentPlan.status == PlanStatus.PENDING) {
-                viewModel.acceptPlan {
-                    // Opcional: algún feedback de que se aceptó automáticamente
-                }
+                viewModel.acceptPlan { }
             }
         }
     }
 
-    // Determinar si el usuario actual es el "receptor" (compañero) para permitir edición de sus sesiones
+    // Determinar si el usuario actual es el "receptor" (compañero)
     val effectivelyIsReceived = currentPlan?.let { it.creatorId != user?.id } ?: false
 
     Scaffold(
@@ -111,6 +108,9 @@ fun ExchangePlanScreen(
             }
 
             errorMessage != null -> {
+                // Filtro de seguridad que transforma mensajes técnicos en amigables
+                val displayError = formatErrorMessage(errorMessage!!)
+                
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -120,21 +120,24 @@ fun ExchangePlanScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = errorMessage ?: "Error desconocido",
+                        text = displayError,
                         color = Color.Red,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
                         onClick = { 
-                            if (planId != null) viewModel.loadPlan(planId)
-                            else if (chatId != null) viewModel.loadPlanByChatId(chatId)
+                            user?.let { u ->
+                                if (planId != null) viewModel.loadPlan(planId, u.id)
+                                else if (chatId != null) viewModel.loadPlanByChatId(chatId, u.id)
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
                     ) {
-                        Text("Reintentar")
+                        Text(stringResource(R.string.retry_button))
                     }
                 }
             }
@@ -147,7 +150,7 @@ fun ExchangePlanScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No hay planes de intercambio disponibles.",
+                        text = stringResource(R.string.no_plans_available),
                         color = Color.Gray
                     )
                 }
@@ -166,8 +169,8 @@ fun ExchangePlanScreen(
                 ) {
                     item {
                         PartnerCard(
-                            partnerName = currentPlan.partnerName,
-                            partnerImageUrl = currentPlan.partnerImageUrl
+                            partnerName = partnerProfile?.publicName ?: currentPlan.partnerName,
+                            partnerImageUrl = partnerProfile?.photoUrl ?: currentPlan.partnerImageUrl
                         )
                     }
 
@@ -183,18 +186,10 @@ fun ExchangePlanScreen(
                     }
 
                     itemsIndexed(currentPlan.sessions) { index, session ->
-                        // Permitimos editar si el plan está ACEPTADO o PENDIENTE
-                        val canEditSession = (currentPlan.status == PlanStatus.ACCEPTED || currentPlan.status == PlanStatus.PENDING) && 
-                                ((effectivelyIsReceived && session.instructorName == currentPlan.partnerName) || 
-                                (!effectivelyIsReceived && session.instructorName != currentPlan.partnerName))
-
                         SessionCard(
                             session = session,
-                            canEdit = canEditSession && !isSaving,
-                            onEditClick = {
-                                selectedSessionIndex = index
-                                showDialog = true
-                            },
+                            canEdit = false, 
+                            onEditClick = { },
                             onToggleCompletion = {
                                 viewModel.toggleSessionCompletion(index)
                             }
@@ -213,7 +208,7 @@ fun ExchangePlanScreen(
                             ActionButtons(
                                 status = currentPlan.status,
                                 isReceived = effectivelyIsReceived,
-                                onAccept = { /* Auto-aceptado */ },
+                                onAccept = { },
                                 onReject = {
                                     viewModel.rejectPlan {
                                         navController.navigate(NavRoutes.Home.ROUTE) {
@@ -222,9 +217,7 @@ fun ExchangePlanScreen(
                                     }
                                 },
                                 onSave = {
-                                    viewModel.savePlan {
-                                        // Opcional: feedback de guardado
-                                    }
+                                    viewModel.savePlan()
                                 },
                                 onClose = {
                                     navController.navigate(NavRoutes.Home.ROUTE) {
@@ -246,17 +239,19 @@ fun ExchangePlanScreen(
             }
         }
     }
+}
 
-    if (showDialog) {
-        EditSessionDialog(
-            session = sessionToEdit,
-            onDismiss = { showDialog = false },
-            onSave = { updated ->
-                if (selectedSessionIndex != -1) {
-                    viewModel.updateSession(selectedSessionIndex, updated)
-                }
-                showDialog = false
-            }
-        )
+/**
+ * Filtro final de seguridad para evitar mensajes técnicos de Java/GSON en la UI.
+ */
+private fun formatErrorMessage(rawError: String): String {
+    val lowError = rawError.lowercase()
+    return if (lowError.contains("end of input") || 
+               lowError.contains("path $") || 
+               lowError.contains("malformed") || 
+               lowError.contains("expected")) {
+        "El servidor envió información incompleta. Por favor, intenta de nuevo en unos momentos."
+    } else {
+        rawError
     }
 }

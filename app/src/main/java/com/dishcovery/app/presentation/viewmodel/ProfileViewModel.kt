@@ -2,6 +2,7 @@ package com.dishcovery.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Profile
 import com.dishcovery.app.domain.repository.ProfileRepository
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val repository: ProfileRepository,
-    private val recipeRepository: RecipeRepository
+    private val recipeRepository: RecipeRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _profile = MutableStateFlow<Profile?>(null)
@@ -40,22 +42,15 @@ class ProfileViewModel @Inject constructor(
             _error.value = null
 
             repository.getProfileByUserId(userId)
-                .onSuccess { profile ->
-                    _profile.value = profile
-                }
+                .onSuccess { profile -> _profile.value = profile }
                 .onFailure { e ->
-                    _error.value = e.message
+                    _error.value = DomainError.fromThrowable(e).message
+                    globalErrorViewModel.showError(e)
                 }
 
             recipeRepository.getKitchenCategories()
-                .onSuccess { categories ->
-                    _kitchenCategories.value = categories
-                }
-                .onFailure { e ->
-                    if (_error.value == null) {
-                        _error.value = e.message
-                    }
-                }
+                .onSuccess { categories -> _kitchenCategories.value = categories }
+                .onFailure { e -> globalErrorViewModel.showError(e) }
 
             _isLoading.value = false
         }
@@ -72,7 +67,6 @@ class ProfileViewModel @Inject constructor(
         onSuccess: () -> Unit = {}
     ) {
         val currentProfile = _profile.value ?: return
-
         viewModelScope.launch {
             _isSaving.value = true
             _error.value = null
@@ -90,9 +84,9 @@ class ProfileViewModel @Inject constructor(
                 _profile.value = updated
                 onSuccess()
             }.onFailure { e ->
-                _error.value = e.message ?: "No se pudo actualizar el perfil."
+                _error.value = DomainError.fromThrowable(e).message
+                globalErrorViewModel.showError(e)
             }
-
             _isSaving.value = false
         }
     }

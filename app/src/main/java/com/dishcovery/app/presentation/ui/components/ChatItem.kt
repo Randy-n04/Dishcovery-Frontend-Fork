@@ -19,8 +19,15 @@ import coil.compose.AsyncImage
 @Composable
 fun ChatItem(
     chat: Chat,
+    currentUserId: Long,
     onClick: () -> Unit = {}
 ) {
+    val displayName = if (chat.senderId == currentUserId) {
+        chat.receiverName ?: chat.name
+    } else {
+        chat.senderName ?: chat.name
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,7 +35,6 @@ fun ChatItem(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
 
         AsyncImage(
             model = chat.avatarUrl,
@@ -41,7 +47,7 @@ fun ChatItem(
         Spacer(modifier = Modifier.width(12.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(chat.name, style = MaterialTheme.typography.titleMedium)
+            Text(displayName, style = MaterialTheme.typography.titleMedium)
             Text(
                 chat.lastMessage,
                 style = MaterialTheme.typography.bodySmall,

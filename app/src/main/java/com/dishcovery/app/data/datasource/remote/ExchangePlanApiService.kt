@@ -8,16 +8,16 @@ import retrofit2.http.*
 interface ExchangePlanApiService {
 
     @GET("v1/exchange-plans")
-    suspend fun findAll(): List<ExchangePlanResultDto>
+    suspend fun findAll(): Response<List<ExchangePlanResultDto>?>
 
     @GET("v1/exchange-plans/{id}")
-    suspend fun findById(@Path("id") id: Long): ExchangePlanResultDto
+    suspend fun findById(@Path("id") id: Long): Response<ExchangePlanResultDto?>
 
     @GET("v1/exchange-plans/chat/{chatId}")
     suspend fun findByChatId(@Path("chatId") chatId: Long): Response<ExchangePlanResultDto?>
 
     @POST("v1/exchange-plans")
-    suspend fun create(@Body input: ExchangePlanInputDto): ExchangePlanResultDto
+    suspend fun create(@Body input: ExchangePlanInputDto): Response<ExchangePlanResultDto?>
 
     @PUT("v1/exchange-plans/{id}")
     suspend fun update(
@@ -26,5 +26,5 @@ interface ExchangePlanApiService {
     ): Response<ExchangePlanResultDto?>
 
     @DELETE("v1/exchange-plans/{id}")
-    suspend fun deleteById(@Path("id") id: Long)
+    suspend fun deleteById(@Path("id") id: Long): Response<Unit>
 }

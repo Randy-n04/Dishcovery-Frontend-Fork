@@ -16,6 +16,10 @@ class ChatDataSourceImpl @Inject constructor(
         return apiService.findAll()
     }
 
+    override suspend fun getChatById(id: Long): ChatDto {
+        return apiService.findById(id)
+    }
+
     override suspend fun createChat(chatInput: ChatInputDto): ChatDto {
         return apiService.create(chatInput)
     }

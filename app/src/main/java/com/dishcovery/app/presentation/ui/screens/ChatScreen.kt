@@ -69,7 +69,9 @@ fun ChatScreen(
     }
 
     val filteredChats = chats.filter {
-        it.name.contains(search, ignoreCase = true) ||
+        val currentUserId = user?.id ?: -1L
+        val displayName = if (it.senderId == currentUserId) it.receiverName ?: it.name else it.senderName ?: it.name
+        displayName.contains(search, ignoreCase = true) ||
                 it.lastMessage.contains(search, ignoreCase = true)
     }
 
@@ -155,9 +157,12 @@ fun ChatScreen(
                 items(filteredChats) { chat ->
                     ChatItem(
                         chat = chat,
+                        currentUserId = user?.id ?: -1L,
                         onClick = {
+                            val currentUserId = user?.id ?: -1L
+                            val displayName = if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name
                             navController.navigate(
-                                NavRoutes.ChatDetail.createRoute(chat.id, chat.name)
+                                NavRoutes.ChatDetail.createRoute(chat.id, displayName)
                             )
                         }
                     )

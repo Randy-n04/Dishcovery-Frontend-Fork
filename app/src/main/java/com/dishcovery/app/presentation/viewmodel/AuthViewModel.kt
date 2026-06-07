@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.AuthRepository
 import com.dishcovery.app.data.local.TokenManager
+import com.dishcovery.app.domain.error.DomainError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _isUpdatingAccount = MutableStateFlow(false)
@@ -50,7 +52,9 @@ class AuthViewModel @Inject constructor(
                     _error.value = null
                 }
                 .onFailure { throwable ->
-                    _error.value = throwable.message ?: "Error al iniciar sesión"
+                    val domainError = DomainError.fromThrowable(throwable)
+                    _error.value = domainError.message
+                    globalErrorViewModel.showError(throwable)
                 }
             
             _isLoading.value = false
@@ -71,7 +75,9 @@ class AuthViewModel @Inject constructor(
                 .onFailure { throwable ->
                     // Aun si falla la red, ya se limpio el token localmente en el repo
                     _user.value = null
-                    _error.value = throwable.message
+                    val domainError = DomainError.fromThrowable(throwable)
+                    _error.value = domainError.message
+                    globalErrorViewModel.showError(throwable)
                 }
             _isLoading.value = false
         }
@@ -111,7 +117,9 @@ class AuthViewModel @Inject constructor(
                 _accountUpdateMessage.value = "Cuenta actualizada correctamente"
                 onSuccess()
             }.onFailure { e ->
-                _error.value = e.message ?: "No se pudo actualizar la cuenta"
+                val domainError = DomainError.fromThrowable(e)
+                _error.value = domainError.message
+                globalErrorViewModel.showError(e)
             }
 
             _isUpdatingAccount.value = false

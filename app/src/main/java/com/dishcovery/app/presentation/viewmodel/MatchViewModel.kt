@@ -2,6 +2,7 @@ package com.dishcovery.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.Match
 import com.dishcovery.app.domain.model.Chat
 import com.dishcovery.app.domain.model.ExchangePlan
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MatchViewModel @Inject constructor(
     private val repository: MatchRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _matches = MutableStateFlow<List<Match>>(emptyList())
@@ -46,7 +48,8 @@ class MatchViewModel @Inject constructor(
                     _matches.value = it
                 }
                 .onFailure {
-                    _errorMessage.value = it.message ?: "Error al buscar candidatos."
+                    _errorMessage.value = DomainError.fromThrowable(it).message
+                    globalErrorViewModel.showError(it)
                 }
             _isLoading.value = false
         }
@@ -72,8 +75,9 @@ class MatchViewModel @Inject constructor(
                 val plan = result.getOrNull()
                 _generatedPlanId.value = plan?.id
             } else {
-                _errorMessage.value =
-                    result.exceptionOrNull()?.message ?: "Error al generar el plan."
+                val exception = result.exceptionOrNull()
+                _errorMessage.value = exception?.let { DomainError.fromThrowable(it).message } ?: "Error al generar el plan."
+                exception?.let { globalErrorViewModel.showError(it) }
             }
 
             _isLoading.value = false

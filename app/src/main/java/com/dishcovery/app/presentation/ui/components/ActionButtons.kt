@@ -21,16 +21,7 @@ fun ActionButtons(
     onChat: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // Botón principal de comunicación (siempre visible para facilitar el flujo)
-        Button(
-            onClick = onChat,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEFA053))
-        ) {
-            Text(text = "Abrir Chat con el Chef", color = Color.White)
-        }
-
+        // Primero los botones de acción del plan (Guardar/Actualizar/Aceptar)
         if (status == PlanStatus.PENDING) {
             if (isReceived) {
                 Row(
@@ -56,7 +47,6 @@ fun ActionButtons(
                 }
             }
             
-            // Botón de guardar visible para ambos (Creador y Receptor) en estado PENDING
             Button(
                 onClick = onSave,
                 modifier = Modifier.fillMaxWidth(),
@@ -77,13 +67,16 @@ fun ActionButtons(
             }
         }
 
-        OutlinedButton(
-            onClick = onClose,
+        // El botón de comunicación (Chat) ahora va debajo
+        Button(
+            onClick = onChat,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color(0xFF8B4513))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEFA053))
         ) {
-            Text(text = "Volver al inicio", color = Color(0xFF8B4513))
+            Text(text = "Abrir Chat con el Chef", color = Color.White)
         }
+
+        // Se eliminó el botón "Volver al inicio"
     }
 }

@@ -35,10 +35,27 @@ sealed class DomainError(
         cause: Throwable? = null
     ) : DomainError(message, cause)
 
+    class DataError(
+        message: String = "El servidor envió información incompleta o inválida."
+    ) : DomainError(message)
+
     companion object {
         fun fromThrowable(t: Throwable): DomainError {
+            if (t is DomainError) return t
+            
+            val msg = (t.message ?: t.toString()).lowercase()
+            
+            // Filtro agresivo para errores técnicos de GSON/Retrofit (como el de la imagen)
+            if (msg.contains("end of input") || 
+                msg.contains("path $") || 
+                msg.contains("malformed") || 
+                msg.contains("expected") || 
+                msg.contains("eof") ||
+                msg.contains("syntax error")) {
+                return DataError()
+            }
+
             return when (t) {
-                is DomainError -> t
                 is ConnectException, is UnknownHostException -> NetworkError()
                 is SocketTimeoutException -> NetworkError("La conexión ha expirado. Inténtalo de nuevo.")
                 is IOException -> NetworkError()

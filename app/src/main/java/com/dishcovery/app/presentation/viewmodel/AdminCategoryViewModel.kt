@@ -14,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminCategoryViewModel @Inject constructor(
-    private val repository: KitchenCategoryRepository
+    private val repository: KitchenCategoryRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _categories    = MutableStateFlow<List<KitchenCategory>>(emptyList())
@@ -36,7 +37,10 @@ class AdminCategoryViewModel @Inject constructor(
             _isLoading.value = true
             repository.getAll()
                 .onSuccess { _categories.value = it; _error.value = null }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }
@@ -46,7 +50,10 @@ class AdminCategoryViewModel @Inject constructor(
             _isLoading.value = true
             repository.setTrending(id, days)
                 .onSuccess { _success.value = true; _error.value = null }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }
@@ -60,7 +67,10 @@ class AdminCategoryViewModel @Inject constructor(
                     _error.value = null
                     loadCategories() // refresca el dropdown con la nueva categoría
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }

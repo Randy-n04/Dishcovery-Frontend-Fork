@@ -11,7 +11,8 @@ class ProfileDataSourceImpl @Inject constructor(
 
     override suspend fun getProfileByUserId(userId: Long): ProfileDto? {
         return try {
-            apiService.getProfileByUserId(userId)
+            val response = apiService.getProfileByUserId(userId)
+            if (response.isSuccessful) response.body() else null
         } catch (e: Exception) {
             null
         }
@@ -22,7 +23,8 @@ class ProfileDataSourceImpl @Inject constructor(
         profileUpdateDto: ProfileUpdateDto
     ): ProfileDto? {
         return try {
-            apiService.updateProfile(profileId, profileUpdateDto)
+            val response = apiService.updateProfile(profileId, profileUpdateDto)
+            if (response.isSuccessful) response.body() else null
         } catch (e: Exception) {
             null
         }

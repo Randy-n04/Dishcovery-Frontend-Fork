@@ -4,6 +4,7 @@ import com.dishcovery.app.data.datasource.model.ExchangePlanResultDto
 import com.dishcovery.app.data.datasource.model.GeneratePlanRequestDto
 import com.dishcovery.app.data.datasource.model.MatchRequestDto
 import com.dishcovery.app.data.datasource.model.MatchResultDto
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -17,5 +18,5 @@ interface MatchApiService {
     @POST("v1/match/generate-plan")
     suspend fun generatePlan(
         @Body request: GeneratePlanRequestDto
-    ): ExchangePlanResultDto
+    ): Response<ExchangePlanResultDto?>
 }

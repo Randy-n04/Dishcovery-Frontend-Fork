@@ -18,7 +18,8 @@ import javax.inject.Inject
 class CameraViewModel @Inject constructor(
     private val repository: ImageRepository,
     private val mapper: ImageMapper,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     sealed class CameraUiState {
@@ -48,6 +49,7 @@ class CameraViewModel @Inject constructor(
                     _uiState.value = CameraUiState.Error(
                         throwable.message ?: "Error al analizar la imagen"
                     )
+                    globalErrorViewModel.showError(throwable)
                 }
         }
     }

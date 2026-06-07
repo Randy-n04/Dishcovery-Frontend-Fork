@@ -44,9 +44,22 @@ class MatchRepositoryImpl @Inject constructor(
             )
 
             val response = apiService.generatePlan(request)
-            Result.success(exchangePlanMapper.toDomain(response))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(exchangePlanMapper.toDomain(body))
+                } else {
+                    Result.failure(Exception("El servidor generó un plan vacío."))
+                }
+            } else {
+                Result.failure(Exception("Error al generar plan (${response.code()})"))
+            }
         } catch (e: Exception) {
-            Result.failure(e)
+            if (e.message?.contains("End of input") == true) {
+                Result.failure(Exception("No se pudo procesar la respuesta del servidor (Vacía)"))
+            } else {
+                Result.failure(e)
+            }
         }
     }
 }

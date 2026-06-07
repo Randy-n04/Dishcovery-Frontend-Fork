@@ -2,10 +2,13 @@ package com.dishcovery.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dishcovery.app.domain.error.DomainError
 import com.dishcovery.app.domain.model.ExchangePlan
 import com.dishcovery.app.domain.model.ExchangeSession
 import com.dishcovery.app.domain.model.PlanStatus
+import com.dishcovery.app.domain.model.Profile
 import com.dishcovery.app.domain.repository.ExchangePlanRepository
+import com.dishcovery.app.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExchangePlanViewModel @Inject constructor(
-    private val repository: ExchangePlanRepository
+    private val repository: ExchangePlanRepository,
+    private val profileRepository: ProfileRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     private val _plan = MutableStateFlow<ExchangePlan?>(null)
@@ -23,6 +28,9 @@ class ExchangePlanViewModel @Inject constructor(
 
     private val _allPlans = MutableStateFlow<List<ExchangePlan>>(emptyList())
     val allPlans: StateFlow<List<ExchangePlan>> = _allPlans.asStateFlow()
+
+    private val _partnerProfile = MutableStateFlow<Profile?>(null)
+    val partnerProfile: StateFlow<Profile?> = _partnerProfile.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -33,158 +41,122 @@ class ExchangePlanViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    fun loadAllPlans() {
+    fun loadPlan(planId: Long? = null, currentUserId: Long? = null) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            val result = repository.getAllPlans()
-            if (result.isSuccess) {
-                _allPlans.value = result.getOrNull() ?: emptyList()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar los planes."
-            }
-            _isLoading.value = false
-        }
-    }
-
-    fun loadPlan(planId: Long? = null) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
+            _partnerProfile.value = null
 
             val result = if (planId != null) {
                 repository.getPlanById(planId)
             } else {
                 repository.getAllPlans().map { plans ->
-                    plans.firstOrNull()
-                        ?: throw NoSuchElementException("No hay planes de intercambio disponibles.")
+                    plans.firstOrNull() ?: throw NoSuchElementException("No hay planes.")
                 }
             }
 
-            if (result.isSuccess) {
-                _plan.value = result.getOrNull()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar el plan."
-            }
+            result.onSuccess { plan ->
+                _plan.value = plan
+                if (plan != null && currentUserId != null) {
+                    val otherUserId = if (plan.creatorId == currentUserId) plan.partnerId else plan.creatorId
+                    loadPartnerProfile(otherUserId)
+                }
+            }.onFailure { handleFailure(it) }
 
             _isLoading.value = false
         }
     }
 
-    fun loadPlanByChatId(chatId: Long) {
+    fun loadAllPlans() {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
-            val result = repository.getPlanByChatId(chatId)
-            if (result.isSuccess) {
-                _plan.value = result.getOrNull()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al cargar el plan por chat."
-            }
+            repository.getAllPlans()
+                .onSuccess { 
+                    _allPlans.value = it 
+                }
+                .onFailure { handleFailure(it) }
             _isLoading.value = false
         }
     }
 
-    fun updateSession(index: Int, updatedSession: ExchangeSession) {
-        val currentPlan = _plan.value ?: return
-        val newSessions = currentPlan.sessions.toMutableList()
-
-        if (index in newSessions.indices) {
-            newSessions[index] = updatedSession
-            
-            val completedCount = newSessions.count { it.isCompleted }
-            
-            _plan.value = currentPlan.copy(
-                sessions = newSessions,
-                progress = completedCount,
-                totalSessions = newSessions.size
-            )
+    fun loadPlanByChatId(chatId: Long, currentUserId: Long? = null) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            repository.getPlanByChatId(chatId)
+                .onSuccess { plan ->
+                    _plan.value = plan
+                    if (plan != null && currentUserId != null) {
+                        val otherUserId = if (plan.creatorId == currentUserId) plan.partnerId else plan.creatorId
+                        loadPartnerProfile(otherUserId)
+                    }
+                }
+                .onFailure { handleFailure(it) }
+            _isLoading.value = false
         }
+    }
+
+    private fun loadPartnerProfile(userId: Long) {
+        viewModelScope.launch {
+            profileRepository.getProfileByUserId(userId)
+                .onFailure { globalErrorViewModel.showError(it) }
+                .onSuccess { _partnerProfile.value = it }
+        }
+    }
+
+    private fun handleFailure(throwable: Throwable) {
+        // TRADUCCIÓN OBLIGATORIA: Nunca más pasar el mensaje crudo a la UI
+        val domainError = DomainError.fromThrowable(throwable)
+        _errorMessage.value = domainError.message
+        globalErrorViewModel.showError(throwable)
     }
 
     fun toggleSessionCompletion(index: Int) {
         val currentPlan = _plan.value ?: return
         val newSessions = currentPlan.sessions.toMutableList()
-
         if (index in newSessions.indices) {
-            val session = newSessions[index]
-            newSessions[index] = session.copy(isCompleted = !session.isCompleted)
-            
-            // Recalcular progreso como cantidad de sesiones completadas
+            newSessions[index] = newSessions[index].copy(isCompleted = !newSessions[index].isCompleted)
             val completedCount = newSessions.count { it.isCompleted }
-            val total = newSessions.size
-            
-            _plan.value = currentPlan.copy(
-                sessions = newSessions,
-                progress = completedCount,
-                totalSessions = total
-            )
+            _plan.value = currentPlan.copy(sessions = newSessions, progress = completedCount)
         }
-    }
-
-    fun updateUserNote(note: String) {
-        val currentPlan = _plan.value ?: return
-        _plan.value = currentPlan.copy(userNote = note)
     }
 
     fun savePlan(onSuccess: (() -> Unit)? = null) {
         val currentPlan = _plan.value ?: return
-
         viewModelScope.launch {
             _isSaving.value = true
-            _errorMessage.value = null
-
-            val result = repository.updatePlan(currentPlan)
-
-            if (result.isSuccess) {
-                _plan.value = result.getOrNull()
-                onSuccess?.invoke()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al guardar el plan."
-            }
-
+            repository.updatePlan(currentPlan)
+                .onSuccess { 
+                    _plan.value = it
+                    onSuccess?.invoke() 
+                }
+                .onFailure { handleFailure(it) }
             _isSaving.value = false
         }
     }
 
-    fun acceptPlan(onSuccess: () -> Unit) {
+    fun acceptPlan(onSuccess: () -> Unit = {}) {
         val currentPlan = _plan.value ?: return
-
         viewModelScope.launch {
             _isSaving.value = true
-            _errorMessage.value = null
-
-            val acceptedPlan = currentPlan.copy(status = PlanStatus.ACCEPTED)
-            val result = repository.updatePlan(acceptedPlan)
-
-            if (result.isSuccess) {
-                _plan.value = result.getOrNull()
-                onSuccess()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al aceptar el plan."
-            }
-
+            repository.updatePlan(currentPlan.copy(status = PlanStatus.ACCEPTED))
+                .onSuccess { 
+                    _plan.value = it
+                    onSuccess() 
+                }
+                .onFailure { handleFailure(it) }
             _isSaving.value = false
         }
     }
 
     fun rejectPlan(onSuccess: () -> Unit) {
         val currentPlan = _plan.value ?: return
-
         viewModelScope.launch {
             _isSaving.value = true
-            _errorMessage.value = null
-
-            val rejectedPlan = currentPlan.copy(status = PlanStatus.REJECTED)
-            val result = repository.updatePlan(rejectedPlan)
-
-            if (result.isSuccess) {
-                _plan.value = result.getOrNull()
-                onSuccess()
-            } else {
-                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al rechazar el plan."
-            }
-
+            repository.updatePlan(currentPlan.copy(status = PlanStatus.REJECTED))
+                .onSuccess { onSuccess() }
+                .onFailure { handleFailure(it) }
             _isSaving.value = false
         }
     }

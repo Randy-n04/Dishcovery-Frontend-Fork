@@ -18,7 +18,8 @@ import kotlin.collections.map
 @HiltViewModel
 class AdminViewModel @Inject constructor(
     private val faqRepository: FaqRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val globalErrorViewModel: GlobalErrorViewModel
 ) : ViewModel() {
 
     // --- FAQ ---
@@ -68,7 +69,10 @@ class AdminViewModel @Inject constructor(
                     _editContent.value = faq.content
                     _error.value       = null
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message 
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }
@@ -85,7 +89,10 @@ class AdminViewModel @Inject constructor(
                     _saveSuccess.value = true
                     _error.value       = null
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { 
+                    _error.value = it.message 
+                    globalErrorViewModel.showError(it)
+                }
             _isLoading.value = false
         }
     }
@@ -103,7 +110,10 @@ class AdminViewModel @Inject constructor(
                     _totalPages.value  = result.totalPages
                     _usersError.value  = null
                 }
-                .onFailure { _usersError.value = it.message }
+                .onFailure { 
+                    _usersError.value = it.message 
+                    globalErrorViewModel.showError(it)
+                }
             _usersLoading.value = false
         }
     }
@@ -117,7 +127,10 @@ class AdminViewModel @Inject constructor(
                     }
                     _usersError.value = null
                 }
-                .onFailure { _usersError.value = it.message }
+                .onFailure { 
+                    _usersError.value = it.message 
+                    globalErrorViewModel.showError(it)
+                }
         }
     }
 
