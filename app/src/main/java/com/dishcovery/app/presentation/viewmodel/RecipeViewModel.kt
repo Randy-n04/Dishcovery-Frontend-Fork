@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Recipe
+import com.dishcovery.app.domain.repository.ProfileRepository
 import com.dishcovery.app.domain.repository.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
-    private val repository: RecipeRepository
+    private val repository: RecipeRepository,
+    private val profileRepository: ProfileRepository
 ) : ViewModel() {
 
     private val _popularRecipes = MutableStateFlow<List<Recipe>>(emptyList())
@@ -44,50 +46,44 @@ class RecipeViewModel @Inject constructor(
     private val _isFeedLoading = MutableStateFlow(false)
     val isFeedLoading: StateFlow<Boolean> = _isFeedLoading.asStateFlow()
 
-    init {
-        loadHomeData()
-    }
+    private var currentProfileId: Long? = null
+    private var loadedUserId: Long? = null
 
-    fun loadHomeData() {
+    fun loadHomeData(userId: Long?) {
+        if (userId == null) {
+            _homeError.value = "No se encontró el usuario actual."
+            return
+        }
+
+        if (loadedUserId == userId && currentProfileId != null) return
+
         viewModelScope.launch {
             _isLoading.value = true
             _homeError.value = null
-            
-            val popularResult = repository.getPopularRecipes()
-            if (popularResult.isSuccess) {
-                _popularRecipes.value = popularResult.getOrDefault(emptyList())
+            loadedUserId = userId
+
+            val profileResult = profileRepository.getProfileByUserId(userId)
+
+            if (profileResult.isSuccess) {
+                currentProfileId = profileResult.getOrNull()?.id
             } else {
-                _homeError.value = popularResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las recetas populares"
+                _homeError.value = profileResult.exceptionOrNull()?.message
+                    ?: "No se pudo obtener el perfil del usuario."
             }
 
-            val savedResult = repository.getSavedRecipes()
-            if (savedResult.isSuccess) {
-                _savedRecipes.value = savedResult.getOrDefault(emptyList())
-            } else if (_homeError.value == null) {
-                _homeError.value = savedResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las recetas guardadas"
-            } else {
-                _homeError.value = buildString {
-                    append(_homeError.value)
-                    append(" • ")
-                    append(savedResult.exceptionOrNull()?.message ?: "No se pudieron cargar las recetas guardadas")
-                }
+            repository.getPopularRecipes()
+                .onSuccess { _popularRecipes.value = it }
+                .onFailure { _homeError.value = it.message }
+
+            currentProfileId?.let { profileId ->
+                repository.getSavedRecipes(profileId)
+                    .onSuccess { _savedRecipes.value = it }
+                    .onFailure { _homeError.value = it.message }
             }
 
-            val categoriesResult = repository.getKitchenCategories()
-            if (categoriesResult.isSuccess) {
-                _kitchenCategories.value = categoriesResult.getOrDefault(emptyList())
-            } else if (_homeError.value == null) {
-                _homeError.value = categoriesResult.exceptionOrNull()?.message
-                    ?: "No se pudieron cargar las categorías"
-            } else {
-                _homeError.value = buildString {
-                    append(_homeError.value)
-                    append(" • ")
-                    append(categoriesResult.exceptionOrNull()?.message ?: "No se pudieron cargar las categorías")
-                }
-            }
+            repository.getKitchenCategories()
+                .onSuccess { _kitchenCategories.value = it }
+                .onFailure { _homeError.value = it.message }
 
             _isLoading.value = false
         }
@@ -124,18 +120,30 @@ class RecipeViewModel @Inject constructor(
 
     fun toggleSaveRecipe(recipe: Recipe) {
         viewModelScope.launch {
-            val isSaved = _savedRecipes.value.any { it.id == recipe.id }
-            if (isSaved) {
-                repository.removeSavedRecipe(recipe.id)
-            } else {
-                repository.saveRecipe(recipe)
+            val profileId = currentProfileId
+
+            if (profileId == null) {
+                _homeError.value = "No se pudo guardar: perfil no cargado."
+                return@launch
             }
-            // Refresh saved recipes
-            val savedResult = repository.getSavedRecipes()
-            if (savedResult.isSuccess) {
-                _savedRecipes.value = savedResult.getOrDefault(emptyList())
+
+            val isSaved = _savedRecipes.value.any { it.id == recipe.id }
+
+            val result = if (isSaved) {
+                repository.removeSavedRecipe(profileId, recipe.id)
             } else {
-                _homeError.value = savedResult.exceptionOrNull()?.message
+                repository.saveRecipe(profileId, recipe.id)
+            }
+
+            if (result.isSuccess) {
+                repository.getSavedRecipes(profileId)
+                    .onSuccess { _savedRecipes.value = it }
+                    .onFailure { _homeError.value = it.message }
+
+                repository.getPopularRecipes()
+                    .onSuccess { _popularRecipes.value = it }
+            } else {
+                _homeError.value = result.exceptionOrNull()?.message
             }
         }
     }

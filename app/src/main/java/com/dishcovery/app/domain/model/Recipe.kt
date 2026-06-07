@@ -6,5 +6,6 @@ data class Recipe(
     val description: String,
     val iconUrl: String,
     val weight: Int,
-    val categories: List<KitchenCategory> = emptyList()
+    val categories: List<KitchenCategory> = emptyList(),
+    val savedCount: Long = 0
 )

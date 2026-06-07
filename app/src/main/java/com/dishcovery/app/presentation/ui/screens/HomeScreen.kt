@@ -25,7 +25,9 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     paddingValues: PaddingValues,
     recipeViewModel: RecipeViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    userId: Long?
+
 ) {
     val popularRecipes by recipeViewModel.popularRecipes.collectAsState()
     val savedRecipes by recipeViewModel.savedRecipes.collectAsState()
@@ -43,14 +45,8 @@ fun HomeScreen(
     var searchingCategoryName by remember { mutableStateOf("") }
     var searchingCategoryIds by remember { mutableStateOf<List<Long>>(emptyList()) }
 
-    // Simulación de búsqueda con delay para mostrar el diálogo antes de ir a Discover
-    LaunchedEffect(showSearchingDialog) {
-        if (showSearchingDialog) {
-            delay(2000) 
-            showSearchingDialog = false
-            val idsParam = searchingCategoryIds.joinToString(",")
-            navController.navigate(NavRoutes.DiscoverPeople.createRoute(idsParam))
-        }
+    LaunchedEffect(userId) {
+        recipeViewModel.loadHomeData(userId)
     }
 
     HomeLayout(
@@ -132,14 +128,23 @@ fun HomeScreen(
     }
 
     selectedRecipe?.let { recipe ->
-        val isSaved = savedRecipes.any { it.id == recipe.id }
+        val updatedRecipe =
+            popularRecipes.find { it.id == recipe.id }
+                ?: savedRecipes.find { it.id == recipe.id }
+                ?: recommendedRecipes.find { it.id == recipe.id }
+                ?: recipe
+
+        val isSaved = savedRecipes.any { it.id == updatedRecipe.id }
+
         RecipeDetailDialog(
-            recipe = recipe,
+            recipe = updatedRecipe,
             isSaved = isSaved,
-            onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
-            onSearchMatch = { 
-                searchingCategoryName = recipe.categories.joinToString(", ") { it.name }
-                searchingCategoryIds = recipe.categories.map { it.id }
+            onSaveToggle = {
+                recipeViewModel.toggleSaveRecipe(updatedRecipe)
+            },
+            onSearchMatch = {
+                searchingCategoryName = updatedRecipe.categories.joinToString(", ") { it.name }
+                searchingCategoryIds = updatedRecipe.categories.map { it.id }
                 showSearchingDialog = true
             },
             onDismiss = { selectedRecipe = null }
@@ -147,14 +152,27 @@ fun HomeScreen(
     }
 
     selectedRecipeForDialog?.let { recipe ->
-        val isSaved = savedRecipes.any { it.id == recipe.id }
+        val updatedRecipe =
+            popularRecipes.find { it.id == recipe.id }
+                ?: savedRecipes.find { it.id == recipe.id }
+                ?: recommendedRecipes.find { it.id == recipe.id }
+                ?: recipe
+
+        val isSaved = savedRecipes.any { it.id == updatedRecipe.id }
+
         RecipeDetailDialog(
-            recipe = recipe,
+            recipe = updatedRecipe,
             isSaved = isSaved,
-            onSaveToggle = { recipeViewModel.toggleSaveRecipe(recipe) },
-            onSearchMatch = { },
+            onSaveToggle = {
+                recipeViewModel.toggleSaveRecipe(updatedRecipe)
+            },
+            onSearchMatch = {
+                searchingCategoryName = updatedRecipe.categories.joinToString(", ") { it.name }
+                searchingCategoryIds = updatedRecipe.categories.map { it.id }
+                showSearchingDialog = true
+            },
             onDismiss = { selectedRecipeForDialog = null },
-            showSearchMatchButton = false
+            showSearchMatchButton = true
         )
     }
 }

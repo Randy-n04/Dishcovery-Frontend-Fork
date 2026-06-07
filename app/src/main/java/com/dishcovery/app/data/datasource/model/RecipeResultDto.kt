@@ -9,6 +9,7 @@ data class RecipeResultDto(
     val description: String = "",
     val iconUrl: String = "",
     val weight: Int = 0,
-    val categories: List<KitchenCategoryDetailsDto> = emptyList()
+    val categories: List<KitchenCategoryDetailsDto> = emptyList(),
+    val savedCount: Long = 0
 )
 
