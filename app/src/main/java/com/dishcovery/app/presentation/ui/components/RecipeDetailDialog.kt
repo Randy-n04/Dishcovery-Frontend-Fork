@@ -117,7 +117,7 @@ fun RecipeDetailDialog(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = recipe.weight.toString(),
+                                text = recipe.savedCount.toString(),
                                 color = Color.White,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold

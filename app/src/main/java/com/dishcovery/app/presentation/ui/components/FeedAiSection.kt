@@ -47,6 +47,8 @@ import coil.compose.AsyncImage
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Recipe
+import androidx.compose.ui.text.style.TextAlign
+import com.dishcovery.app.presentation.ui.theme.Cafe
 
 @Composable
 fun FeedAiSection(
@@ -252,7 +254,6 @@ fun FeedAiSection(
         }
     }
 }
-
 @Composable
 fun RecipeRecommendationCard(recipe: Recipe, onClick: () -> Unit = {}) {
     Card(
@@ -266,47 +267,31 @@ fun RecipeRecommendationCard(recipe: Recipe, onClick: () -> Unit = {}) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(12.dp)
         ) {
             AsyncImage(
                 model = recipe.iconUrl,
                 contentDescription = recipe.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(90.dp)
                     .background(Color(0xFFE0E0E0), RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Nombre de receta
             Text(
                 text = recipe.name,
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = Cafe,
+                textAlign = TextAlign.Center,
                 maxLines = 2,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                fontSize = 12.sp
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 16.sp,
+                modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Rating visual (simplificado)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Color(0xFFFFB74D),
-                    modifier = Modifier.size(14.dp)
-                )
-                Text(
-                    text = "${(recipe.weight / 100).coerceIn(1, 5)}.0",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
         }
     }
 }

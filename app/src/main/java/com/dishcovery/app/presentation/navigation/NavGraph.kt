@@ -50,7 +50,12 @@ fun NavGraph(
 
         composable(NavRoutes.Home.ROUTE) {
             val recipeViewModel: RecipeViewModel = hiltViewModel()
-            HomeScreen(paddingValues, recipeViewModel, navController)
+            HomeScreen(
+                paddingValues,
+                recipeViewModel,
+                navController,
+                userId = user?.id
+            )
         }
 
         composable(

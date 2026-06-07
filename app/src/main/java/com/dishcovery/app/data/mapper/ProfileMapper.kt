@@ -10,17 +10,18 @@ class ProfileMapper @Inject constructor(
     private val categoryMapper: KitchenCategoryMapper
 ) {
     fun toDomain(dto: ProfileDto): Profile = Profile(
+        id = dto.id,
         user = User(
             id = dto.userId,
             username = dto.username,
-            role = UserRole.Client(2, "USER") // Default role as it's not in the profile response
+            role = UserRole.Client(2, "USER")
         ),
-        publicName   = dto.publicName,
-        bio          = bioConverter(dto.bio),
-        photoUrl     = dto.photoUrl,
+        publicName = dto.publicName,
+        bio = bioConverter(dto.bio),
+        photoUrl = dto.photoUrl,
         offeredSkills = dto.offeredSkills.map { categoryMapper.toDomain(it) },
-        language     = dto.language,
-        location     = dto.location
+        language = dto.language,
+        location = dto.location
     )
 
     private fun bioConverter(bio: String): String {
