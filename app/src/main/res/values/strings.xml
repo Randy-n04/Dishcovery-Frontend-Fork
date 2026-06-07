@@ -119,8 +119,12 @@
     <string name="prof_amateur">Aficionado</string>
     <string name="prof_chef_pro">Chef Pro</string>
     <string name="prof_student">Estudiante</string>
-
+  
     <!-- FAQ Admin -->
+    <string name="trend_success">¡Categoría marcada como tendencia!</string>
+    <string name="new_category_placeholder">Nombre de la nueva categoría</string>
+    <string name="create_button">Crear</string>
+
     <string name="faq_placeholder">Escribe el contenido de las preguntas frecuentes…</string>
     <string name="faq_save_button">Guardar</string>
     <string name="faq_save_success">¡Cambios guardados correctamente!</string>

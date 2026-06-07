@@ -5,6 +5,8 @@ import com.dishcovery.app.data.datasource.model.KitchenCategoryDto
 /**
  * Simulates a data source for Kitchen Categories
  */
+
+//TODO: Eliminar este archivo cuando la API funcione correctamente
 class KitchenCategoryProvider {
 
     companion object {
