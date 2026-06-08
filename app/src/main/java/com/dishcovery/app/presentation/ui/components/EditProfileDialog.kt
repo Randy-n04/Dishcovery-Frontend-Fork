@@ -8,9 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dishcovery.app.domain.model.KitchenCategory
@@ -36,15 +33,17 @@ fun EditProfileDialog(
     ) -> Unit
 ) {
     var publicName by remember { mutableStateOf(profile.publicName) }
-    // Normalizamos la bio: si viene como mensajes por defecto en inglés o español la dejamos vacía
-    val bioNormalized = if (profile.bio.isBlank()) {
-        ""
-    } else {
-        val lower = profile.bio.lowercase().trim()
-        when (lower) {
-            "no bio available", "bibliografía no disponible", "no bibliografía disponible" -> ""
-            else -> profile.bio
-        }
+    // Normalizamos la bio: tratamos como vacía cualquier placeholder genérico (ing/esp)
+    // para que la UI muestre únicamente "Biografía no disponible" cuando no haya texto real.
+    val bioNormalized = run {
+        val raw = profile.bio.trim()
+        if (raw.isBlank()) return@run ""
+
+        // Detecta frases genéricas como "no bio", "no biography", "biografía no disponible", etc.
+        val lower = raw.lowercase()
+        val placeholderRegex = Regex("\\b(no\\s+bio|no\\s+biograph|no\\s+biograf|biograf.*no\\s+disponible)\\b", RegexOption.IGNORE_CASE)
+
+        if (placeholderRegex.containsMatchIn(lower)) "" else raw
     }
     var bio by remember { mutableStateOf(bioNormalized) }
     var photoUrl by remember { mutableStateOf(profile.photoUrl) }
@@ -106,8 +105,8 @@ fun EditProfileDialog(
                     label = { Text("Nombre público") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    supportingText = { Text("${publicName.length}/30") },
-                    isError = publicName.isBlank() || publicName.length > 30
+                    supportingText = { Text("${publicName.length}/20") },
+                    isError = publicName.isBlank() || publicName.length > 20
                 )
                 // Mensaje de error justo debajo del campo
                 if (nameError != null) {
@@ -216,7 +215,7 @@ fun EditProfileDialog(
                         nameError = "Nombre requerido"
                         return@Button
                     }
-                    if (publicName.length > 30) {
+                    if (publicName.length > 20) {
                         nameError = "Nombre máximo 30"
                         return@Button
                     }

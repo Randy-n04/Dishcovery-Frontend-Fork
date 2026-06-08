@@ -26,6 +26,7 @@ class ProfileMapper @Inject constructor(
     )
 
     private fun bioConverter(bio: String): String {
-        return bio.ifEmpty { "No bio available" }
+        // Dejar bio vacía si el backend envía cadena vacía o nula
+        return bio.trim().ifBlank { "" }
     }
 }

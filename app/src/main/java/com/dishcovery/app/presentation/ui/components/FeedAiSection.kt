@@ -2,6 +2,7 @@ package com.dishcovery.app.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -134,28 +136,28 @@ fun FeedAiSection(
 
             OutlinedTextField(
                 value = preference,
-                onValueChange = { if (it.length <= 200) preference = it },
+                onValueChange = { if (it.length <= 100) preference = it },
                 label = { Text("Preferencia") },
                 placeholder = { Text("Ej: algo sin pasta") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
-                supportingText = { Text("${preference.length}/200") },
-                isError = preference.length > 200
+                supportingText = { Text("${preference.length}/100") },
+                isError = preference.length > 100
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = ingredients,
-                onValueChange = { if (it.length <= 200) ingredients = it },
+                onValueChange = { if (it.length <= 100) ingredients = it },
                 label = { Text("Ingredientes") },
                 placeholder = { Text("Ej: arroz, tomate, pollo") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
-                supportingText = { Text("${ingredients.length}/200") },
-                isError = ingredients.length > 200
+                supportingText = { Text("${ingredients.length}/100") },
+                isError = ingredients.length > 100
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -175,7 +177,7 @@ fun FeedAiSection(
                         parsedIngredients
                     )
                 },
-                enabled = !isLoading && selectedCategory != null && preference.length <= 200 && ingredients.length <= 200,
+                enabled = !isLoading && selectedCategory != null && preference.length <= 100 && ingredients.length <= 100,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp),
@@ -183,6 +185,28 @@ fun FeedAiSection(
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(stringResource(R.string.feed_ai_button), fontWeight = FontWeight.SemiBold)
+            }
+
+            if (isLoading) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color(0xFFD84315),
+                            modifier = Modifier.size(40.dp),
+                            strokeWidth = 3.dp
+                        )
+                    }
+                }
             }
 
             feedMessage?.let {
@@ -196,15 +220,15 @@ fun FeedAiSection(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFFFFA052),
-                                    Color(0xFFF2994A),
-                                    Color(0xFFF07B3F),
-                                    Color(0xFFF07B3F)
-                                )
-                            ),
+                                .background(
+                                            brush = Brush.horizontalGradient(
+                                                colors = listOf(
+                                                    Color(0xFFFFA052),
+                                                    Color(0xFFF2994A),
+                                                    Color(0xFFF07B3F),
+                                                    Color(0xFFF07B3F)
+                                                )
+                                            ),
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(12.dp),

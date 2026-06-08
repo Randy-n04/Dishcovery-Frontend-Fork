@@ -1,5 +1,6 @@
 package com.dishcovery.app.presentation.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +15,11 @@ import com.dishcovery.app.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.FeedAiSection
@@ -26,6 +31,7 @@ import com.dishcovery.app.presentation.ui.layout.HomeLayout
 import com.dishcovery.app.presentation.ui.theme.Primary
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import kotlinx.coroutines.delay
+
 
 @Composable
 fun HomeScreen(
@@ -213,6 +219,41 @@ fun HomeScreen(
             },
             onDismiss = { selectedRecipeForDialog = null },
             showSearchMatchButton = true
+        )
+    }
+}
+
+@Composable
+private fun CameraGlyph(
+    tint: Color,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        // Cuerpo de camara
+        val bodyTop = size.height * 0.28f
+        drawRoundRect(
+            color = tint,
+            topLeft = Offset(0f, bodyTop),
+            size = Size(size.width, size.height - bodyTop),
+            cornerRadius = CornerRadius(4f, 4f),
+            style = Stroke(width = 2f)
+        )
+
+        // Lente
+        drawCircle(
+            color = tint,
+            radius = size.minDimension * 0.17f,
+            center = Offset(size.width * 0.5f, size.height * 0.63f),
+            style = Stroke(width = 2f)
+        )
+
+        // Visor superior
+        drawRoundRect(
+            color = tint,
+            topLeft = Offset(size.width * 0.15f, size.height * 0.12f),
+            size = Size(size.width * 0.28f, size.height * 0.2f),
+            cornerRadius = CornerRadius(3f, 3f),
+            style = Stroke(width = 2f)
         )
     }
 }

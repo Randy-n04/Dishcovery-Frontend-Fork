@@ -53,7 +53,7 @@ fun ActionButtons(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
             ) {
-                Text(text = "Guardar Propuesta", color = Color.White)
+                Text(text = "Guardar Progreso", color = Color.White)
             }
 
         } else if (status == PlanStatus.ACCEPTED) {

@@ -84,7 +84,7 @@ fun SessionCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (session.isCompleted) Color.Gray else Color(0xFFE57373)
+                    containerColor = if (session.isCompleted) Color.Gray else Color(0xFFD84315)
                 )
             ) {
                 Text(text = if (session.isCompleted) "Completada" else stringResource(R.string.start_session_button))
