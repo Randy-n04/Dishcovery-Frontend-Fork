@@ -47,11 +47,16 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            
+
             repository.login(username, password)
                 .onSuccess { loggedUser ->
-                    _user.value = loggedUser
-                    _error.value = null
+                    if (loggedUser.isBlocked) {
+                        _error.value = "Tu cuenta ha sido bloqueada. Contacta al administrador."
+                        _user.value = null
+                    } else {
+                        _user.value = loggedUser
+                        _error.value = null
+                    }
                 }
                 .onFailure { throwable ->
                     val domainError = DomainError.fromThrowable(throwable)

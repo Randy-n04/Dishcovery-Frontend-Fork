@@ -26,9 +26,10 @@ class UserMapper @Inject constructor() {
     fun toDomainFromLogin(dto: LoginResponseDto): User {
         val isAdmin = dto.authorities.any { it.authority.uppercase() == "ADMIN" }
         return User(
-            id = dto.id,
-            username = dto.username,
-            role = if (isAdmin) UserRole.Admin(1, "ADMIN") else UserRole.Client(2, "USER")
+            id        = dto.id,
+            username  = dto.username,
+            role      = if (isAdmin) UserRole.Admin(1, "ADMIN") else UserRole.Client(2, "USER"),
+            isBlocked = !dto.accountNonLocked
         )
     }
 
