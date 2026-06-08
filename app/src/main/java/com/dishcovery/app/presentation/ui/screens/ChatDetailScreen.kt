@@ -298,18 +298,6 @@ fun ChatDetailScreen(
                     .padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically) {
 
-                  Surface(
-                      shape    = CircleShape,
-                      color    = Color(0xFFFFE1DB),
-                      modifier = Modifier
-                          .size(30.dp)
-                          .clickable { navController.navigate(NavRoutes.CameraAnalysis.ROUTE) }
-                  ) {
-                      Box(contentAlignment = Alignment.Center) {
-                          CameraGlyph(tint = Primary, modifier = Modifier.size(18.dp))
-                      }
-                  }
-
                 Spacer(modifier = Modifier.width(8.dp))
 
                 TextField(
@@ -388,36 +376,46 @@ fun ChatDetailScreen(
 
 
 @Composable
-private fun CameraGlyph(
+fun CameraGlyph(
     tint: Color,
     modifier: Modifier = Modifier
 ) {
+    val density = LocalDensity.current
+
     Canvas(modifier = modifier) {
+        val stroke = with(density) { 2.dp.toPx() }
+        val cornerBody = with(density) { 4.dp.toPx() }
+        val cornerVisor = with(density) { 3.dp.toPx() }
+
+        // Visor superior
+        val visorTop = size.height * 0.08f
+        val visorHeight = size.height * 0.18f
+        drawRoundRect(
+            color = tint,
+            topLeft = Offset(size.width * 0.15f, visorTop),
+            size = Size(size.width * 0.28f, visorHeight),
+            cornerRadius = CornerRadius(cornerVisor, cornerVisor),
+            style = Stroke(width = stroke)
+        )
+
         // Cuerpo de camara
-        val bodyTop = size.height * 0.28f
+        val bodyTop = visorTop + visorHeight * 0.6f
+        val bodyHeight = size.height - bodyTop - size.height * 0.08f  // margen abajo
         drawRoundRect(
             color = tint,
             topLeft = Offset(0f, bodyTop),
-            size = Size(size.width, size.height - bodyTop),
-            cornerRadius = CornerRadius(4f, 4f),
-            style = Stroke(width = 2f)
+            size = Size(size.width, bodyHeight),
+            cornerRadius = CornerRadius(cornerBody, cornerBody),
+            style = Stroke(width = stroke)
         )
 
-        // Lente
+        // Lente (centrada dentro del cuerpo)
+        val lensCenter = bodyTop + bodyHeight * 0.5f
         drawCircle(
             color = tint,
             radius = size.minDimension * 0.17f,
-            center = Offset(size.width * 0.5f, size.height * 0.63f),
-            style = Stroke(width = 2f)
-        )
-
-        // Visor superior
-        drawRoundRect(
-            color = tint,
-            topLeft = Offset(size.width * 0.15f, size.height * 0.12f),
-            size = Size(size.width * 0.28f, size.height * 0.2f),
-            cornerRadius = CornerRadius(3f, 3f),
-            style = Stroke(width = 2f)
+            center = Offset(size.width * 0.5f, lensCenter),
+            style = Stroke(width = stroke)
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.dishcovery.app.presentation.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,7 +11,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
-import com.dishcovery.app.domain.error.DomainError
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import com.dishcovery.app.domain.model.Recipe
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.FeedAiSection
@@ -19,6 +23,7 @@ import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
 import com.dishcovery.app.presentation.ui.components.SearchingMatchDialog
 import com.dishcovery.app.presentation.ui.layout.HomeLayout
+import com.dishcovery.app.presentation.ui.theme.Primary
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import kotlinx.coroutines.delay
 
@@ -131,6 +136,29 @@ fun HomeScreen(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = Color(0xFFFFE1DB),
+            shadowElevation = 6.dp,
+            modifier = Modifier
+                .padding(
+                    end = 20.dp,
+                    bottom = paddingValues.calculateBottomPadding() + 16.dp
+                )
+                .size(56.dp)
+                .clickable { navController.navigate(NavRoutes.CameraAnalysis.ROUTE) }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                CameraGlyph(tint = Primary, modifier = Modifier.size(28.dp))
             }
         }
     }

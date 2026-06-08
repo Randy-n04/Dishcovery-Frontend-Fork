@@ -270,13 +270,20 @@ fun CameraScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(
-                            text = stringResource(R.string.camera_idle_hint),
-                            color = Cafe,
-                            modifier = Modifier.padding(horizontal = 24.dp),
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
+                        Surface(
+                            color = Color.White,
+                            shape = RoundedCornerShape(12.dp),
+                            shadowElevation = 2.dp,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.camera_idle_hint),
+                                color = Cafe,
+                                modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
                         
                         Row(
                             modifier = Modifier.fillMaxWidth(),
