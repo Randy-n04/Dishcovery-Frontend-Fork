@@ -48,17 +48,17 @@ fun EditAccountDialog(
             ) {
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { if (it.length <= 200) username = it },
+                    onValueChange = { if (it.length <= 12) username = it },
                     label = { Text("Nombre de usuario") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    supportingText = { Text("${username.length}/200") },
-                    isError = username.length > 200
+                    supportingText = { Text("${username.length}/12") },
+                    isError = username.isNotBlank() && (username.length < 6 || username.length > 12)
                 )
 
                 OutlinedTextField(
                     value = currentPassword,
-                    onValueChange = { currentPassword = it },
+                    onValueChange = { if (it.length <= 12) currentPassword = it },
                     label = { Text("Contraseña actual") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -67,7 +67,7 @@ fun EditAccountDialog(
 
                 OutlinedTextField(
                     value = newPassword,
-                    onValueChange = { newPassword = it },
+                    onValueChange = { if (it.length <= 12) newPassword = it },
                     label = { Text("Nueva contraseña") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -76,7 +76,7 @@ fun EditAccountDialog(
 
                 OutlinedTextField(
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
+                    onValueChange = { if (it.length <= 12) confirmPassword = it },
                     label = { Text("Confirmar nueva contraseña") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -98,8 +98,9 @@ fun EditAccountDialog(
                 onClick = {
                     localError = null
 
-                    if (username.length > 200) {
-                        localError = "El nombre de usuario no debe superar los 200 caracteres."
+                    // Validaciones de longitud: username y passwords entre 6 y 12 caracteres
+                    if (username.isNotBlank() && (username.length < 6 || username.length > 12)) {
+                        localError = "El nombre de usuario debe tener entre 6 y 12 caracteres."
                         return@Button
                     }
 
@@ -108,9 +109,21 @@ fun EditAccountDialog(
                         return@Button
                     }
 
-                    if (newPassword.isNotBlank() && newPassword != confirmPassword) {
-                        localError = "La nueva contraseña no coincide."
+                    if (currentPassword.length < 6 || currentPassword.length > 12) {
+                        localError = "La contraseña debe tener entre 6 y 12 caracteres."
                         return@Button
+                    }
+
+                    if (newPassword.isNotBlank()) {
+                        if (newPassword.length < 6 || newPassword.length > 12) {
+                            localError = "La nueva contraseña debe tener entre 6 y 12 caracteres."
+                            return@Button
+                        }
+
+                        if (newPassword != confirmPassword) {
+                            localError = "La nueva contraseña no coincide."
+                            return@Button
+                        }
                     }
 
                     onSave(

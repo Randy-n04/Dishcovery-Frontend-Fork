@@ -74,7 +74,12 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 Result.success(mapper.toDomain(response.body()!!))
             } else {
-                Result.failure(Exception("No se pudo actualizar la cuenta: ${response.code()}"))
+                // Si el backend responde 409, interpretamos que el nombre de usuario no está disponible
+                if (response.code() == 409) {
+                    Result.failure(Exception("El nombre de usuario no está disponible."))
+                } else {
+                    Result.failure(Exception("No se pudo actualizar la cuenta: ${response.code()}"))
+                }
             }
         } catch (e: Exception) {
             Result.failure(e)
