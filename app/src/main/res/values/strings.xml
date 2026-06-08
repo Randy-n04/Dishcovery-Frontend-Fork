@@ -138,24 +138,25 @@
     <string name="faq_save_success">¡Cambios guardados correctamente!</string>
     <!-- CameraScreen -->
     <string name="camera_screen_title">Analizar imagen</string>
-    <string name="camera_idle_hint">Toma una foto para analizar los ingredientes</string>
+    <string name="camera_idle_hint">Toma una foto o selecciona una imagen de tu galería para analizar los ingredientes</string>
     <string name="camera_take_photo_button">Tomar foto</string>
+    <string name="camera_upload_button">Subir imagen</string>
     <string name="camera_analyzing">Analizando imagen…</string>
     <string name="camera_result_title">Ingredientes detectados</string>
-    <string name="camera_photo_desc">Foto tomada</string>
-    <string name="camera_retake_button">Tomar otra foto</string>
+    <string name="camera_photo_desc">Imagen analizada</string>
+    <string name="camera_retake_button">Nueva imagen</string>
     <string name="camera_retry_button">Reintentar</string>
     <string name="camera_natural_text_title">Descripción</string>
     <string name="camera_no_ingredients">No se detectaron ingredientes en la imagen.</string>
     <string name="camera_one_ingredient">Se detectó: %1$s.</string>
     <string name="camera_exit_dialog_title">¿Salir del análisis?</string>
-    <string name="camera_exit_dialog_body">La foto y los ingredientes detectados se perderán.</string>
+    <string name="camera_exit_dialog_body">La imagen y los ingredientes detectados se perderán.</string>
     <string name="camera_exit_dialog_confirm">Salir</string>
     <string name="camera_exit_dialog_cancel">Cancelar</string>
 
-    <string name="camera_retake_dialog_title">¿Tomar otra foto?</string>
+    <string name="camera_retake_dialog_title">¿Nueva imagen?</string>
     <string name="camera_retake_dialog_body">Los ingredientes detectados actualmente se perderán.</string>
-    <string name="camera_retake_dialog_confirm">Tomar otra foto</string>
+    <string name="camera_retake_dialog_confirm">Confirmar</string>
     <string name="camera_retake_dialog_cancel">Cancelar</string>
 
     <!-- Badge y contador -->

@@ -8,8 +8,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Coffee
@@ -29,13 +31,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.dishcovery.app.R
-import com.dishcovery.app.presentation.viewmodel.CameraViewModel
 import com.dishcovery.app.presentation.ui.theme.Beige
 import com.dishcovery.app.presentation.ui.theme.Cafe
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-
+import com.dishcovery.app.presentation.viewmodel.CameraViewModel
 import java.io.File
+import java.io.FileOutputStream
 
 private val CafeLight = Color(0xFFFFE8DC)
 private val TagBackground = Color(0xFFFFF3F0)
@@ -73,19 +73,29 @@ fun CameraScreen(
         }
     }
 
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            capturedUri = it
+            // Copy URI content to temp file for analysis
+            try {
+                context.contentResolver.openInputStream(it)?.use { input ->
+                    FileOutputStream(photoFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                viewModel.analyzeImage(photoFile)
+            } catch (e: Exception) {
+                // Error handling is managed by ViewModel/GlobalError
+            }
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) cameraLauncher.launch(photoUri)
-    }
-
-    LaunchedEffect(Unit) {
-        val permission = Manifest.permission.CAMERA
-        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-            cameraLauncher.launch(photoUri)
-        } else {
-            permissionLauncher.launch(permission)
-        }
     }
 
     // Intercepta el gesto/botón de sistema atrás
@@ -138,7 +148,7 @@ fun CameraScreen(
         )
     }
 
-    // Diálogo — tomar otra foto
+    // Diálogo — tomar otra foto / elegir otra imagen
     if (showRetakeDialog) {
         AlertDialog(
             onDismissRequest = { showRetakeDialog = false },
@@ -155,27 +165,48 @@ fun CameraScreen(
                 )
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        showRetakeDialog = false
-                        viewModel.reset()
-                        cameraLauncher.launch(photoUri)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Cafe)
-                ) {
-                    Text(
-                        text = stringResource(R.string.camera_retake_dialog_confirm),
-                        color = Color.White
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = {
+                            showRetakeDialog = false
+                            viewModel.reset()
+                            val permission = Manifest.permission.CAMERA
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                cameraLauncher.launch(photoUri)
+                            } else {
+                                permissionLauncher.launch(permission)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.camera_take_photo_button),
+                            color = Color.White
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            showRetakeDialog = false
+                            viewModel.reset()
+                            galleryLauncher.launch("image/*")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.camera_upload_button),
+                            color = Cafe
+                        )
+                    }
                 }
             },
             dismissButton = {
-                Button(
-                    onClick = { showRetakeDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                TextButton(
+                    onClick = { showRetakeDialog = false }
                 ) {
                     Text(
-                        text = stringResource(R.string.camera_retake_dialog_cancel),
+                        text = stringResource(R.string.camera_exit_dialog_cancel),
                         color = Cafe
                     )
                 }
@@ -241,16 +272,46 @@ fun CameraScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.camera_idle_hint),
-                            color = Cafe
+                            color = Cafe,
+                            modifier = Modifier.padding(horizontal = 24.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
-                        Button(
-                            onClick = { cameraLauncher.launch(photoUri) },
-                            colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.camera_take_photo_button),
-                                color = Color.White
-                            )
+                            Button(
+                                onClick = {
+                                    val permission = Manifest.permission.CAMERA
+                                    if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                        cameraLauncher.launch(photoUri)
+                                    } else {
+                                        permissionLauncher.launch(permission)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Cafe),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.camera_take_photo_button),
+                                    color = Color.White
+                                )
+                            }
+                            
+                            Button(
+                                onClick = { galleryLauncher.launch("image/*") },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = CafeLight),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.camera_upload_button),
+                                    color = Cafe
+                                )
+                            }
                         }
                     }
                 }
@@ -274,14 +335,14 @@ fun CameraScreen(
                             .fillMaxSize()
                             .padding(16.dp)
                     ) {
-                        // Contenido scrollable — ocupa el 100% el espacio disponible
+                        // Contenido scrollable
                         Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            // Foto tomada
+                            // Foto tomada/seleccionada
                             capturedUri?.let { uri ->
                                 Box {
                                     AsyncImage(
@@ -319,9 +380,7 @@ fun CameraScreen(
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
-                                color = Color.White,
-                                tonalElevation = 0.dp,
-                                shadowElevation = 0.dp
+                                color = Color.White
                             ) {
                                 Column(
                                     modifier = Modifier.padding(16.dp),
@@ -385,7 +444,7 @@ fun CameraScreen(
                                 }
                             }
 
-                            // Botón retomar — siempre visible al fondo
+                            // Botón retomar/nueva — siempre visible al fondo
                             Button(
                                 onClick = { showRetakeDialog = true },
                                 modifier = Modifier.fillMaxWidth(),
@@ -397,19 +456,7 @@ fun CameraScreen(
                                     color = Color.White
                                 )
                             }
-
-                            // Botón enviar al chat — pendiente de implementar
-                            // Button(
-                            //     onClick = { /* TODO */ },
-                            //     modifier = Modifier.fillMaxWidth(),
-                            //     shape = RoundedCornerShape(26.dp),
-                            //     colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
-                            // ) {
-                            //     Text(text = stringResource(R.string.camera_send_to_chat_button), color = Cafe)
-                            // }
                         }
-
-
                     }
                 }
 
@@ -427,7 +474,6 @@ fun CameraScreen(
                         Button(
                             onClick = {
                                 viewModel.reset()
-                                cameraLauncher.launch(photoUri)
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Cafe)
                         ) {
