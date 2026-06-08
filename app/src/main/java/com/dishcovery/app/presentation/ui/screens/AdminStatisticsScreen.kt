@@ -26,8 +26,6 @@ fun AdminStatisticsScreen(
     username: String,
     onLogout: () -> Unit
 ) {
-    val statsViewModel: AdminStatisticsViewModel = hiltViewModel()
-
     Column(
         Modifier
             .fillMaxSize()
@@ -47,7 +45,7 @@ fun AdminStatisticsScreen(
                 style = MaterialTheme.typography.labelLarge,
                 color = TextPrimary.copy(.6f)
             )
-            AdminStatsSection(viewModel = statsViewModel)  // ← pasar el viewModel
+            AdminStatsSection()
         }
     }
 }
