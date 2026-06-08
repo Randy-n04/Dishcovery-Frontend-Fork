@@ -152,39 +152,62 @@ fun CameraScreen(
     if (showRetakeDialog) {
         AlertDialog(
             onDismissRequest = { showRetakeDialog = false },
+
             title = {
                 Text(
-                    text = stringResource(R.string.camera_retake_dialog_title),
+                    text = stringResource(
+                        R.string.camera_retake_dialog_title
+                    ),
                     color = Cafe
                 )
             },
+
             text = {
-                Text(
-                    text = stringResource(R.string.camera_retake_dialog_body),
-                    color = TagText
-                )
-            },
-            confirmButton = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    Text(
+                        text = stringResource(
+                            R.string.camera_retake_dialog_body
+                        ),
+                        color = TagText
+                    )
+
                     Button(
                         onClick = {
                             showRetakeDialog = false
                             viewModel.reset()
-                            val permission = Manifest.permission.CAMERA
-                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+
+                            val permission =
+                                Manifest.permission.CAMERA
+
+                            if (
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    permission
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
                                 cameraLauncher.launch(photoUri)
                             } else {
-                                permissionLauncher.launch(permission)
+                                permissionLauncher.launch(
+                                    permission
+                                )
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Cafe)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Cafe
+                        )
                     ) {
                         Text(
-                            text = stringResource(R.string.camera_take_photo_button),
+                            text = stringResource(
+                                R.string.camera_take_photo_button
+                            ),
                             color = Color.White
                         )
                     }
+
                     Button(
                         onClick = {
                             showRetakeDialog = false
@@ -192,25 +215,38 @@ fun CameraScreen(
                             galleryLauncher.launch("image/*")
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = CafeLight)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CafeLight
+                        )
                     ) {
                         Text(
-                            text = stringResource(R.string.camera_upload_button),
+                            text = stringResource(
+                                R.string.camera_upload_button
+                            ),
+                            color = Cafe
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            showRetakeDialog = false
+                        },
+                        modifier = Modifier.align(
+                            Alignment.End
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.camera_exit_dialog_cancel
+                            ),
                             color = Cafe
                         )
                     }
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { showRetakeDialog = false }
-                ) {
-                    Text(
-                        text = stringResource(R.string.camera_exit_dialog_cancel),
-                        color = Cafe
-                    )
-                }
-            }
+
+            confirmButton = {},
+            dismissButton = {}
         )
     }
 
