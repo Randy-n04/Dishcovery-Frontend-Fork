@@ -101,7 +101,7 @@ fun EditProfileDialog(
             ) {
                 OutlinedTextField(
                     value = publicName,
-                    onValueChange = { if (it.length <= 30) publicName = it },
+                    onValueChange = { if (it.length <= 20) publicName = it },
                     label = { Text("Nombre público") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
