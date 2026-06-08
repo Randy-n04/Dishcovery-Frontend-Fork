@@ -9,12 +9,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dishcovery.app.presentation.ui.theme.Rojo
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.delay
 
 @Composable
 fun EditAccountDialog(
     currentUsername: String,
     isSaving: Boolean,
     errorFromServer: String? = null,
+    accountSaveMessage: String? = null,
     onDismiss: () -> Unit,
     onSave: (
         username: String?,
@@ -27,8 +30,31 @@ fun EditAccountDialog(
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var localError by remember { mutableStateOf<String?>(null) }
+    // 0 = idle, 1 = saving, 2 = saved
+    var buttonState by remember { mutableStateOf(0) }
 
     val displayError = localError ?: errorFromServer
+
+    // Gestionar estado del botón según isSaving, displayError y accountSaveMessage:
+    // cuando la petición termine sin error y accountSaveMessage != null mostramos "Guardado" y cerramos
+    LaunchedEffect(isSaving, displayError, accountSaveMessage) {
+        if (isSaving) {
+            buttonState = 1
+        } else {
+            if (buttonState == 1) {
+                if (displayError == null && accountSaveMessage != null) {
+                    buttonState = 2
+                    delay(1500)
+                    // cerrar diálogo después de mostrar "Guardado"
+                    onDismiss()
+                    buttonState = 0
+                } else {
+                    // hubo error o no hay indicación de éxito -> volver a idle
+                    buttonState = 0
+                }
+            }
+        }
+    }
 
     AlertDialog(
         onDismissRequest = {
@@ -94,7 +120,7 @@ fun EditAccountDialog(
         },
         confirmButton = {
             Button(
-                enabled = !isSaving,
+                enabled = buttonState != 1 && !isSaving,
                 onClick = {
                     localError = null
 
@@ -106,11 +132,6 @@ fun EditAccountDialog(
 
                     if (currentPassword.isBlank()) {
                         localError = "Debes escribir tu contraseña actual."
-                        return@Button
-                    }
-
-                    if (currentPassword.length < 6 || currentPassword.length > 12) {
-                        localError = "La contraseña debe tener entre 6 y 12 caracteres."
                         return@Button
                     }
 
@@ -126,16 +147,22 @@ fun EditAccountDialog(
                         }
                     }
 
+                    // marcar estado de botón como "guardando" antes de invocar el handler
+                    buttonState = 1
                     onSave(
                         username.takeIf { it.isNotBlank() && it != currentUsername },
                         currentPassword,
                         newPassword.takeIf { it.isNotBlank() }
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Rojo),
+                colors = ButtonDefaults.buttonColors(containerColor = if (buttonState == 2) Color(0xFF66BB6A) else Rojo, contentColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(if (isSaving) "Guardando..." else "Guardar")
+                when (buttonState) {
+                    1 -> Text("Guardando...")
+                    2 -> Text("Guardado", color = Color.White)
+                    else -> Text("Guardar")
+                }
             }
         },
         dismissButton = {

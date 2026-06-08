@@ -44,7 +44,7 @@ sealed class DomainError(
             if (t is DomainError) return t
             
             val msg = (t.message ?: t.toString()).lowercase()
-            
+
             // Filtro agresivo para errores técnicos de GSON/Retrofit (como el de la imagen)
             if (msg.contains("end of input") || 
                 msg.contains("path $") || 

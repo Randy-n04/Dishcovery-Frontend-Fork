@@ -28,6 +28,8 @@ class AuthViewModel @Inject constructor(
 
     private val _accountUpdateMessage = MutableStateFlow<String?>(null)
     val accountUpdateMessage: StateFlow<String?> = _accountUpdateMessage.asStateFlow()
+    private val _accountUpdateSuccess = MutableStateFlow(false)
+    val accountUpdateSuccess: StateFlow<Boolean> = _accountUpdateSuccess.asStateFlow()
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
 
@@ -106,6 +108,7 @@ class AuthViewModel @Inject constructor(
             _isUpdatingAccount.value = true
             _error.value = null
             _accountUpdateMessage.value = null
+            _accountUpdateSuccess.value = false
 
             repository.updateAccount(
                 userId = currentUser.id,
@@ -115,6 +118,7 @@ class AuthViewModel @Inject constructor(
             ).onSuccess { updatedUser ->
                 _user.value = updatedUser
                 _accountUpdateMessage.value = "Cuenta actualizada correctamente"
+                _accountUpdateSuccess.value = true
                 onSuccess()
             }.onFailure { e ->
                 val domainError = DomainError.fromThrowable(e)

@@ -80,13 +80,22 @@ fun ProfileAvatar(
                 }
             }
             Text(publicName, fontWeight = FontWeight.Bold, fontSize = 22.sp, color = TextPrimary)
-            if (showBio && bio.isNotBlank()) {
-                Text(
-                    text = "\"$bio\"",
-                    fontSize = 13.sp,
-                    color = TextPrimary.copy(.6f),
-                    fontStyle = FontStyle.Italic
-                )
+            if (showBio) {
+                if (bio.isNotBlank()) {
+                    Text(
+                        text = "\"$bio\"",
+                        fontSize = 13.sp,
+                        color = TextPrimary.copy(.6f),
+                        fontStyle = FontStyle.Italic
+                    )
+                } else {
+                    Text(
+                        text = "Bibliografía no disponible",
+                        fontSize = 13.sp,
+                        color = TextPrimary.copy(.6f),
+                        fontStyle = FontStyle.Italic
+                    )
+                }
             }
         }
     }

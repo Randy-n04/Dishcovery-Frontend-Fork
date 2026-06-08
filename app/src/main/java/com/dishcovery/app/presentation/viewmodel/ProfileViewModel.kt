@@ -35,6 +35,8 @@ class ProfileViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+    private val _saveSuccess = MutableStateFlow(false)
+    val saveSuccess: StateFlow<Boolean> = _saveSuccess.asStateFlow()
 
     fun loadProfile(userId: Long) {
         viewModelScope.launch {
@@ -70,6 +72,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             _error.value = null
+            _saveSuccess.value = false
 
             repository.updateProfile(
                 profileId = currentProfile.id,
@@ -82,6 +85,7 @@ class ProfileViewModel @Inject constructor(
                 location = location
             ).onSuccess { updated ->
                 _profile.value = updated
+                _saveSuccess.value = true
                 onSuccess()
             }.onFailure { e ->
                 _error.value = DomainError.fromThrowable(e).message

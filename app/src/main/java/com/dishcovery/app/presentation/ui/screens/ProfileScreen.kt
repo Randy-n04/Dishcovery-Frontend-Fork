@@ -48,10 +48,13 @@ fun ProfileScreen(
     val isSaving by viewModel.isSaving.collectAsState()
     val profileError by viewModel.error.collectAsState()
     val kitchenCategories by viewModel.kitchenCategories.collectAsState()
-    
+    val saveSuccess by viewModel.saveSuccess.collectAsState()
+
     val isUpdatingAccount by authViewModel.isUpdatingAccount.collectAsState()
     val authError by authViewModel.error.collectAsState()
-    
+    val accountUpdateMessage by authViewModel.accountUpdateMessage.collectAsState()
+    val accountUpdateSuccess by authViewModel.accountUpdateSuccess.collectAsState()
+
     var showAccountDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
 
@@ -215,8 +218,11 @@ fun ProfileScreen(
             profile = profile!!,
             categories = kitchenCategories,
             isSaving = isSaving,
+            errorFromServer = profileError,
+            saveSuccess = saveSuccess,
             onDismiss = { showEditDialog = false },
             onSave = { publicName, bio, photoUrl, offeredSkills, skillsToLearn, language, location ->
+                // No cerramos el diálogo aquí; el diálogo manejará el cierre después de mostrar "Guardado".
                 viewModel.updateProfile(
                     publicName = publicName,
                     bio = bio,
@@ -225,9 +231,7 @@ fun ProfileScreen(
                     skillsToLearn = skillsToLearn,
                     language = language,
                     location = location
-                ) {
-                    showEditDialog = false
-                }
+                )
             }
         )
     }
@@ -236,15 +240,15 @@ fun ProfileScreen(
             currentUsername = user.username,
             isSaving = isUpdatingAccount,
             errorFromServer = authError,
+            accountSaveMessage = accountUpdateMessage,
             onDismiss = { showAccountDialog = false },
             onSave = { username, currentPassword, newPassword ->
+                // No cerramos el diálogo aquí; dejar que el diálogo espere y cierre tras mostrar "Guardado".
                 authViewModel.updateAccount(
                     username = username,
                     currentPassword = currentPassword,
                     newPassword = newPassword
-                ) {
-                    showAccountDialog = false
-                }
+                )
             }
         )
     }
