@@ -121,9 +121,8 @@ class AuthViewModel @Inject constructor(
                 _accountUpdateSuccess.value = true
                 onSuccess()
             }.onFailure { e ->
-                val domainError = DomainError.fromThrowable(e)
-                _error.value = domainError.message
-                globalErrorViewModel.showError(e)
+                _error.value = e.message ?: "No se pudo actualizar la cuenta."
+                //globalErrorViewModel.showError(e)
             }
 
             _isUpdatingAccount.value = false

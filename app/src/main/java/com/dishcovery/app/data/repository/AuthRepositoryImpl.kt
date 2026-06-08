@@ -74,12 +74,20 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 Result.success(mapper.toDomain(response.body()!!))
             } else {
-                // Si el backend responde 409, interpretamos que el nombre de usuario no está disponible
-                if (response.code() == 409) {
-                    Result.failure(Exception("El nombre de usuario no está disponible."))
-                } else {
-                    Result.failure(Exception("No se pudo actualizar la cuenta: ${response.code()}"))
+                val errorBody = response.errorBody()?.string().orEmpty()
+
+                val message = when {
+                    errorBody.contains("Username already exists", ignoreCase = true) ->
+                        "Ese nombre de usuario ya existe. Intenta con otro."
+
+                    errorBody.contains("Current password is incorrect", ignoreCase = true) ->
+                        "La contraseña actual es incorrecta."
+
+                    else ->
+                        "No se pudo actualizar la cuenta."
                 }
+
+                Result.failure(Exception(message))
             }
         } catch (e: Exception) {
             Result.failure(e)

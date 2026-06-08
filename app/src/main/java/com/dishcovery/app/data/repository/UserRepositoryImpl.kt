@@ -8,11 +8,15 @@ import com.dishcovery.app.data.mapper.UserMapper
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.UserRepository
 import javax.inject.Inject
+import com.dishcovery.app.data.datasource.model.AccountUpdateDto
 
 class UserRepositoryImpl @Inject constructor(
     private val apiService: UserApiService,
     private val mapper: UserMapper
 ) : UserRepository {
+
+
+
 
     override suspend fun findAll(): Result<List<User>> {
         return try {
@@ -113,6 +117,36 @@ class UserRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    override suspend fun updateAccount(
+        id: Long,
+        request: AccountUpdateDto
+    ): Result<User> {
+        return try {
+            val response = apiService.updateAccount(id, request)
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(mapper.toDomain(response.body()!!))
+            } else {
+                val errorBody = response.errorBody()?.string().orEmpty()
+
+                val message = when {
+                    errorBody.contains("Username already exists", ignoreCase = true) ->
+                        "Ese nombre de usuario ya existe. Intenta con otro."
+
+                    errorBody.contains("Current password is incorrect", ignoreCase = true) ->
+                        "La contraseña actual es incorrecta."
+
+                    else ->
+                        "No se pudo actualizar la cuenta."
+                }
+
+                Result.failure(Exception(message))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("No se pudo conectar con el servidor. Intenta nuevamente."))
         }
     }
 }
