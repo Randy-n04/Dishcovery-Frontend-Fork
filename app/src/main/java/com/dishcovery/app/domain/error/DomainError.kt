@@ -31,7 +31,7 @@ sealed class DomainError(
     ) : DomainError(message)
 
     class UnknownError(
-        message: String = "Ha ocurrido un error inesperado",
+        message: String = "",
         cause: Throwable? = null
     ) : DomainError(message, cause)
 
