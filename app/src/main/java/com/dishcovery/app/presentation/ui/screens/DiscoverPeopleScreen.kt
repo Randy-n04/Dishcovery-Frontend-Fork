@@ -115,56 +115,14 @@ fun DiscoverPeopleScreen(
                     }
                 }
                 errorMessage != null -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(24.dp)
-                    ) {
-                        Text(
-                            text = errorMessage!!,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { user?.let { matchViewModel.findMatches(it.id, categoryIds) } },
-                            colors = ButtonDefaults.buttonColors(containerColor = Primary)
-                        ) {
-                            Text(stringResource(R.string.update_button_label))
-                        }
-                    }
+                    NoCandidatesState(
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 matches.isEmpty() || currentIndex >= matches.size -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(32.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                            tint = Color.Gray.copy(alpha = 0.5f)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = stringResource(R.string.no_candidates_available),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Cafe,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Button(
-                            onClick = { navController.popBackStack() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.back_button_label),
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                        }
-                    }
+                    NoCandidatesState(
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 else -> {
                     val candidate = matches[currentIndex]
@@ -182,6 +140,46 @@ fun DiscoverPeopleScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun NoCandidatesState(
+    onBack: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(32.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = Color.Gray.copy(alpha = 0.5f)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.no_candidates_available),
+            style = MaterialTheme.typography.titleMedium,
+            color = Cafe,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onBack,
+            colors = ButtonDefaults.buttonColors(containerColor = Primary),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.back_button_label),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
         }
     }
 }

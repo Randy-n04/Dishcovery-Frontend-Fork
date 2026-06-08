@@ -23,7 +23,7 @@ sealed class DomainError(
     ) : DomainError(message)
 
     class ServerError(
-        message: String = "El servidor no responde. Inténtalo más tarde."
+        message: String = ""
     ) : DomainError(message)
 
     class ProfileNotFound(
