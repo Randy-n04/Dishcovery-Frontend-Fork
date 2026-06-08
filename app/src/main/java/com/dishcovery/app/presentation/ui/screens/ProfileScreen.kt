@@ -1,9 +1,14 @@
 package com.dishcovery.app.presentation.ui.screens
-
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,6 +48,12 @@ fun ProfileScreen(
     viewModel: ProfileViewModel,
     authViewModel: AuthViewModel
 ) {
+    val faqViewModel: AdminViewModel = hiltViewModel()
+    val faq by faqViewModel.faq.collectAsState()
+    val faqLoading by faqViewModel.isLoading.collectAsState()
+    val faqError by faqViewModel.error.collectAsState()
+
+    var showFaqUserDialog by remember { mutableStateOf(false) }
     val profile by viewModel.profile.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
@@ -202,7 +213,11 @@ fun ProfileScreen(
                     ProfileMenuSection(
                         title = stringResource(R.string.other_section_title),
                         items = listOf(
-                            Triple(stringResource(R.string.faq_item), { }, TextPrimary),
+                            Triple(
+                                stringResource(R.string.faq_item),
+                                { showFaqUserDialog = true },
+                                TextPrimary
+                            ),
                             Triple(stringResource(R.string.logout_item), onLogout, Rojo)
                         )
                     )
@@ -249,6 +264,83 @@ fun ProfileScreen(
                     currentPassword = currentPassword,
                     newPassword = newPassword
                 )
+            }
+        )
+    }
+    if (showFaqUserDialog) {
+        AlertDialog(
+            onDismissRequest = { showFaqUserDialog = false },
+            title = {
+                Text(text = stringResource(R.string.faq_item))
+            },
+            text = {
+                val faqContent = faq?.content.orEmpty()
+
+                when {
+                    faqLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Rojo)
+                        }
+                    }
+
+                    faqError != null -> {
+                        Text(
+                            text = faqError.orEmpty(),
+                            color = Rojo
+                        )
+                    }
+
+                    faqContent.isBlank() -> {
+                        Text(
+                            text = "No hay preguntas frecuentes disponibles.",
+                            color = TextPrimary
+                        )
+                    }
+
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 400.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    faqContent.lines().forEach { line ->
+
+                                        val isQuestion =
+                                            Regex("^\\d+\\.").containsMatchIn(line.trim())
+
+                                        if (isQuestion) {
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            ) {
+                                                append(line)
+                                            }
+                                        } else {
+                                            append(line)
+                                        }
+
+                                        append("\n")
+                                    }
+                                },
+                                color = TextPrimary
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { showFaqUserDialog = false }
+                ) {
+                    Text("Cerrar", color = Rojo)
+                }
             }
         )
     }
