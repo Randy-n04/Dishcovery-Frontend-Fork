@@ -176,4 +176,8 @@
     <string name="user_active">Activo</string>
     <string name="user_blocked">Bloqueado</string>
 
+    <string name="stats_axis_day">Día</string>
+    <string name="stats_axis_users">Usuarios</string>
+    <string name="stats_axis_matches">Matches</string>
+
 </resources>

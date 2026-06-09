@@ -1,6 +1,7 @@
 package com.dishcovery.app.presentation.ui.components
 
 
+import android.graphics.Typeface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +26,7 @@ import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
@@ -54,11 +56,13 @@ fun AdminStatsSection(
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StatChart(
             title  = stringResource(R.string.stats_active_users_title),
-            points = activeUsers
+            points = activeUsers,
+            yAxisLabel = stringResource(R.string.stats_axis_users)
         )
         StatChart(
             title  = stringResource(R.string.stats_matches_title),
-            points = matches
+            points = matches,
+            yAxisLabel = stringResource(R.string.stats_axis_matches)
         )
     }
 }
@@ -66,7 +70,8 @@ fun AdminStatsSection(
 @Composable
 fun StatChart(
     title : String,
-    points: List<StatPoint>
+    points: List<StatPoint>,
+    yAxisLabel: String
 ) {
     AdminSection(title) {
         if (points.isEmpty()) {
@@ -88,13 +93,33 @@ fun StatChart(
             }
         }
 
-        val labels = points.map { it.date.takeLast(5) }
+        val axisLabelComponent = rememberTextComponent(
+            color = TextPrimary.copy(.6f),
+            textSize = 11.sp,
+            typeface = Typeface.DEFAULT
+        )
 
         CartesianChartHost(
             chart = rememberCartesianChart(
                 rememberLineCartesianLayer(),
-                startAxis  = VerticalAxis.rememberStart(),
-                bottomAxis = HorizontalAxis.rememberBottom()
+                startAxis = VerticalAxis.rememberStart(
+                    titleComponent = rememberTextComponent(
+                        color    = TextPrimary.copy(.6f),
+                        textSize = 11.sp,
+                        typeface = Typeface.DEFAULT_BOLD
+                    ),
+                    title = yAxisLabel,
+                    label = axisLabelComponent
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                    titleComponent = rememberTextComponent(
+                        color    = TextPrimary.copy(.6f),
+                        textSize = 11.sp,
+                        typeface = Typeface.DEFAULT_BOLD
+                    ),
+                    title = stringResource(R.string.stats_axis_day),
+                    label = axisLabelComponent
+                )
             ),
             modelProducer = modelProducer,
             modifier      = Modifier.fillMaxWidth().height(180.dp)
