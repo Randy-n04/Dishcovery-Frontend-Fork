@@ -24,6 +24,7 @@ import com.dishcovery.app.presentation.ui.components.*
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.presentation.viewmodel.ExchangePlanViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +37,7 @@ fun ExchangePlanScreen(
     viewModel: ExchangePlanViewModel = hiltViewModel(),
     chatViewModel: ChatViewModel = hiltViewModel()
 ) {
+
     val user by authViewModel.user.collectAsState()
     val plan by viewModel.plan.collectAsState()
     val partnerProfile by viewModel.partnerProfile.collectAsState()
@@ -157,6 +159,14 @@ fun ExchangePlanScreen(
             }
 
             else -> {
+                val totalSessions = currentPlan.sessions.size
+
+                val completedSessions =
+                    if (currentPlan.progress > totalSessions) {
+                        ((currentPlan.progress / 100.0) * totalSessions).roundToInt()
+                    } else {
+                        currentPlan.progress
+                    }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -176,12 +186,8 @@ fun ExchangePlanScreen(
 
                     item {
                         ProgressSection(
-                            progress = currentPlan.progress,
-                            total = if (currentPlan.totalSessions > 0) {
-                                currentPlan.totalSessions
-                            } else {
-                                currentPlan.sessions.size
-                            }
+                            progress = completedSessions,
+                            total = totalSessions
                         )
                     }
 
