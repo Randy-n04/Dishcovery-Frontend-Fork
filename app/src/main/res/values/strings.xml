@@ -71,7 +71,8 @@
     <string name="hello_user_prefix">Hola Usuario 👨‍🍳</string>
     <string name="logout_label">Cerrar Sesión</string>
     <string name="system_label">Sistema</string>
-    <string name="invalid_credentials_error">Credenciales invalidas</string>
+    <string name="invalid_credentials_error">Credenciales inválidas</string>
+    <string name="blocked_user_error">Tu cuenta ha sido bloqueada. Contacta al administrador.</string>
     <string name="edited_label">(editado)</string>
     <string name="edit_message">Editar mensaje</string>
     <string name="copy_message">Copiar mensaje</string>

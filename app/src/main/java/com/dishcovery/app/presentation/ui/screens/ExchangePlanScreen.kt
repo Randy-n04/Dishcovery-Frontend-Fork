@@ -44,6 +44,7 @@ fun ExchangePlanScreen(
     val chats by chatViewModel.chats.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
+    val saveSuccess by viewModel.saveSuccess.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(planId, chatId, user) {
@@ -203,41 +204,39 @@ fun ExchangePlanScreen(
                     }
 
                     item {
-                        if (isSaving) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = Color(0xFF8B4513))
-                            }
-                        } else {
-                            ActionButtons(
-                                status = currentPlan.status,
-                                isReceived = effectivelyIsReceived,
-                                onAccept = { },
-                                onReject = {
-                                    viewModel.rejectPlan {
-                                        navController.navigate(NavRoutes.Home.ROUTE) {
-                                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
-                                        }
-                                    }
-                                },
-                                onSave = {
-                                    viewModel.savePlan()
-                                },
-                                onClose = {
+                        ActionButtons(
+                            status = currentPlan.status,
+                            isReceived = effectivelyIsReceived,
+                            isSaving = isSaving,
+                            saveSuccess = saveSuccess,
+                            onAccept = { },
+                            onReject = {
+                                viewModel.rejectPlan {
                                     navController.navigate(NavRoutes.Home.ROUTE) {
                                         popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
                                     }
-                                },
-                                onChat = {
-                                    val associatedChat = chats.find { it.planId == currentPlan.id || it.id == chatId }
-                                    if (associatedChat != null) {
-                                        navController.navigate(NavRoutes.ChatDetail.createRoute(associatedChat.id, associatedChat.name))
-                                    }
                                 }
-                            )
-                        }
+                            },
+                            onSave = {
+                                viewModel.savePlan()
+                            },
+                            onClose = {
+                                navController.navigate(NavRoutes.Home.ROUTE) {
+                                    popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                                }
+                            },
+                            onChat = {
+                                val associatedChat = chats.find { it.planId == currentPlan.id || it.id == chatId }
+                                if (associatedChat != null) {
+                                    navController.navigate(
+                                        NavRoutes.ChatDetail.createRoute(
+                                            associatedChat.id,
+                                            associatedChat.name
+                                        )
+                                    )
+                                }
+                            }
+                        )
 
                         Spacer(modifier = Modifier.height(16.dp))
                     }

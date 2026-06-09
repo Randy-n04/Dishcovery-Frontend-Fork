@@ -19,21 +19,29 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val loginInput = UserLoginInputDto(username, password)
             val response = apiService.login(loginInput)
-            
+
             if (response.isSuccessful && response.body() != null) {
-                // 1. Extraer el Token del Header (Authorization: Bearer <token>)
                 val authHeader = response.headers()["Authorization"]
+
                 if (authHeader != null && authHeader.startsWith("Bearer ")) {
                     val token = authHeader.substring(7)
-                    // 2. Guardar el token de forma segura en EncryptedSharedPreferences
                     tokenManager.saveToken(token)
                 }
 
-                // 3. Mapear la respuesta (UserDetails) al modelo de dominio User
                 Result.success(mapper.toDomainFromLogin(response.body()!!))
             } else {
-                Result.failure(Exception("Credenciales inválidas o error de servidor: ${response.code()}"))
-            }
+            val errorBody = response.errorBody()?.string().orEmpty()
+
+                val message = when {
+                    errorBody.contains("bloqueada", ignoreCase = true) ->
+                        "BLOCKED_USER"
+
+                    else ->
+                        "INVALID_CREDENTIALS"
+                }
+
+                Result.failure(Exception(message))
+        }
         } catch (e: Exception) {
             Result.failure(e)
         }

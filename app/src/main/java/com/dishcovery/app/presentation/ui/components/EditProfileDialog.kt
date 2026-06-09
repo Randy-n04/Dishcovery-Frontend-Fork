@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import com.dishcovery.app.domain.model.KitchenCategory
 import com.dishcovery.app.domain.model.Profile
 import com.dishcovery.app.presentation.ui.theme.Rojo
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun EditProfileDialog(
@@ -97,7 +99,11 @@ fun EditProfileDialog(
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 500.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)
             ) {
                 OutlinedTextField(
                     value = publicName,

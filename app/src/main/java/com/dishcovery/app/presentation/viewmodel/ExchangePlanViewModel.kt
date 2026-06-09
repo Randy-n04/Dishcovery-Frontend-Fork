@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 
 @HiltViewModel
 class ExchangePlanViewModel @Inject constructor(
@@ -36,6 +37,9 @@ class ExchangePlanViewModel @Inject constructor(
 
     private val _isSaving = MutableStateFlow(false)
     val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    private val _saveSuccess = MutableStateFlow(false)
+    val saveSuccess: StateFlow<Boolean> = _saveSuccess.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
@@ -118,17 +122,28 @@ class ExchangePlanViewModel @Inject constructor(
         }
     }
 
-    fun savePlan(onSuccess: (() -> Unit)? = null) {
+    fun savePlan() {
         val currentPlan = _plan.value ?: return
+
         viewModelScope.launch {
             _isSaving.value = true
+            _saveSuccess.value = false
+
             repository.updatePlan(currentPlan)
-                .onSuccess { 
+                .onSuccess {
                     _plan.value = it
-                    onSuccess?.invoke() 
+                    _isSaving.value = false
+                    _saveSuccess.value = true
+
+                    delay(1500)
+
+                    _saveSuccess.value = false
                 }
-                .onFailure { handleFailure(it) }
-            _isSaving.value = false
+                .onFailure {
+                    _isSaving.value = false
+                    _saveSuccess.value = false
+                    handleFailure(it)
+                }
         }
     }
 

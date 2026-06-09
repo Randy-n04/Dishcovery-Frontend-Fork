@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.delay
+
 
 /**
  * ViewModel para la gestión de autenticación real conectada al backend
@@ -43,6 +45,7 @@ class AuthViewModel @Inject constructor(
      * Realiza el login contra el backend. 
      * El repositorio se encarga de guardar el JWT en TokenManager.
      */
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -59,11 +62,10 @@ class AuthViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
-                    val domainError = DomainError.fromThrowable(throwable)
-                    _error.value = domainError.message
+                    _error.value = throwable.message ?: "Credenciales inválidas"
                     globalErrorViewModel.showError(throwable)
                 }
-            
+
             _isLoading.value = false
         }
     }
