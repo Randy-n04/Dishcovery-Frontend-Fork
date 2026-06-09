@@ -26,11 +26,9 @@ import com.dishcovery.app.presentation.ui.components.FeedAiSection
 import com.dishcovery.app.presentation.ui.components.PopularRecipesList
 import com.dishcovery.app.presentation.ui.components.RecipeDetailDialog
 import com.dishcovery.app.presentation.ui.components.SavedRecipesList
-import com.dishcovery.app.presentation.ui.components.SearchingMatchDialog
 import com.dishcovery.app.presentation.ui.layout.HomeLayout
 import com.dishcovery.app.presentation.ui.theme.Primary
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
-import kotlinx.coroutines.delay
 
 
 @Composable
@@ -64,7 +62,6 @@ fun HomeScreen(
 
     LaunchedEffect(showSearchingDialog) {
         if (showSearchingDialog) {
-            delay(1200)
             showSearchingDialog = false
 
             val idsParam = searchingCategoryIds.joinToString(",")
@@ -169,9 +166,7 @@ fun HomeScreen(
         }
     }
 
-    if (showSearchingDialog) {
-        SearchingMatchDialog(category = searchingCategoryName)
-    }
+
 
     selectedRecipe?.let { recipe ->
         val updatedRecipe =
