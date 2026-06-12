@@ -13,9 +13,11 @@ import androidx.navigation.navArgument
 import com.dishcovery.app.domain.model.UserRole
 import com.dishcovery.app.presentation.ui.screens.*
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
+import com.dishcovery.app.presentation.viewmodel.CameraViewModel
 import com.dishcovery.app.presentation.viewmodel.RecipeViewModel
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.viewmodel.ProfileViewModel
+import com.dishcovery.app.presentation.viewmodel.MatchViewModel
 
 @Composable
 fun NavGraph(
@@ -49,33 +51,54 @@ fun NavGraph(
 
         composable(NavRoutes.Home.ROUTE) {
             val recipeViewModel: RecipeViewModel = hiltViewModel()
-            HomeScreen(paddingValues, recipeViewModel, navController)
+            HomeScreen(
+                paddingValues,
+                recipeViewModel,
+                navController,
+                userId = user?.id
+            )
         }
 
-        composable(NavRoutes.DiscoverPeople.ROUTE) {
+        composable(
+            route = NavRoutes.DiscoverPeople.ROUTE,
+            arguments = listOf(navArgument("categoryIds") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val matchViewModel: MatchViewModel = hiltViewModel()
+            val categoryIdsArg = backStackEntry.arguments?.getString("categoryIds") ?: ""
+            val listIds = categoryIdsArg.split(",").mapNotNull { it.toLongOrNull() }
+
             DiscoverPeopleScreen(
                 paddingValues = paddingValues,
-                onBack = { navController.popBackStack() },
-                onConnect = { user ->
-                    navController.navigate(NavRoutes.ExchangePlan.createRoute(isReceived = true))
-                }
+                categoryIds = listIds,
+                navController = navController,
+                matchViewModel = matchViewModel,
+                authViewModel = authViewModel
             )
         }
 
         composable(
             route = NavRoutes.ExchangePlan.ROUTE,
-            arguments = listOf(navArgument("isReceived") { type = NavType.BoolType; defaultValue = true })
+            arguments = listOf(
+                navArgument("planId") { 
+                    type = NavType.LongType
+                    defaultValue = -1L
+                },
+                navArgument("chatId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
         ) { backStackEntry ->
-            val isReceived = backStackEntry.arguments?.getBoolean("isReceived") ?: true
+            val planId = backStackEntry.arguments?.getLong("planId")?.takeIf { it != -1L }
+            val chatId = backStackEntry.arguments?.getLong("chatId")?.takeIf { it != -1L }
+
             ExchangePlanScreen(
                 navController = navController,
                 paddingValues = paddingValues,
-                isReceived = isReceived
+                planId = planId,
+                chatId = chatId,
+                authViewModel = authViewModel
             )
-        }
-
-        composable(NavRoutes.PlanRequests.ROUTE) {
-            PlanRequestsScreen(navController = navController)
         }
 
         composable(NavRoutes.Chats.ROUTE) {
@@ -98,7 +121,8 @@ fun NavGraph(
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) { popUpTo(0) { inclusive = true } }
                 },
-                viewModel = profileViewModel
+                viewModel = profileViewModel,
+                authViewModel = authViewModel
             )
         }
 
@@ -148,8 +172,17 @@ fun NavGraph(
                     authViewModel.logout()
                     navController.navigate(NavRoutes.Auth.ROUTE) { popUpTo(0) { inclusive = true } }
                 },
-                viewModel = profileViewModel
+                viewModel = profileViewModel,
+                authViewModel = authViewModel
             )
         }
+
+        composable(NavRoutes.CameraAnalysis.ROUTE) {
+              val cameraViewModel: CameraViewModel = hiltViewModel()
+              CameraScreen(
+                  navController = navController,
+                  viewModel     = cameraViewModel
+              )
+          }
     }
 }

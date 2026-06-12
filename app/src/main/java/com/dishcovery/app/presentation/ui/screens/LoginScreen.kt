@@ -13,6 +13,8 @@ import com.dishcovery.app.presentation.ui.components.LoginContent
 import com.dishcovery.app.presentation.ui.layout.MainLayout
 import com.dishcovery.app.presentation.viewmodel.AuthViewModel
 import com.dishcovery.app.R
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun LoginScreen(
@@ -36,26 +38,35 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Show error message above the login content if it's "Credenciales invalidas"
-            if (error != null) {
-                Text(
-                    text = stringResource(R.string.invalid_credentials_error),
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+            val errorText = when (error) {
+                "BLOCKED_USER" -> stringResource(R.string.blocked_user_error)
+                "INVALID_CREDENTIALS" -> stringResource(R.string.invalid_credentials_error)
+                else -> stringResource(R.string.invalid_credentials_error)
             }
 
+            if (error != null) {
+                Text(
+                    text = errorText,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, bottom = 8.dp)
+                )
+            }
             LoginContent(
                 username = username,
                 password = password,
                 onUsernameChange = { username = it },
                 onPasswordChange = { password = it },
+
                 onLoginClick = {
                     viewModel.login(username, password)
                 },
-                error = null, // Set to null here since we're displaying it above
+                error = null,
                 success = null
+
             )
         }
     }

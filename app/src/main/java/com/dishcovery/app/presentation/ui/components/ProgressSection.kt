@@ -14,7 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.dishcovery.app.R
 
 @Composable
-fun ProgressSection() {
+fun ProgressSection(
+    progress: Int,
+    total: Int
+) {
+    val progressPercentage = if (total > 0) progress.toFloat() / total.toFloat() else 0f
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -26,13 +31,13 @@ fun ProgressSection() {
                 color = Color.Gray
             )
             Text(
-                text = stringResource(R.string.sessions_count_label, 0, 3),
+                text = stringResource(R.string.sessions_count_label, progress, total),
                 color = Color.Gray
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         LinearProgressIndicator(
-            progress = { 0f },
+            progress = { progressPercentage },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(12.dp)

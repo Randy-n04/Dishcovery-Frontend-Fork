@@ -44,6 +44,7 @@ fun ChatScreen(
 ) {
     val user by authViewModel.user.collectAsState()
     val chats by chatViewModel.chats.collectAsState()
+    val publicNames by chatViewModel.publicNames.collectAsState()
     val chatsError by chatViewModel.chatsError.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val isLoadingChats by chatViewModel.isLoadingChats.collectAsState()
@@ -68,9 +69,13 @@ fun ChatScreen(
         }
     }
 
-    val filteredChats = chats.filter {
-        it.name.contains(search, ignoreCase = true) ||
-                it.lastMessage.contains(search, ignoreCase = true)
+    val filteredChats = chats.filter { chat ->
+        val currentUserId = user?.id ?: -1L
+        val otherUserId = if (chat.senderId == currentUserId) chat.receiverId else chat.senderId
+        val displayName = publicNames[otherUserId] ?: (if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name)
+        
+        displayName.contains(search, ignoreCase = true) ||
+                chat.lastMessage.contains(search, ignoreCase = true)
     }
 
     Box(
@@ -87,11 +92,6 @@ fun ChatScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             )
-
-            // Sección de Solicitudes de Planes
-            PlanRequestsEntry(onClick = {
-                navController.navigate(NavRoutes.PlanRequests.ROUTE)
-            })
 
             Row(
                 modifier = Modifier
@@ -158,11 +158,16 @@ fun ChatScreen(
 
             LazyColumn {
                 items(filteredChats) { chat ->
+                    val currentUserId = user?.id ?: -1L
+                    val otherUserId = if (chat.senderId == currentUserId) chat.receiverId else chat.senderId
+                    val displayName = publicNames[otherUserId] ?: (if (chat.senderId == currentUserId) chat.receiverName ?: chat.name else chat.senderName ?: chat.name)
+                    
                     ChatItem(
                         chat = chat,
+                        displayName = displayName,
                         onClick = {
                             navController.navigate(
-                                NavRoutes.ChatDetail.createRoute(chat.id, chat.name)
+                                NavRoutes.ChatDetail.createRoute(chat.id, displayName)
                             )
                         }
                     )
@@ -175,52 +180,5 @@ fun ChatScreen(
             }
         }
 
-    }
-}
-
-@Composable
-fun PlanRequestsEntry(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBE6)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xFF8B4513).copy(alpha = 0.1f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = null,
-                    tint = Color(0xFF8B4513)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Buzón de Planes",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF8B4513)
-                )
-                Text(
-                    text = "Tienes solicitudes pendientes",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-            Badge(containerColor = Rojo) {
-                Text("2", color = Color.White)
-            }
-        }
     }
 }

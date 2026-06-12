@@ -1,16 +1,17 @@
 package com.dishcovery.app.data.repository
 
 import com.dishcovery.app.data.datasource.ChatDataSource
+import com.dishcovery.app.data.datasource.model.ChatInputDto
 import com.dishcovery.app.data.datasource.model.MessageCreateRequest
-import com.dishcovery.app.data.datasource.model.MessageUpdateRequest
 import com.dishcovery.app.data.mapper.ChatMapper
 import com.dishcovery.app.data.mapper.MessageMapper
 import com.dishcovery.app.domain.model.Chat
 import com.dishcovery.app.domain.model.Message
 import com.dishcovery.app.domain.repository.ChatRepository
 import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,29 +25,24 @@ class ChatRepositoryImpl @Inject constructor(
     private val cachedMessagesByChatId = mutableMapOf<Long, MutableList<Message>>()
 
     override suspend fun getChats(userId: Long): Result<List<Chat>> = try {
-        val chats = dataSource.getChats(userId).map { dto ->
-            val domainChat = chatMapper.toDomain(dto)
-            
-            // Si no tenemos mensajes en caché para este chat, intentamos traerlos
-            // para que el "lastMessage" esté actualizado desde el inicio.
-            if (!cachedMessagesByChatId.containsKey(domainChat.id)) {
-                getMessages(domainChat.id)
-            }
-            
-            mergeChatPreview(domainChat)
-        }
+        val dtos = dataSource.getChatsByUserId(userId)
+        val chats = dtos.map { chatMapper.toDomain(it) }
         Result.success(chats)
     } catch (e: Exception) {
-        Result.failure(mapToUserFriendlyException(e))
+        Result.failure(e)
+    }
+
+    override suspend fun getChatById(chatId: Long): Result<Chat> = try {
+        val dto = dataSource.getChatById(chatId)
+        Result.success(chatMapper.toDomain(dto))
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
     override suspend fun getMessages(chatId: Long): Result<List<Message>> = try {
-        val messages = dataSource.getMessages(chatId)
-            .filter { it.chatId == chatId }
-            .map {
-                messageMapper.mapToDomain(it)
-            }
-        cacheMessages(chatId, messages)
+        val dtos = dataSource.getMessages(chatId)
+        val messages = dtos.map { messageMapper.toDomain(it) }
+        cachedMessagesByChatId[chatId] = messages.toMutableList()
         Result.success(messages)
     } catch (e: Exception) {
         Result.failure(mapToUserFriendlyException(e))
@@ -55,52 +51,43 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun sendMessage(chatId: Long, senderId: Long, text: String): Result<Message> = try {
         val request = MessageCreateRequest(chatId, senderId, text)
         val dto = dataSource.sendMessage(request)
-        val domainMessage = messageMapper.mapToDomain(dto)
-        cacheMessage(domainMessage)
+        val domainMessage = messageMapper.toDomain(dto)
+        val messages = cachedMessagesByChatId.getOrPut(chatId) { mutableListOf() }
+        messages.add(domainMessage)
         Result.success(domainMessage)
     } catch (e: Exception) {
         Result.failure(mapToUserFriendlyException(e))
     }
 
-    override suspend fun updateMessage(id: Long, text: String): Result<Message> = try {
-        val request = MessageUpdateRequest(text)
-        val dto = dataSource.updateMessage(id, request)
-        val domainMessage = messageMapper.mapToDomain(dto)
-        cacheMessage(domainMessage)
-        Result.success(domainMessage)
-    } catch (e: Exception) {
-        Result.failure(mapToUserFriendlyException(e))
-    }
+    override suspend fun updateMessage(id: Long, text: String): Result<Message> = Result.failure(Exception("Not implemented"))
 
-    private fun mergeChatPreview(chat: Chat): Chat {
-        val latestMessage = cachedMessagesByChatId[chat.id]?.lastOrNull() ?: return chat
-        return chat.copy(
-            lastMessage = latestMessage.message,
-            time = chat.time
+    override suspend fun createChat(
+        senderId: Long,
+        receiverId: Long,
+        name: String,
+        avatarUrl: String,
+        planId: Long?
+    ): Result<Chat> = try {
+        val input = ChatInputDto(
+            senderId = senderId,
+            receiverId = receiverId,
+            name = name,
+            avatarUrl = avatarUrl,
+            planId = planId,
+            lastMessage = "¡Nuevo plan de intercambio creado!",
+            time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
+            unreadCount = 0
         )
-    }
-
-    private fun cacheMessages(chatId: Long, messages: List<Message>) {
-        cachedMessagesByChatId[chatId] = messages.toMutableList()
-    }
-
-    private fun cacheMessage(message: Message) {
-        val messages = cachedMessagesByChatId.getOrPut(message.chatId) { mutableListOf() }
-        val index = messages.indexOfFirst { it.id == message.id }
-        if (index >= 0) {
-            messages[index] = message
-        } else {
-            messages.add(message)
-        }
+        val dto = dataSource.createChat(input)
+        Result.success(chatMapper.toDomain(dto))
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
     private fun mapToUserFriendlyException(exception: Exception): Exception {
-        val message = when (exception) {
-            is UnknownHostException,
-            is SocketTimeoutException -> "Sin conexion. Verifica internet o que Mockoon este encendido."
-            is IOException -> "Error de red. Intenta nuevamente."
-            else -> exception.message ?: "Ocurrio un error inesperado."
+        return when (exception) {
+            is IOException -> Exception("Error de conexión con el servidor", exception)
+            else -> Exception(exception.message ?: "Error inesperado en el chat", exception)
         }
-        return Exception(message, exception)
     }
 }

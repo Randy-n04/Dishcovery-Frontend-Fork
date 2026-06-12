@@ -5,5 +5,6 @@ package com.dishcovery.app.data.datasource.model
  */
 data class KitchenCategoryDto(
     val id: Long,
-    val name: String
+    val name: String,
+    val trendingUntil: String? = null
 )

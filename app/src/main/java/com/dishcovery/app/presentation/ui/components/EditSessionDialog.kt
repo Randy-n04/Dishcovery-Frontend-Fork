@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.ExchangeSession
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,7 +20,7 @@ fun EditSessionDialog(
     onSave: (ExchangeSession) -> Unit
 ) {
     var title by remember { mutableStateOf(session?.title ?: "") }
-    var instructor by remember { mutableStateOf(session?.instructor ?: "") }
+    var instructor by remember { mutableStateOf(session?.instructorName ?: "") }
     var date by remember { mutableStateOf(session?.date ?: "") }
     var time by remember { mutableStateOf(session?.time ?: "") }
 
@@ -28,7 +29,16 @@ fun EditSessionDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onSave(ExchangeSession(title, instructor, date, time))
+                    onSave(
+                        ExchangeSession(
+                            id = session?.id ?: 0,
+                            title = title,
+                            instructorName = instructor,
+                            date = date,
+                            time = time,
+                            isCompleted = session?.isCompleted ?: false
+                        )
+                    )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513)),
                 shape = RoundedCornerShape(12.dp)

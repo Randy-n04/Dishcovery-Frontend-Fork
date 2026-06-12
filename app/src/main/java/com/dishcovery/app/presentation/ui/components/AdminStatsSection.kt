@@ -1,6 +1,7 @@
 package com.dishcovery.app.presentation.ui.components
 
 
+import android.graphics.Typeface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,27 +15,114 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.StatPoint
 import com.dishcovery.app.presentation.ui.theme.Rojo
 import com.dishcovery.app.presentation.ui.theme.TextPrimary
+import com.dishcovery.app.presentation.viewmodel.AdminStatisticsViewModel
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 
 @Composable
-fun AdminStatsSection() {
-    AdminSection(stringResource(R.string.stats_section_title)) {
-        listOf(
-            stringResource(R.string.active_users_stat),
-            stringResource(R.string.matches_made_stat)
-        ).forEachIndexed { i, title ->
-            if (i > 0) HorizontalDivider(color = TextPrimary.copy(.1f))
-            Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Rojo)
-            Box(
-                Modifier.fillMaxWidth().height(80.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(TextPrimary.copy(alpha = 0.06f)),
-                Alignment.Center
-            ) {
-                Text(stringResource(R.string.no_data_available), fontSize = 13.sp, color = TextPrimary.copy(.4f))
+fun AdminStatsSection(
+    viewModel: AdminStatisticsViewModel = hiltViewModel()
+) {
+    val activeUsers by viewModel.activeUsers.collectAsState()
+    val matches     by viewModel.matches.collectAsState()
+    val isLoading   by viewModel.isLoading.collectAsState()
+    val error       by viewModel.error.collectAsState()
+
+    if (isLoading) {
+        Box(Modifier.fillMaxWidth().height(200.dp), Alignment.Center) {
+            CircularProgressIndicator(color = Rojo)
+        }
+        return
+    }
+
+    if (error != null) {
+        Text(error!!, color = Rojo, fontSize = 13.sp)
+        return
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        StatChart(
+            title  = stringResource(R.string.stats_active_users_title),
+            points = activeUsers,
+            yAxisLabel = stringResource(R.string.stats_axis_users)
+        )
+        StatChart(
+            title  = stringResource(R.string.stats_matches_title),
+            points = matches,
+            yAxisLabel = stringResource(R.string.stats_axis_matches)
+        )
+    }
+}
+
+@Composable
+fun StatChart(
+    title : String,
+    points: List<StatPoint>,
+    yAxisLabel: String
+) {
+    AdminSection(title) {
+        if (points.isEmpty()) {
+            Box(Modifier.fillMaxWidth().height(120.dp), Alignment.Center) {
+                Text(
+                    stringResource(R.string.stats_no_data),
+                    color    = TextPrimary.copy(.4f),
+                    fontSize = 13.sp
+                )
+            }
+            return@AdminSection
+        }
+
+        val modelProducer = remember { CartesianChartModelProducer() }
+
+        LaunchedEffect(points) {
+            modelProducer.runTransaction {
+                lineSeries { series(points.map { it.count.toFloat() }) }
             }
         }
+
+        val axisLabelComponent = rememberTextComponent(
+            color = TextPrimary.copy(.6f),
+            textSize = 11.sp,
+            typeface = Typeface.DEFAULT
+        )
+
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(),
+                startAxis = VerticalAxis.rememberStart(
+                    titleComponent = rememberTextComponent(
+                        color    = TextPrimary.copy(.6f),
+                        textSize = 11.sp,
+                        typeface = Typeface.DEFAULT_BOLD
+                    ),
+                    title = yAxisLabel,
+                    label = axisLabelComponent
+                ),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                    titleComponent = rememberTextComponent(
+                        color    = TextPrimary.copy(.6f),
+                        textSize = 11.sp,
+                        typeface = Typeface.DEFAULT_BOLD
+                    ),
+                    title = stringResource(R.string.stats_axis_day),
+                    label = axisLabelComponent
+                )
+            ),
+            modelProducer = modelProducer,
+            modifier      = Modifier.fillMaxWidth().height(180.dp)
+        )
     }
 }

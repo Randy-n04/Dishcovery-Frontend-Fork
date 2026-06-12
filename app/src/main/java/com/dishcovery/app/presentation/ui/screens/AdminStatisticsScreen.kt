@@ -13,10 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dishcovery.app.presentation.ui.components.AdminHeader
 import com.dishcovery.app.presentation.ui.components.AdminStatsSection
 import com.dishcovery.app.presentation.ui.theme.Beige
 import com.dishcovery.app.presentation.ui.theme.TextPrimary
+import com.dishcovery.app.presentation.viewmodel.AdminStatisticsViewModel
 
 @Composable
 fun AdminStatisticsScreen(
@@ -38,11 +40,14 @@ fun AdminStatisticsScreen(
                 .padding(16.dp, 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Estadisticas", style = MaterialTheme.typography.labelLarge, color = TextPrimary.copy(.6f))
+            Text(
+                "Estadísticas",
+                style = MaterialTheme.typography.labelLarge,
+                color = TextPrimary.copy(.6f)
+            )
             AdminStatsSection()
         }
     }
 }
-
 
 

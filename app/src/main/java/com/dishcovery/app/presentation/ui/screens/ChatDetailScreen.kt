@@ -11,15 +11,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -31,17 +29,22 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.dishcovery.app.R
 import com.dishcovery.app.domain.model.Message
+import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.viewmodel.ChatViewModel
 import com.dishcovery.app.presentation.ui.theme.*
 import com.dishcovery.app.presentation.ui.components.MessageBubble
 import com.dishcovery.app.presentation.ui.components.MessageContextMenu
 import com.dishcovery.app.presentation.ui.components.ScreenErrorState
 import com.dishcovery.app.presentation.ui.components.ScreenLoadingState
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.filled.Send
 
 @Composable
 fun ChatDetailScreen(
@@ -53,6 +56,7 @@ fun ChatDetailScreen(
 ) {
 
     val messages by chatViewModel.messages.collectAsState()
+    val otherProfile by chatViewModel.otherParticipantProfile.collectAsState()
     val messagesError by chatViewModel.messagesError.collectAsState()
     val sendError by chatViewModel.sendError.collectAsState()
 
@@ -74,7 +78,7 @@ fun ChatDetailScreen(
     val isLoadingMessages by chatViewModel.isLoadingMessages.collectAsState()
 
     LaunchedEffect(chatId) {
-        chatViewModel.loadMessages(chatId)
+        chatViewModel.loadChatAndMessages(chatId, currentUserId)
     }
 
     LaunchedEffect(sendError) {
@@ -92,62 +96,199 @@ fun ChatDetailScreen(
         wasLoading = isLoadingMessage
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Beige)
-    ) {
+    val listState = rememberLazyListState()
 
-        // Header
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-        ) {
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.lastIndex)
+        }
+    }
+    Scaffold(
+        containerColor = Beige,
+        topBar = {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button_desc)
+                        )
+                    }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button_desc)
+                    Text(
+                        text = otherProfile?.publicName ?: chatName,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp, vertical = 10.dp)
                     )
                 }
 
-                Text(
-                    text = chatName,
+                HorizontalDivider(color = Color(0xFFE8E8E8), thickness = 1.dp)
+            }
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Beige)
+                    .navigationBarsPadding()
+                    .imePadding()
+            ) {
+                if (editingMessageId != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFFE1DB))
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.cancel_button),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    editingMessageId = null
+                                    draft = ""
+                                },
+                            tint = Primary
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = stringResource(R.string.edit_message),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Primary
+                        )
+                    }
+                }
+
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp, vertical = 10.dp)
-                )
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 8.dp)
+                        .height(52.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFE4E4E4),
+                            shape = RoundedCornerShape(26.dp)
+                        )
+                        .background(Color.White, RoundedCornerShape(26.dp))
+                        .padding(start = 6.dp, end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFFFFE1DB),
+                        shadowElevation = 4.dp,
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clickable {
+                                navController.navigate(
+                                    NavRoutes.ExchangePlan.createRoute(chatId = chatId)
+                                )
+                            }
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            NotebookPencilGlyph(
+                                tint = Primary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
 
-                Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search_placeholder), tint = Primary)
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                Spacer(modifier = Modifier.width(10.dp))
+                    TextField(
+                        value = draft,
+                        onValueChange = {
+                            draft = it
+                            if (sendError != null) chatViewModel.clearSendError()
+                        },
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.message_placeholder),
+                                color = Color(0xFF7E7E7E)
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary
+                        )
+                    )
 
-                Icon(Icons.Default.Call, contentDescription = null, tint = Primary)
+                    IconButton(
+                        onClick = {
+                            val textToSend = draft.trim()
+                            if (textToSend.isNotEmpty()) {
+                                if (editingMessageId != null) {
+                                    chatViewModel.editMessage(editingMessageId!!, textToSend, chatId)
+                                    editingMessageId = null
+                                } else {
+                                    chatViewModel.sendMessage(chatId, currentUserId, textToSend)
+                                }
+                            }
+                        }
+                    ) {
+                        if (isLoadingMessage) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp,
+                                color = Primary
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = stringResource(R.string.send_button_label),
+                                tint = Primary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                }
 
-                Spacer(modifier = Modifier.width(10.dp))
+                if (sendError != null) {
+                    Text(
+                        text = sendError.orEmpty(),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
+    ) { innerPadding ->
 
-        HorizontalDivider(color = Color(0xFFE8E8E8), thickness = 1.dp)
-
-        Box(modifier = Modifier.weight(1f)) {
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Beige)
+                .padding(innerPadding)
+        ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-
                 itemsIndexed(messages) { index, message ->
-
                     val isSelected = selectedMessage?.id == message.id
                     val isMe = message.senderId == currentUserId
 
@@ -182,7 +323,8 @@ fun ChatDetailScreen(
                             isFirstChatHighlight = index == 0,
                             screenHeightPx = screenHeightPx,
                             onLongClick = { yFraction ->
-                                selectedMessage = if (selectedMessage?.id == message.id) null else message
+                                selectedMessage =
+                                    if (selectedMessage?.id == message.id) null else message
                                 showMenuAbove = yFraction > 0.5f
                             }
                         )
@@ -197,7 +339,6 @@ fun ChatDetailScreen(
                         }
                     }
                 }
-
             }
 
             if (isLoadingMessages) {
@@ -205,240 +346,67 @@ fun ChatDetailScreen(
             } else if (messagesError != null) {
                 ScreenErrorState(message = messagesError.orEmpty())
             }
-
-            if (messagesError != null) {
-                ScreenErrorState(message = messagesError.orEmpty())
-            }
-
-            DropdownMenu(
-                expanded = showOptions,
-                onDismissRequest = { showOptions = false }
-            ) {
-
-                selectedMessage?.let { message ->
-
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.copy_message)) },
-                        onClick = {
-                            clipboardManager.setText(AnnotatedString(message.message))
-                            showOptions = false
-                        }
-                    )
-
-                    if (message.senderId == currentUserId) {
-
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.edit_message)) },
-                            onClick = {
-                                draft = message.message
-                                editingMessageId = message.id
-                                showOptions = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-        ) {
-
-            if (editingMessageId != null) {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFFFE1DB))
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.cancel_button),
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                editingMessageId = null
-                                draft = ""
-                            },
-                        tint = Primary
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = stringResource(R.string.edit_message),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Primary
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SuggestionChip(text = stringResource(R.string.translate_chip), selected = false, modifier = Modifier.weight(1f))
-                SuggestionChip(text = stringResource(R.string.recipe_tips_chip), selected = false, modifier = Modifier.weight(1f))
-                SuggestionChip(text = stringResource(R.string.plan_schedules_chip), selected = true, modifier = Modifier.weight(1.2f))
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
-                    .height(52.dp)
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFE4E4E4),
-                        shape = RoundedCornerShape(26.dp)
-                    )
-                    .background(Color.White, RoundedCornerShape(26.dp))
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Surface(
-                    shape = CircleShape,
-                    color = Color(0xFFFFE1DB),
-                    modifier = Modifier.size(30.dp)
-                ) {
-
-                    Box(contentAlignment = Alignment.Center) {
-
-                        CameraGlyph(
-                            tint = Primary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                TextField(
-                    value = draft,
-                    onValueChange = {
-                        draft = it
-                        if (sendError != null) chatViewModel.clearSendError()
-                    },
-                    placeholder = {
-                        Text(
-                            stringResource(R.string.message_placeholder),
-                            color = Color(0xFF7E7E7E)
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary
-                    )
-                )
-
-                TextButton(
-                    onClick = {
-                        val textToSend = draft.trim()
-                        if (textToSend.isNotEmpty()) {
-                            if (editingMessageId != null) {
-                                chatViewModel.editMessage(editingMessageId!!, textToSend, chatId)
-                                editingMessageId = null
-                            } else {
-                                chatViewModel.sendMessage(chatId, currentUserId, textToSend)
-                            }
-                        }
-                    }
-                ) {
-                    if (isLoadingMessage) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp,
-                            color = Primary
-                        )
-                    } else {
-                        Text(
-                            text =
-                                if (editingMessageId != null)
-                                    stringResource(R.string.update_button_label)
-                                else
-                                    stringResource(R.string.send_button_label),
-                            color = Primary
-                        )
-                    }
-                }
-            }
-
-            if (sendError != null) {
-
-                Text(
-                    text = sendError.orEmpty(),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp, vertical = 4.dp)
-                )
-            }
-
         }
     }
 }
 
 
+
+
+
 @Composable
-private fun CameraGlyph(
+fun NotebookPencilGlyph(
     tint: Color,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
-        // Cuerpo de camara
-        val bodyTop = size.height * 0.28f
+        val stroke = Stroke(width = 3f, cap = StrokeCap.Round)
+
+        // Libreta
         drawRoundRect(
             color = tint,
-            topLeft = Offset(0f, bodyTop),
-            size = Size(size.width, size.height - bodyTop),
-            cornerRadius = CornerRadius(4f, 4f),
-            style = Stroke(width = 2f)
+            topLeft = Offset(size.width * 0.18f, size.height * 0.15f),
+            size = Size(size.width * 0.48f, size.height * 0.65f),
+            cornerRadius = CornerRadius(8f, 8f),
+            style = stroke
         )
 
-        // Lente
-        drawCircle(
+        // Líneas de la libreta
+        drawLine(
             color = tint,
-            radius = size.minDimension * 0.17f,
-            center = Offset(size.width * 0.5f, size.height * 0.63f),
-            style = Stroke(width = 2f)
+            start = Offset(size.width * 0.28f, size.height * 0.35f),
+            end = Offset(size.width * 0.55f, size.height * 0.35f),
+            strokeWidth = 2.5f
+        )
+        drawLine(
+            color = tint,
+            start = Offset(size.width * 0.28f, size.height * 0.50f),
+            end = Offset(size.width * 0.55f, size.height * 0.50f),
+            strokeWidth = 2.5f
         )
 
-        // Visor superior
-        drawRoundRect(
+        // Lápiz
+        drawLine(
             color = tint,
-            topLeft = Offset(size.width * 0.15f, size.height * 0.12f),
-            size = Size(size.width * 0.28f, size.height * 0.2f),
-            cornerRadius = CornerRadius(3f, 3f),
-            style = Stroke(width = 2f)
+            start = Offset(size.width * 0.58f, size.height * 0.75f),
+            end = Offset(size.width * 0.82f, size.height * 0.35f),
+            strokeWidth = 4f,
+            cap = StrokeCap.Round
         )
     }
 }
+
+
 
 @Composable
 private fun SuggestionChip(
     text: String,
     selected: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
         shadowElevation = 2.dp,
         color = if (selected) Color(0xFFEFA053) else Color(0xFFF0ECD5)

@@ -21,7 +21,7 @@ import com.dishcovery.app.presentation.ui.theme.Cafe
 fun PopularRecipeCard(
     title: String,
     description: String,
-    likes: Int,
+    likes: Long,
     imageUrl: String,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier

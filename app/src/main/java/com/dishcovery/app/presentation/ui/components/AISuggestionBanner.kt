@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.sp
 import com.dishcovery.app.R
 
 @Composable
-fun AISuggestionBanner() {
+fun AISuggestionBanner(suggestion: String?) {
+    if (suggestion == null) return
+
     val gradient = Brush.horizontalGradient(
         colors = listOf(Color(0xFFFFA07A), Color(0xFFFF6347))
     )
@@ -38,7 +40,7 @@ fun AISuggestionBanner() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.ai_plan_suggestion),
+                text = suggestion,
                 color = Color.White,
                 fontSize = 13.sp,
                 lineHeight = 18.sp

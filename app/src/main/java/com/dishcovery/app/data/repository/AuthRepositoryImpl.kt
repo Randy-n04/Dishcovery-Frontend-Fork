@@ -1,31 +1,102 @@
 package com.dishcovery.app.data.repository
 
-import com.dishcovery.app.data.datasource.AuthDataSource
+import com.dishcovery.app.data.datasource.model.UserLoginInputDto
+import com.dishcovery.app.data.datasource.remote.UserApiService
+import com.dishcovery.app.data.local.TokenManager
 import com.dishcovery.app.data.mapper.UserMapper
 import com.dishcovery.app.domain.model.User
 import com.dishcovery.app.domain.repository.AuthRepository
 import javax.inject.Inject
+import com.dishcovery.app.data.datasource.model.AccountUpdateDto
 
-/**
- * Concrete implementation of [AuthRepository].
- * Orchestrates the data source and mapper to return domain entities.
- */
 class AuthRepositoryImpl @Inject constructor(
-    private val dataSource: AuthDataSource,
-    private val mapper: UserMapper
+    private val apiService: UserApiService,
+    private val mapper: UserMapper,
+    private val tokenManager: TokenManager
 ) : AuthRepository {
 
     override suspend fun login(username: String, password: String): Result<User> {
         return try {
-            val userDto = dataSource.login(username, password)
+            val loginInput = UserLoginInputDto(username, password)
+            val response = apiService.login(loginInput)
 
-            if (userDto != null) {
-                val user = mapper.mapToDomain(userDto)
-                Result.success(user)
+            if (response.isSuccessful && response.body() != null) {
+                val authHeader = response.headers()["Authorization"]
+
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    val token = authHeader.substring(7)
+                    tokenManager.saveToken(token)
+                }
+
+                Result.success(mapper.toDomainFromLogin(response.body()!!))
             } else {
-                Result.failure(Exception("invalid_credentials_error"))
-            }
+            val errorBody = response.errorBody()?.string().orEmpty()
 
+                val message = when {
+                    errorBody.contains("bloqueada", ignoreCase = true) ->
+                        "BLOCKED_USER"
+
+                    else ->
+                        "INVALID_CREDENTIALS"
+                }
+
+                Result.failure(Exception(message))
+        }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun logout(): Result<Unit> {
+        return try {
+            val response = apiService.logout()
+            if (response.isSuccessful) {
+                tokenManager.deleteToken()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al cerrar sesión: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            // Incluso si falla la red, borramos el token localmente
+            tokenManager.deleteToken()
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateAccount(
+        userId: Long,
+        username: String?,
+        currentPassword: String,
+        newPassword: String?
+    ): Result<User> {
+        return try {
+            val response = apiService.updateAccount(
+                id = userId,
+                request = AccountUpdateDto(
+                    username = username,
+                    currentPassword = currentPassword,
+                    newPassword = newPassword
+                )
+            )
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(mapper.toDomain(response.body()!!))
+            } else {
+                val errorBody = response.errorBody()?.string().orEmpty()
+
+                val message = when {
+                    errorBody.contains("Username already exists", ignoreCase = true) ->
+                        "Ese nombre de usuario ya existe. Intenta con otro."
+
+                    errorBody.contains("Current password is incorrect", ignoreCase = true) ->
+                        "La contraseña actual es incorrecta."
+
+                    else ->
+                        "No se pudo actualizar la cuenta."
+                }
+
+                Result.failure(Exception(message))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -1,7 +1,6 @@
 package com.dishcovery.app.di
 
 import com.dishcovery.app.data.datasource.*
-import com.dishcovery.app.data.mapper.*
 import com.dishcovery.app.data.repository.*
 import com.dishcovery.app.domain.repository.*
 import dagger.Binds
@@ -28,6 +27,13 @@ abstract class AppModule {
 
     @Binds
     @Singleton
+    abstract fun bindFaqDataSource(impl: FaqDataSourceImpl): FaqDataSource
+
+    @Binds @Singleton
+    abstract fun bindStatsDataSource(impl: StatsDataSourceImpl): StatsDataSource
+
+    @Binds
+    @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
     @Binds
@@ -41,4 +47,39 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindKitchenCategoryDataSource(impl: KitchenCategoryDataSourceImpl): KitchenCategoryDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindKitchenCategoryRepository(impl: KitchenCategoryRepositoryImpl): KitchenCategoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFaqRepository(impl: FaqRepositoryImpl): FaqRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindImageDataSource(impl: ImageDataSourceImpl): ImageDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindImageRepository(impl: ImageRepositoryImpl): ImageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExchangePlanRepository(impl: ExchangePlanRepositoryImpl): ExchangePlanRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMatchRepository(impl: MatchRepositoryImpl): MatchRepository
+
+    @Binds @Singleton
+    abstract fun bindStatsRepository(impl: StatsRepositoryImpl): StatsRepository
 }

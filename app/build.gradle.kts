@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services") version "4.4.4" apply false
+
 }
 
 android {
@@ -53,16 +55,23 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.security.crypto)
     implementation(libs.coil.compose)
     
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.runtime)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+
+    // Testing
+    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -71,4 +80,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // En dependencias
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-beta.2")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 }

@@ -5,7 +5,9 @@ import com.dishcovery.app.domain.model.Message
 
 interface ChatRepository {
     suspend fun getChats(userId: Long): Result<List<Chat>>
+    suspend fun getChatById(chatId: Long): Result<Chat>
     suspend fun getMessages(chatId: Long): Result<List<Message>>
     suspend fun sendMessage(chatId: Long, senderId: Long, text: String): Result<Message>
     suspend fun updateMessage(id: Long, text: String): Result<Message>
+    suspend fun createChat(senderId: Long, receiverId: Long, name: String, avatarUrl: String, planId: Long?): Result<Chat>
 }

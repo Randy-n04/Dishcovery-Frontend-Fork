@@ -9,26 +9,32 @@ class ChatMapper @Inject constructor() {
     fun toDto(chat: Chat): ChatDto {
         return ChatDto(
             id = chat.id,
-            userId1 = chat.userId1,
-            userId2 = chat.userId2,
+            senderId = chat.senderId,
+            receiverId = chat.receiverId,
+            senderName = chat.senderName,
+            receiverName = chat.receiverName,
             name = chat.name,
             lastMessage = chat.lastMessage,
             time = chat.time,
-            unread = chat.unreadCount,
-            avatarUrl = chat.avatarUrl
+            unreadCount = chat.unreadCount,
+            avatarUrl = chat.avatarUrl,
+            planId = chat.planId
         )
     }
 
     fun toDomain(dto: ChatDto): Chat {
         return Chat(
             id = dto.id,
-            userId1 = dto.userId1,
-            userId2 = dto.userId2,
+            senderId = dto.senderId,
+            receiverId = dto.receiverId,
+            senderName = dto.senderName,
+            receiverName = dto.receiverName,
             name = dto.name,
             lastMessage = dto.lastMessage,
             time = dto.time,
-            unreadCount = dto.unread,
-            avatarUrl = dto.avatarUrl ?: ""
+            unreadCount = dto.unreadCount,
+            avatarUrl = dto.avatarUrl,
+            planId = dto.planId
         )
     }
 }

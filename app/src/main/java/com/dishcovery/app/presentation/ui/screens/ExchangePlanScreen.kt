@@ -7,41 +7,71 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.dishcovery.app.R
+import com.dishcovery.app.domain.model.ExchangeSession
+import com.dishcovery.app.domain.model.PlanStatus
 import com.dishcovery.app.presentation.navigation.NavRoutes
 import com.dishcovery.app.presentation.ui.components.*
+import com.dishcovery.app.presentation.viewmodel.AuthViewModel
+import com.dishcovery.app.presentation.viewmodel.ExchangePlanViewModel
+import com.dishcovery.app.presentation.viewmodel.ChatViewModel
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExchangePlanScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    isReceived: Boolean = true // true if we received it (can edit), false if we sent it (readonly)
+    planId: Long?,
+    chatId: Long?,
+    authViewModel: AuthViewModel,
+    viewModel: ExchangePlanViewModel = hiltViewModel(),
+    chatViewModel: ChatViewModel = hiltViewModel()
 ) {
-    // 1. Estado dinámico de las sesiones
-    val sessions = remember {
-        mutableStateListOf(
-            ExchangeSession("Pasta italiana nivel principiante", "Javier", "Marzo 15, 2026", "6:00 PM - 7:30 PM"),
-            ExchangeSession("Tacos tradicionales y salsas", "ti", "Marzo 16, 2026", "6:00 PM - 7:30 PM")
-        )
+
+    val user by authViewModel.user.collectAsState()
+    val plan by viewModel.plan.collectAsState()
+    val partnerProfile by viewModel.partnerProfile.collectAsState()
+    val chats by chatViewModel.chats.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
+    val saveSuccess by viewModel.saveSuccess.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(planId, chatId, user) {
+        user?.let { u ->
+            if (planId != null) {
+                viewModel.loadPlan(planId, u.id)
+            } else if (chatId != null) {
+                viewModel.loadPlanByChatId(chatId, u.id)
+            }
+            chatViewModel.loadChats(u.id)
+        }
     }
 
-    // Sugerencias de la IA (Simulado)
-    val aiSuggestions = listOf(
-        ExchangeSession("Postres Gourmet Italianos", "Javier", "Marzo 20, 2026", "4:00 PM - 6:00 PM"),
-        ExchangeSession("Maridaje de Vinos", "ti", "Marzo 22, 2026", "7:00 PM - 8:30 PM")
-    )
+    val currentPlan = plan
 
-    var suggestionsText by remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedSessionIndex by remember { mutableIntStateOf(-1) }
-    val sessionToEdit = if (selectedSessionIndex != -1) sessions.getOrNull(selectedSessionIndex) else null
+    // Lógica de auto-aceptación si el usuario es el receptor y el plan está PENDING
+    LaunchedEffect(currentPlan, user) {
+        if (currentPlan != null && user != null) {
+            val isCreator = currentPlan.creatorId == user!!.id
+            if (!isCreator && currentPlan.status == PlanStatus.PENDING) {
+                viewModel.acceptPlan { }
+            }
+        }
+    }
+
+    // Determinar si el usuario actual es el "receptor" (compañero)
+    val effectivelyIsReceived = currentPlan?.let { it.creatorId != user?.id } ?: false
 
     Scaffold(
         topBar = {
@@ -54,7 +84,11 @@ fun ExchangePlanScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { 
+                        navController.navigate(NavRoutes.Home.ROUTE) {
+                            popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                        }
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                 },
@@ -63,74 +97,166 @@ fun ExchangePlanScreen(
         },
         containerColor = Color(0xFFFFFBE6)
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding() + 80.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item { PartnerCard() }
-            item { AISuggestionBanner() }
-            item { ProgressSection() }
 
-            // Lista de sesiones dinámicas
-            itemsIndexed(sessions) { index, session ->
-                SessionCard(
-                    session = session,
-                    canEdit = isReceived, // Solo se puede editar si es recibido
-                    onEditClick = {
-                        selectedSessionIndex = index
-                        showDialog = true
-                    }
-                )
-            }
-
-            // Solo mostramos el botón de generar si es un plan recibido (editable)
-            if (isReceived) {
-                item {
-                    GenerateSessionButton(onGenerate = {
-                        val next = aiSuggestions.getOrNull(sessions.size - 2) ?: aiSuggestions.random()
-                        sessions.add(next)
-                    })
+        when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF8B4513))
                 }
             }
 
-            // Sección de sugerencias del usuario
-            item {
-                SuggestionsSection(
-                    text = suggestionsText, 
-                    onValueChange = { suggestionsText = it },
-                    enabled = isReceived // Solo editable si es recibido
-                )
+            errorMessage != null -> {
+                // Filtro de seguridad que transforma mensajes técnicos en amigables
+                val displayError = formatErrorMessage(errorMessage!!)
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = displayError,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { 
+                            user?.let { u ->
+                                if (planId != null) viewModel.loadPlan(planId, u.id)
+                                else if (chatId != null) viewModel.loadPlanByChatId(chatId, u.id)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B4513))
+                    ) {
+                        Text(stringResource(R.string.retry_button))
+                    }
+                }
             }
-            
-            item {
-                ActionButtons(
-                    onAccept = {
-                        navController.navigate(NavRoutes.Chats.ROUTE) {
-                            popUpTo(NavRoutes.Home.ROUTE)
-                        }
-                    },
-                    onSave = { /* Simulación de guardado */ },
-                    isReceived = isReceived
-                )
+
+            currentPlan == null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_plans_available),
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            else -> {
+                val totalSessions = currentPlan.sessions.size
+
+                val completedSessions =
+                    if (currentPlan.progress > totalSessions) {
+                        ((currentPlan.progress / 100.0) * totalSessions).roundToInt()
+                    } else {
+                        currentPlan.progress
+                    }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = PaddingValues(
+                        top = innerPadding.calculateTopPadding() + 16.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 100.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        PartnerCard(
+                            partnerName = partnerProfile?.publicName ?: currentPlan.partnerName,
+                            partnerImageUrl = partnerProfile?.photoUrl ?: currentPlan.partnerImageUrl
+                        )
+                    }
+
+                    item {
+                        ProgressSection(
+                            progress = completedSessions,
+                            total = totalSessions
+                        )
+                    }
+
+                    itemsIndexed(currentPlan.sessions) { index, session ->
+                        SessionCard(
+                            session = session,
+                            canEdit = false, 
+                            onEditClick = { },
+                            onToggleCompletion = {
+                                viewModel.toggleSessionCompletion(index)
+                            }
+                        )
+                    }
+
+                    item {
+                        ActionButtons(
+                            status = currentPlan.status,
+                            isReceived = effectivelyIsReceived,
+                            isSaving = isSaving,
+                            saveSuccess = saveSuccess,
+                            onAccept = { },
+                            onReject = {
+                                viewModel.rejectPlan {
+                                    navController.navigate(NavRoutes.Home.ROUTE) {
+                                        popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                                    }
+                                }
+                            },
+                            onSave = {
+                                viewModel.savePlan()
+                            },
+                            onClose = {
+                                navController.navigate(NavRoutes.Home.ROUTE) {
+                                    popUpTo(NavRoutes.Home.ROUTE) { inclusive = true }
+                                }
+                            },
+                            onChat = {
+                                val associatedChat = chats.find { it.planId == currentPlan.id || it.id == chatId }
+                                if (associatedChat != null) {
+                                    navController.navigate(
+                                        NavRoutes.ChatDetail.createRoute(
+                                            associatedChat.id,
+                                            associatedChat.name
+                                        )
+                                    )
+                                }
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         }
     }
+}
 
-    if (showDialog && isReceived) {
-        EditSessionDialog(
-            session = sessionToEdit,
-            onDismiss = { showDialog = false },
-            onSave = { updated ->
-                if (selectedSessionIndex != -1) sessions[selectedSessionIndex] = updated
-                else sessions.add(updated)
-                showDialog = false
-            }
-        )
+/**
+ * Filtro final de seguridad para evitar mensajes técnicos de Java/GSON en la UI.
+ */
+private fun formatErrorMessage(rawError: String): String {
+    val lowError = rawError.lowercase()
+    return if (lowError.contains("end of input") || 
+               lowError.contains("path $") || 
+               lowError.contains("malformed") || 
+               lowError.contains("expected")) {
+        "El servidor envió información incompleta. Por favor, intenta de nuevo en unos momentos."
+    } else {
+        rawError
     }
 }
